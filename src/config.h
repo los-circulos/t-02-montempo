@@ -18,6 +18,7 @@ struct configT {
 
 extern configT config;
 
+void initConfig();
 void readConfig();
 
 #endif //MONTEMPO_CONFIG_H

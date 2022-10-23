@@ -1,12 +1,26 @@
 #ifndef MONTEMPO_HARDWARE_H
 #define MONTEMPO_HARDWARE_H
 
+
+
+///////////////////////////////////////// LEDS          /////////////////////////////////////
+#define LED1 LED_BUILTIN
+#define BLINK_NONE 0
+#define BLINK_SLOW 1
+#define BLINK_FAST 2
+#define BLINK_ERR 3
+#define BLINK_ON 99
+
 ///////////////////////////////////////// BUTTONS       /////////////////////////////////////
 // button normally ON, "safe switch" - breaking it triggers shutdown (unless noted otherwise)
-#define CONFIG_BTN_ON PIN_A6
+#define BTN_A PIN_A7
+#define BTN_A_PUSHED (analogRead(BTN_A) < 50)
+#define BTN_A_DISABLED (!BTN_A_PUSHED && (analogRead(BTN_A) < 200))
 
 // button normally OFF, "the button" - various functions
-#define CONFIG_BTN_NO PIN_A7
+#define BTN_B PIN_A6
+#define BTN_B_PUSHED (analogRead(BTN_B) < 50)
+#define BTN_B_DISABLED (!BTN_B_PUSHED && (analogRead(BTN_B) < 200))
 
 ///////////////////////////////////////// SENSORS       /////////////////////////////////////
 // throttle pin

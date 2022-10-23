@@ -11,6 +11,25 @@ const unsigned int flyTimeValues[] = {60, 180, 300, 360};
 
 int i;
 
+void initConfig() {
+
+#ifdef CONFIG_DIP_8
+
+    for (i=CONFIG_DIP_1; i<=CONFIG_DIP_8; i++) {
+        pinMode(i, INPUT_PULLUP);
+    }
+
+    pinMode(LED1, OUTPUT);
+    // NOTE on the nano these won't work with default pins A6, A7 and these two pins need a pullup resistor
+    pinMode(BTN_A, INPUT_PULLUP);
+    pinMode(BTN_B, INPUT_PULLUP);
+
+    config.testMode = !digitalRead(CONFIG_DIP_6) && !digitalRead(CONFIG_DIP_7);
+
+#endif
+
+}
+
 void readConfig() {
 
 //#ifdef CONFIG_JMP_4
@@ -18,10 +37,6 @@ void readConfig() {
 //#endif
 
 #ifdef CONFIG_DIP_8
-
-    for (i=CONFIG_DIP_1; i<=CONFIG_DIP_8; i++) {
-        pinMode(i, INPUT_PULLUP);
-    }
 
     config.throttle = 98
             - !digitalRead(CONFIG_DIP_1) * 13
@@ -49,8 +64,6 @@ void readConfig() {
     config.holdRPM = !digitalRead(CONFIG_DIP_6) && digitalRead(CONFIG_DIP_7);
 
     config.holdCurrent = !digitalRead(CONFIG_DIP_7) && digitalRead(CONFIG_DIP_6);
-
-    config.testMode = !digitalRead(CONFIG_DIP_6) && !digitalRead(CONFIG_DIP_7);
 
     // @todo rotate delay should be read from eprom
     // @todo default screen should be read from eprom
