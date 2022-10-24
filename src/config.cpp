@@ -20,9 +20,20 @@ void initConfig() {
     }
 
     pinMode(LED1, OUTPUT);
+
     // NOTE on the nano these won't work with default pins A6, A7 and these two pins need a pullup resistor
-    pinMode(BTN_A, INPUT_PULLUP);
-    pinMode(BTN_B, INPUT_PULLUP);
+    if (BTN_A_DISABLED) {
+        config.btnAEnabled = false;
+    }
+    else {
+        pinMode(BTN_A, INPUT_PULLUP);
+    }
+    if (BTN_B_DISABLED) {
+        config.btnBEnabled = false;
+    }
+    else {
+        pinMode(BTN_B, INPUT_PULLUP);
+    }
 
     config.testMode = !digitalRead(CONFIG_DIP_6) && !digitalRead(CONFIG_DIP_7);
 

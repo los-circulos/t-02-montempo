@@ -14,6 +14,8 @@ struct configT {
     bool rotateScreens = true;
     int screenRotateTime = 2;
     bool testMode = false;
+    bool btnAEnabled = true;
+    bool btnBEnabled = true;
 };
 
 extern configT config;

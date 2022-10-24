@@ -22,6 +22,8 @@
 #define BTN_B_PUSHED (analogRead(BTN_B) < 50)
 #define BTN_B_DISABLED (!BTN_B_PUSHED && (analogRead(BTN_B) < 200))
 
+#define BTN_ANY_BUTTON_PRESSED ((config.btnAEnabled && BTN_A_PUSHED) || (config.btnBEnabled && BTN_B_PUSHED))
+
 ///////////////////////////////////////// SENSORS       /////////////////////////////////////
 // throttle pin
 #define PIN_THROTTLE PIN3
