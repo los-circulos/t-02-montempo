@@ -1,7 +1,7 @@
 #ifndef MONTEMPO_HARDWARE_H
 #define MONTEMPO_HARDWARE_H
 
-
+#include <Arduino.h>
 
 ///////////////////////////////////////// LEDS          /////////////////////////////////////
 #define LED1 LED_BUILTIN
@@ -12,17 +12,15 @@
 #define BLINK_ON 99
 
 ///////////////////////////////////////// BUTTONS       /////////////////////////////////////
-// button normally ON, "safe switch" - breaking it triggers shutdown (unless noted otherwise)
 #define BTN_A PIN_A7
-#define BTN_A_PUSHED (analogRead(BTN_A) < 50)
-#define BTN_A_DISABLED (!BTN_A_PUSHED && (analogRead(BTN_A) < 200))
-
-// button normally OFF, "the button" - various functions
 #define BTN_B PIN_A6
-#define BTN_B_PUSHED (analogRead(BTN_B) < 50)
-#define BTN_B_DISABLED (!BTN_B_PUSHED && (analogRead(BTN_B) < 200))
 
-#define BTN_ANY_BUTTON_PRESSED ((config.btnAEnabled && BTN_A_PUSHED) || (config.btnBEnabled && BTN_B_PUSHED))
+bool btnAPushed();
+bool btnADisabled();
+bool btnBPushed();
+bool btnBDisabled();
+//bool btnAnyButtonPressed();
+#define ANY_BUTTON_PRESSED (btnAPushed() || btnBPushed())
 
 ///////////////////////////////////////// SENSORS       /////////////////////////////////////
 // throttle pin

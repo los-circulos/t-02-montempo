@@ -9,6 +9,7 @@ extern int currentMode;
 #define MODE_WELCOME_LOCK 1
 #define MODE_WELCOME_COUNTDOWN 2
 #define MODE_TEST 10
+
 #define MODE_CONFIG 20
 #define MODE_DELAY 40
 #define MODE_FLY 42
@@ -16,5 +17,6 @@ extern int currentMode;
 
 
 void trapWhileAnyButtonPressed();
+bool elapsedInMode(unsigned int);
 
 #endif //MONTEMPO_MAIN_H

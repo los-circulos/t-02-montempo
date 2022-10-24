@@ -16,6 +16,12 @@
 
 int currentMode = MODE_WELCOME_LOCK;
 unsigned long currentModeStarted = 0;
+// elapsed incremental cycles since last mode change. !! use only through elapsedInMode().
+unsigned long elapsedInModeCounter = 0;
+
+unsigned long m;
+
+void setMode(int newMode);
 
 void setup() {
 
@@ -24,44 +30,52 @@ void setup() {
 
     readConfig();
 
-    clearScreen();
     drawWelcome();
 }
 
 void loop() {
 
-    unsigned long m = millis();
+    m = millis();
     int i;
 
     switch (currentMode) {
         case MODE_WELCOME_LOCK:
-            // display logo, version
-            if (!BTN_ANY_BUTTON_PRESSED) {
-                currentMode = MODE_WELCOME_COUNTDOWN;
-                currentModeStarted = m;
+            // @todo check if any button is enabled
+//            if (!btnAnyButtonPressed()) {
+            if (!ANY_BUTTON_PRESSED) {
+                setMode(MODE_WELCOME_COUNTDOWN);
+                eraseLogoLock();
             }
             else {
                 drawLogoLock();
             }
             break;
         case MODE_WELCOME_COUNTDOWN:
-            if (BTN_ANY_BUTTON_PRESSED) {
-                currentMode = MODE_WELCOME_LOCK;
+//            if (btnAnyButtonPressed()) {
+            if (ANY_BUTTON_PRESSED) {
+                setMode(MODE_WELCOME_LOCK);
             }
-            else {
-                i = (m - currentModeStarted) / 200;
-                u8x8.drawString(i+4, 3, ".");
-                if (i>6) {
-                    currentMode = MODE_CONFIG;
-                }
+            else if (elapsedInModeCounter > 6) {
+                setMode(MODE_CONFIG);
+            }
+            else if (elapsedInMode(250)) {
+                u8x8.drawString(elapsedInModeCounter + 4, 3, ".");
             }
             break;
         case MODE_TEST:
             break;
         case MODE_CONFIG:
-            readConfig();
-            drawScreen(config);
-            delay(200);
+            if (btnBDisabled() || btnBPushed()) {
+                u8x8.drawString(3, 0, "?");
+            }
+            else {
+                u8x8.drawString(3, 0, " ");
+            }
+            if (elapsedInMode(200)) {
+                // @todo time this so we can see if it interferes with servo signal at all
+                readConfig();
+                drawScreen(config);
+            }
             break;
         case MODE_DELAY:
             break;
@@ -71,4 +85,30 @@ void loop() {
             break;
     }
 
+}
+
+void setMode(int newMode) {
+    currentMode = newMode;
+    currentModeStarted = m;
+    elapsedInModeCounter = 0;
+    switch (newMode) {
+        case MODE_CONFIG:
+            clearScreen();
+        break;
+    }
+}
+
+/**
+ * A tricky stepper for "incremental ticks"
+ * eg. a waiting bar from . to ...... is implemented in MODE_WELCOME_COUNTDOWN. It uses the return value
+ *  and if 250 millis have elapsed since drawing the last dot, it will draw another dot.
+ * @param elapsedMillis
+ */
+bool elapsedInMode(unsigned int elapsedMillis) {
+    unsigned int elapsedCnt = (m - currentModeStarted) / elapsedMillis;
+    if (elapsedCnt > elapsedInModeCounter) {
+        elapsedInModeCounter = elapsedCnt;
+        return true;
+    }
+    return false;
 }

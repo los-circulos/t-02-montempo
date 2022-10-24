@@ -22,13 +22,17 @@ void drawLogoLock() {
         u8x8.drawString(4, 3, " !REL! ");
     }
     else {
-        u8x8.drawString(4, 3, "       ");
+        eraseLogoLock();
     }
+}
+
+void eraseLogoLock() {
+    u8x8.drawString(4, 3, "       ");
 }
 
 void drawWelcome() {
     // show current settings
-    u8x8.clear();
+    clearScreen();
     u8x8.setFont(FONT_XL);
     u8x8.drawString(0, 0, "MONTEMPO");
     u8x8.setFont(FONT_S);
@@ -58,19 +62,16 @@ void drawScreen(configT config) {
     }
     else {
         sprintf(buffer, "THR %2d%% ", config.throttle);
-//        u8x8.drawString(0, 3, "THR  82%");
         u8x8.drawString(0, 3, buffer);
     }
 
     u8x8.setFont(FONT_L);
     float u = 12.456;
-//    u8x8.drawString(10,0, "12.4 V");
     dtostrf(u, 2, 2, floatBuffer);
     sprintf(buffer, "%s V", floatBuffer);
     u8x8.drawString(9,0, buffer);
 
-//    u8x8.drawString(11, 2, "10:10");
-    sprintf(buffer, "fly%2d:%02d", config.timeFly / 60, config.timeFly % 60);
-    u8x8.drawString(8, 2, buffer);
+    sprintf(buffer, "%2d:%02d", config.timeFly / 60, config.timeFly % 60);
+    u8x8.drawString(11, 2, buffer);
 
 }
