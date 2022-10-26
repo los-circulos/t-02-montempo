@@ -12,7 +12,9 @@ extern uint8_t currentMode;
 
 #define MODE_CONFIG 20
 #define MODE_CONFIG_COUNTDOWN 21
+#define MODE_DELAY_LOCK 39
 #define MODE_DELAY 40
+#define MODE_SOFT_START 41
 #define MODE_FLY 42
 #define MODE_AFTER 50
 

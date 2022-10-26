@@ -27,7 +27,5 @@ bool btnBDisabled() {
     return !(i IS_PUSHED_BTN) && (i IS_DISABLED_BTN);
 }
 
-// for now the macro version uses less memory. leaving here as if it gets reused many times it might make sense to use a function
-//bool btnAnyButtonPressed() {
-//    return btnAPushed() || btnBPushed();
-//}
+Servo throttle = Servo();
+

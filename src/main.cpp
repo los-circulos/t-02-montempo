@@ -6,6 +6,8 @@
 #include <screen.h>
 
 uint8_t currentMode = MODE_WELCOME_LOCK;
+//uint8_t currentMode = MODE_CONFIG;
+//uint8_t currentMode = MODE_DELAY;
 unsigned long currentModeStarted = 0;
 // elapsed incremental cycles since last mode change. !! use only through elapsedInMode().
 unsigned long elapsedInModeCounter = 0;
@@ -15,12 +17,15 @@ bool elapsedInMode(unsigned int);
 
 void setup() {
 
+    Serial.begin(9600);
+
     initConfig();
     initScreen();
 
     readConfig();
 
     drawWelcome();
+
 }
 
 void loop() {
@@ -59,8 +64,9 @@ void loop() {
 
             break;
         case MODE_CONFIG:
+
             if (elapsedInMode(200)) {
-                // @todo time this so we can see if it interferes with servo signal at all
+
                 readConfig();
                 drawScreen(config);
 
@@ -86,17 +92,49 @@ void loop() {
                 drawFlyConfirmation(false);
             }
             else if (elapsedInModeCounter > 6) {
-                setMode(MODE_DELAY);
+                setMode(MODE_DELAY_LOCK);
             }
             else if (elapsedInMode(DELAY_COUNTDOWN)) {
                 drawWaitDot(elapsedInModeCounter);
             }
-//            blinkLed();
             blinkLed(BLINK_FAST);
             break;
+        case MODE_DELAY_LOCK:
+            if (!ANY_BUTTON_PRESSED) {
+                setMode(MODE_DELAY);
+                eraseLogoLock();
+            }
+            else if (elapsedInMode(100)) {
+                drawLogoLock();
+            }
+
+            break;
         case MODE_DELAY:
+            if (ANY_BUTTON_PRESSED) {
+                setMode(MODE_CONFIG);
+            }
+            // NOTE this has to be in sync with BLINK_FAST blinking, hence the high rate
+            if (elapsedInMode(100)) {
+                drawRemainingTime(config.timeDelay - (currentTime - currentModeStarted) / 1000);
+            }
+            // we increment elapsedInModeCounter twice a sec, so we divide by 2
+            if (elapsedInModeCounter / 10 >= config.timeDelay) {
+                setMode(MODE_FLY);
+            }
+            break;
+        // @todo soft start?
+        case MODE_SOFT_START:
             break;
         case MODE_FLY:
+            if (config.holdRPM) {
+
+            }
+            else if (config.holdCurrent) {
+
+            }
+            else {
+                throttle.writeMicroseconds(config.throttle);
+            }
             break;
         case MODE_AFTER:
             break;
@@ -114,6 +152,15 @@ void setMode(int newMode) {
         break;
         case MODE_CONFIG_COUNTDOWN:
             ledOn();
+        break;
+        case MODE_DELAY_LOCK:
+            clearScreen();
+        break;
+        case MODE_TEST:
+        case MODE_DELAY:
+            throttle.attach(PIN_THROTTLE);
+            throttle.writeMicroseconds(THROTTLE_MICROS_MIN);
+            clearScreen();
         break;
     }
 }

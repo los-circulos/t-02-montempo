@@ -9,11 +9,12 @@ void setCurrentTime() {
 }
 
 bool blinkLed(uint8_t t) {
-    bool ret = millis() / t*10 % 2 > 0;
+    bool ret = (currentTime / t /10) % 2 > 0;
     if (ret) {
         ledOn();
     }
     else {
         ledOff();
     }
+    return ret;
 }

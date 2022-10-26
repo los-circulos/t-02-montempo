@@ -32,6 +32,7 @@ void setFontS() {
     u8x8.setFont(FONT_S);
 }
 void drawLogoLock() {
+    SET_FONT_S;
     if (blinkLed(BLINK_FAST)) {
         u8x8.drawString(4, 3, " !REL! ");
     }
@@ -48,10 +49,8 @@ void drawWelcome() {
     // show current settings
     clearScreen();
     SET_FONT_XL;
-//    setFontXL();
     u8x8.drawString(0, 0, "MONTEMPO");
     SET_FONT_S;
-//    setFontS();
     u8x8.drawString(0, 3, "F2B");
     u8x8.drawString(12, 3, "V1.0");
 }
@@ -59,7 +58,6 @@ void drawWelcome() {
 void drawScreen(configT config) {
 
     SET_FONT_XL;
-//    setFontXL();
 
     if (config.testMode) {
         u8x8.drawString(0, 0, "TEST");
@@ -68,7 +66,6 @@ void drawScreen(configT config) {
         u8x8.drawString(0, 0, "FLY ");
     }
     SET_FONT_S;
-//    setFontS();
 
     if (config.holdRPM) {
         dtostrf(config.RPM/1000, 4, 1, floatBuffer);
@@ -84,7 +81,6 @@ void drawScreen(configT config) {
     }
 
     SET_FONT_L;
-//    setFontL();
     float u = 12.456;
     dtostrf(u, 2, 2, floatBuffer);
     sprintf(buffer, "%s V", floatBuffer);
@@ -97,13 +93,11 @@ void drawScreen(configT config) {
 
 void drawWaitDot(uint8_t x) {
     SET_FONT_S;
-//    setFontS();
     u8x8.drawString(x + 4, 3, ".");
 }
 
 void drawFlyConfirmation(bool show) {
     SET_FONT_XL;
-//    setFontXL();
     if (show) {
         u8x8.drawString(6, 0, "?");
     }
@@ -112,3 +106,14 @@ void drawFlyConfirmation(bool show) {
     }
 }
 
+void drawRemainingTime(unsigned int secsRemain) {
+    setFontXL();
+    sprintf(
+        buffer,
+        "%02d%s%02d",
+        secsRemain/60,
+        blinkLed(secsRemain < 5 ? BLINK_FAST : BLINK_NORMAL) ? "." : " ",
+        secsRemain % 60
+    );
+    u8x8.drawString(3, 0, buffer);
+}

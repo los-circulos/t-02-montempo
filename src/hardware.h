@@ -2,6 +2,7 @@
 #define MONTEMPO_HARDWARE_H
 
 #include <Arduino.h>
+#include "Servo.h"
 
 ///////////////////////////////////////// LEDS          /////////////////////////////////////
 #define LED1 LED_BUILTIN
@@ -23,6 +24,13 @@ bool btnBDisabled();
 ///////////////////////////////////////// SENSORS       /////////////////////////////////////
 // throttle pin
 #define PIN_THROTTLE PIN3
+
+extern Servo throttle;
+
+// micros for 0% throttle eg. delay mode, and for calculations reference
+#define THROTTLE_MICROS_MIN 1050
+// micros for 100% throttle, too high, and ESC might start to cut out. Theoretical max 2000
+#define THROTTLE_MICROS_MAX 1950
 
 // enable voltage sensing
 //#define PIN_VOLTAGE A0
@@ -54,6 +62,7 @@ bool btnBDisabled();
  *      RPM: 8000, 8500, 9000, 9500, 10000, 10500, 11000, 12000 - set R only. Throttle will be set dynamically to keep
  *          motor RPM constant. Needs previous calibration (see there).
  *      current: 13,18,21,24,28,33,37,45 - set C only.
+ * @TODO 360sec should probably rather be "full battery" if there is voltage sensing
  * YY - fly time: 60s, 180s, 300s, 360s
  * R* - turn on RPM hold and interpret govern as target RPM value
  * C* - turn on current hold and interpret govern as target amps
