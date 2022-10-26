@@ -26,6 +26,8 @@ bool btnBDisabled();
 #define PIN_THROTTLE PIN3
 
 extern Servo throttle;
+void throttleOff();
+void throttlePcnt(unsigned int pcnt);
 
 // micros for 0% throttle eg. delay mode, and for calculations reference
 #define THROTTLE_MICROS_MIN 1050
@@ -61,14 +63,15 @@ extern Servo throttle;
  *          will be applied over the fly time. Not very useful as plane will slow down over time
  *      RPM: 8000, 8500, 9000, 9500, 10000, 10500, 11000, 12000 - set R only. Throttle will be set dynamically to keep
  *          motor RPM constant. Needs previous calibration (see there).
- *      current: 13,18,21,24,28,33,37,45 - set C only.
- * @TODO 360sec should probably rather be "full battery" if there is voltage sensing
- * YY - fly time: 60s, 180s, 300s, 360s
- * R* - turn on RPM hold and interpret govern as target RPM value
- * C* - turn on current hold and interpret govern as target amps
- * R+C - * = set both R+C on to enter test mode
+ *      power: 200, 250, 300, 350, 400, 450, 500
+ * YY - fly time: (see code)
+ * R* - turn on RPM hold and interpret govern as target RPM value - needs rpm sensing
+ * C* - turn on power hold and interpret govern as target power (W) - needs voltage and current sensing
+ *
+ * R+C - set both R+C to turn on SMART throttle
  * S - rotate screen views. To go to another screen, turn on rotate then turn it off when you see it. This view
- *      will be shown by default at next power up. Leave turned on to keep cycling in-flight values.
+ *      will be shown by default at next power up. Leave turned on to keep cycling in-flight values. This switch works
+ *      in delay ("countdown") and test modes as well, and will reset countdown timer.
  */
 #define CONFIG_DIP8
 

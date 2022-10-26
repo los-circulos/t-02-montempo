@@ -12,6 +12,7 @@ unsigned long currentModeStarted = 0;
 // elapsed incremental cycles since last mode change. !! use only through elapsedInMode().
 unsigned long elapsedInModeCounter = 0;
 
+void notImplemented();
 void setMode(int newMode);
 bool elapsedInMode(unsigned int);
 
@@ -31,7 +32,7 @@ void setup() {
 void loop() {
 
     setCurrentTime();
-    int i;
+    unsigned int i;
 
     switch (currentMode) {
         case MODE_WELCOME_LOCK:
@@ -132,20 +133,43 @@ void loop() {
         case MODE_SOFT_START:
             break;
         case MODE_FLY:
-            if (config.holdRPM) {
-
+            if (config.holdRPM || config.holdPower || config.smartThrottle) {
+                notImplemented();
+                return;
             }
-            else if (config.holdCurrent) {
-
-            }
+            // simple throttle
             else {
-                throttle.writeMicroseconds(config.throttle);
+                throttlePcnt(config.throttle);
+            }
+            ledOn();
+            if (elapsedInMode(100)) {
+                // draw remaining / elapsed time
+                i = (currentTime - currentModeStarted) / 1000;
+                // remaining time is flight time minus soft start time (elapsed already) minus elapsed time
+                if (!config.runUntilCutoff) {
+                    i = config.timeFly - config.softStartTime - i;
+                }
+                // when using soft start and incremental time, add it to elapsed time (twice to increment previous deduction)
+                else {
+                    i+= 2*config.softStartTime;
+                }
+                drawRemainingTime(i);
+                if (config.runUntilCutoff) {
+                    ledOff();
+                }
             }
             break;
         case MODE_AFTER:
             break;
     }
 
+}
+
+void notImplemented() {
+    throttleOff();
+    if (elapsedInMode(100)) {
+        drawNotImplemented();
+    }
 }
 
 void setMode(int newMode) {
@@ -163,7 +187,7 @@ void setMode(int newMode) {
         case MODE_TEST:
         case MODE_DELAY:
             throttle.attach(PIN_THROTTLE);
-            throttle.writeMicroseconds(THROTTLE_MICROS_MIN);
+            throttleOff();
             clearScreen();
         break;
     }

@@ -29,3 +29,12 @@ bool btnBDisabled() {
 
 Servo throttle = Servo();
 
+void throttleOff() {
+//    throttle.writeMicroseconds((THROTTLE_MICROS_MIN + THROTTLE_MICROS_MAX) / 2);
+    throttle.writeMicroseconds(THROTTLE_MICROS_MIN);
+}
+
+void throttlePcnt(unsigned int pcnt) {
+    unsigned int i = THROTTLE_MICROS_MIN + (THROTTLE_MICROS_MAX - THROTTLE_MICROS_MIN) * pcnt / 100;
+    throttle.writeMicroseconds(i);
+}

@@ -10,14 +10,6 @@ int currentScreen = SCREEN_PRE;
 char buffer[20];
 char floatBuffer[6];
 
-void initScreen() {
-    u8x8.begin();
-    u8x8.setPowerSave(0);
-}
-void clearScreen() {
-    u8x8.clear();
-}
-
 #define SET_FONT_XL     u8x8.setFont(FONT_XL)
 #define SET_FONT_L     u8x8.setFont(FONT_L)
 #define SET_FONT_S     u8x8.setFont(FONT_S)
@@ -30,6 +22,24 @@ void setFontL() {
 }
 void setFontS() {
     u8x8.setFont(FONT_S);
+}
+
+void initScreen() {
+    u8x8.begin();
+    u8x8.setPowerSave(0);
+}
+void clearScreen() {
+    u8x8.clear();
+}
+
+void drawNotImplemented() {
+    SET_FONT_XL;
+    if (blinkLed(BLINK_FAST)) {
+        u8x8.drawString(0, 1, "NOT YET");
+    }
+    else {
+        clearScreen();
+    }
 }
 void drawLogoLock() {
     SET_FONT_S;
@@ -80,15 +90,21 @@ void drawScreen(configT config) {
 //        sprintf(floatBuffer, "%d", (config.RPM/100)%10);
 //        u8x8.drawString(7, 3, floatBuffer);
         // 20342
-        u8x8.drawString(0, 2, "RPM");
+        u8x8.drawString(0, 2, "RPM ");
         sprintf(buffer, "%2d.", config.RPM/1000);
         u8x8.drawString(4, 2, buffer);
         sprintf(buffer, "%d", (config.RPM/100)%10);
         u8x8.drawString(7, 2, buffer);
     }
-    else if (config.holdCurrent) {
-        u8x8.drawString(0, 2, "NOTYET:(");
+    else if (config.holdPower) {
+        sprintf(buffer, "PWR  %3d", config.power);
+        u8x8.drawString(0, 2, buffer);
     }
+    else if (config.smartThrottle) {
+        sprintf(buffer, "SMRT%% %2d", config.throttle);
+        u8x8.drawString(0, 2, buffer);
+    }
+    // constant throttle
     else {
 //        sprintf(buffer, "THR  %2d%%", config.throttle);
         sprintf(buffer, "THR %% %2d", config.throttle);

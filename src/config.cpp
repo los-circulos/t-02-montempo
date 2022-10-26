@@ -2,13 +2,15 @@
 #include "config.h"
 #include "hardware.h"
 
-#define THROTTLE_MAX 98
 #define RPM_BASE 8000
 
 configT config;
-const unsigned int currentValues[] = {13,18,21,24,28,33,37,45};
+//const unsigned int currentValues[] = {13,18,21,24,28,33,37,45};
+// 30A * 15V = 450W (when holding power) / 20A * 15V = 300W
+const unsigned int powerValues[] = { 160, 190, 220, 260, 300, 350, 400, 450 };
 //const unsigned int flyTimeValues[] = {60, 180, 300, 360};
-const unsigned int flyTimeValues[] = {321, 180, 59, 371};
+// 3:00 default, 5:11 is a basic value, 371 + 25sec = leaves 24sec of 7mins to start timer and to land. 0 stands for run until voltage cut
+const unsigned int flyTimeValues[] = {180, 381, 311, 0};
 
 uint8_t i;
 
@@ -16,8 +18,12 @@ void initConfig() {
 
 #ifdef CONFIG_DIP_8
 
+    config.testMode = true;
     for (i=CONFIG_DIP_1; i<=CONFIG_DIP_8; i++) {
         pinMode(i, INPUT_PULLUP);
+        if (digitalRead(i)) {
+            config.testMode = false;
+        }
     }
 
     pinMode(LED1, OUTPUT);
@@ -35,8 +41,6 @@ void initConfig() {
     else {
         pinMode(BTN_B, INPUT_PULLUP);
     }
-
-    config.testMode = !digitalRead(CONFIG_DIP_6) && !digitalRead(CONFIG_DIP_7);
 
 #endif
 
@@ -67,15 +71,20 @@ void readConfig() {
     i = !digitalRead(CONFIG_DIP_1) * 4
             + !digitalRead(CONFIG_DIP_2) * 2
             + !digitalRead(CONFIG_DIP_3) * 1;
-    config.current = currentValues[i];
+    config.power = powerValues[i];
 
     i = !digitalRead(CONFIG_DIP_4) * 2
         + !digitalRead(CONFIG_DIP_5) * 1;
     config.timeFly = flyTimeValues[i];
+    if (config.timeFly == 0) {
+        config.runUntilCutoff = true;
+    }
 
     config.holdRPM = !digitalRead(CONFIG_DIP_6) && digitalRead(CONFIG_DIP_7);
 
-    config.holdCurrent = !digitalRead(CONFIG_DIP_7) && digitalRead(CONFIG_DIP_6);
+    config.holdPower = digitalRead(CONFIG_DIP_6) && !digitalRead(CONFIG_DIP_7);
+
+    config.smartThrottle = !digitalRead(CONFIG_DIP_6) && !digitalRead(CONFIG_DIP_7);
 
     // @todo rotate delay should be read from eprom
     // @todo default screen should be read from eprom

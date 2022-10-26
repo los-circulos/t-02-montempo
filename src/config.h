@@ -3,12 +3,18 @@
 
 struct configT {
     unsigned int throttle = 80;
-    unsigned long RPM = 0;
+    bool smartThrottle = false;
+    unsigned int smartEndThrottle = 95;
+    unsigned int RPM = 0;
     bool holdRPM = false;
-    unsigned int current = 0;
-    bool holdCurrent = false;
-    unsigned int timeDelay = 25;
-    unsigned int timeFly = 180;
+    unsigned int power = 300;
+    bool holdPower = false;
+    bool runUntilCutoff = false;
+//    unsigned int timeDelay = 25;
+    unsigned int timeDelay = 3;
+//    unsigned int softStartTime = 5;
+    unsigned int softStartTime = 0;
+    unsigned int timeFly = 311;
     /** which screen to show */
     int screen = 0;
     bool rotateScreens = true;

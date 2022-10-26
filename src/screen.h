@@ -18,6 +18,7 @@ extern U8X8_SSD1306_128X32_UNIVISION_HW_I2C u8x8;
 
 void initScreen();
 void clearScreen();
+void drawNotImplemented();
 void drawLogoLock();
 void eraseLogoLock();
 void drawWelcome();
