@@ -1,8 +1,13 @@
 #include <Arduino.h>
 #include "time.h"
+#include "hardware.h"
 
-unsigned long currentTime;
-
-bool errorBlink() {
-    return millis() / BLINKDIV_ERR % 2 > 0;
+bool fastBlink() {
+    bool ret = millis() / BLINKDIV_ERR % 2 > 0;
+    if (ret) {
+        ledOn();
+    }
+    else {
+        ledOff();
+    }
 }

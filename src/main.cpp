@@ -93,12 +93,7 @@ void loop() {
             else if (elapsedInMode(DELAY_COUNTDOWN)) {
                 drawWaitDot(elapsedInModeCounter);
             }
-            if (errorBlink()) {
-                ledOn();
-            }
-            else {
-                ledOff();
-            }
+            fastBlink();
             break;
         case MODE_DELAY:
             break;

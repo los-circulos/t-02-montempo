@@ -32,13 +32,11 @@ void setFontS() {
     u8x8.setFont(FONT_S);
 }
 void drawLogoLock() {
-    if (errorBlink()) {
+    if (fastBlink()) {
         u8x8.drawString(4, 3, " !REL! ");
-        ledOn();
     }
     else {
         eraseLogoLock();
-        ledOff();
     }
 }
 

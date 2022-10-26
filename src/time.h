@@ -8,6 +8,6 @@ extern unsigned long currentTime;
 #define BLINKDIV_NORMAL 500
 #define BLINKDIV_SLOW 1000
 
-bool errorBlink();
+bool fastBlink();
 
 #endif //MONTEMPO_TIME_H
