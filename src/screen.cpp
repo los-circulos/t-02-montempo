@@ -1,7 +1,7 @@
 #include "config.h"
 #include "hardware.h"
 #include "screen.h"
-#include "time.h"
+#include "mytime.h"
 
 U8X8_SSD1306_128X32_UNIVISION_HW_I2C u8x8(/* reset=*/ U8X8_PIN_NONE);   // Adafruit ESP8266/32u4/ARM Boards + FeatherWing OLED
 int currentScreen = SCREEN_PRE;
@@ -32,7 +32,7 @@ void setFontS() {
     u8x8.setFont(FONT_S);
 }
 void drawLogoLock() {
-    if (fastBlink()) {
+    if (blinkLed(BLINK_FAST)) {
         u8x8.drawString(4, 3, " !REL! ");
     }
     else {

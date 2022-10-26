@@ -2,15 +2,13 @@
 #include "config.h"
 #include "hardware.h"
 #include "main.h"
-#include "time.h"
+#include "mytime.h"
 #include <screen.h>
 
 uint8_t currentMode = MODE_WELCOME_LOCK;
 unsigned long currentModeStarted = 0;
 // elapsed incremental cycles since last mode change. !! use only through elapsedInMode().
 unsigned long elapsedInModeCounter = 0;
-
-unsigned long m;
 
 void setMode(int newMode);
 bool elapsedInMode(unsigned int);
@@ -27,7 +25,7 @@ void setup() {
 
 void loop() {
 
-    m = millis();
+    setCurrentTime();
     int i;
 
     switch (currentMode) {
@@ -93,7 +91,8 @@ void loop() {
             else if (elapsedInMode(DELAY_COUNTDOWN)) {
                 drawWaitDot(elapsedInModeCounter);
             }
-            fastBlink();
+//            blinkLed();
+            blinkLed(BLINK_FAST);
             break;
         case MODE_DELAY:
             break;
@@ -107,7 +106,7 @@ void loop() {
 
 void setMode(int newMode) {
     currentMode = newMode;
-    currentModeStarted = m;
+    currentModeStarted = currentTime;
     elapsedInModeCounter = 0;
     switch (newMode) {
         case MODE_CONFIG:
@@ -126,7 +125,7 @@ void setMode(int newMode) {
  * @param elapsedMillis
  */
 bool elapsedInMode(unsigned int elapsedMillis) {
-    unsigned long elapsedCnt = (m - currentModeStarted) / elapsedMillis;
+    unsigned long elapsedCnt = (currentTime - currentModeStarted) / elapsedMillis;
     if (elapsedCnt > elapsedInModeCounter) {
         elapsedInModeCounter = elapsedCnt;
         return true;

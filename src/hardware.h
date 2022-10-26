@@ -5,11 +5,7 @@
 
 ///////////////////////////////////////// LEDS          /////////////////////////////////////
 #define LED1 LED_BUILTIN
-#define BLINK_NONE 0
-#define BLINK_SLOW 1
-#define BLINK_FAST 2
-#define BLINK_ERR 3
-#define BLINK_ON 99
+
 void ledOn();
 void ledOff();
 
