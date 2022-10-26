@@ -1,4 +1,5 @@
 #include "config.h"
+#include "hardware.h"
 #include "screen.h"
 #include "time.h"
 
@@ -17,12 +18,27 @@ void clearScreen() {
     u8x8.clear();
 }
 
+#define SET_FONT_XL     u8x8.setFont(FONT_XL)
+#define SET_FONT_L     u8x8.setFont(FONT_L)
+#define SET_FONT_S     u8x8.setFont(FONT_S)
+
+void setFontXL() {
+    u8x8.setFont(FONT_XL);
+}
+void setFontL() {
+    u8x8.setFont(FONT_L);
+}
+void setFontS() {
+    u8x8.setFont(FONT_S);
+}
 void drawLogoLock() {
     if (errorBlink()) {
         u8x8.drawString(4, 3, " !REL! ");
+        ledOn();
     }
     else {
         eraseLogoLock();
+        ledOff();
     }
 }
 
@@ -33,16 +49,19 @@ void eraseLogoLock() {
 void drawWelcome() {
     // show current settings
     clearScreen();
-    u8x8.setFont(FONT_XL);
+    SET_FONT_XL;
+//    setFontXL();
     u8x8.drawString(0, 0, "MONTEMPO");
-    u8x8.setFont(FONT_S);
+    SET_FONT_S;
+//    setFontS();
     u8x8.drawString(0, 3, "F2B");
     u8x8.drawString(12, 3, "V1.0");
 }
 
 void drawScreen(configT config) {
 
-    u8x8.setFont(FONT_XL);
+    SET_FONT_XL;
+//    setFontXL();
 
     if (config.testMode) {
         u8x8.drawString(0, 0, "TEST");
@@ -50,7 +69,8 @@ void drawScreen(configT config) {
     else {
         u8x8.drawString(0, 0, "FLY ");
     }
-    u8x8.setFont(FONT_S);
+    SET_FONT_S;
+//    setFontS();
 
     if (config.holdRPM) {
         dtostrf(config.RPM/1000, 4, 1, floatBuffer);
@@ -65,7 +85,8 @@ void drawScreen(configT config) {
         u8x8.drawString(0, 3, buffer);
     }
 
-    u8x8.setFont(FONT_L);
+    SET_FONT_L;
+//    setFontL();
     float u = 12.456;
     dtostrf(u, 2, 2, floatBuffer);
     sprintf(buffer, "%s V", floatBuffer);
@@ -75,3 +96,21 @@ void drawScreen(configT config) {
     u8x8.drawString(11, 2, buffer);
 
 }
+
+void drawWaitDot(uint8_t x) {
+    SET_FONT_S;
+//    setFontS();
+    u8x8.drawString(x + 4, 3, ".");
+}
+
+void drawFlyConfirmation(bool show) {
+    SET_FONT_XL;
+//    setFontXL();
+    if (show) {
+        u8x8.drawString(6, 0, "?");
+    }
+    else {
+        u8x8.drawString(6, 0, " ");
+    }
+}
+

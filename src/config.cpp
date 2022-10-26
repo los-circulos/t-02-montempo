@@ -9,13 +9,11 @@ configT config;
 const unsigned int currentValues[] = {13,18,21,24,28,33,37,45};
 const unsigned int flyTimeValues[] = {60, 180, 300, 360};
 
-int i;
+uint8_t i;
 
 void initConfig() {
 
 #ifdef CONFIG_DIP_8
-
-    int i;
 
     for (i=CONFIG_DIP_1; i<=CONFIG_DIP_8; i++) {
         pinMode(i, INPUT_PULLUP);
@@ -24,9 +22,6 @@ void initConfig() {
     pinMode(LED1, OUTPUT);
 
     // NOTE on the nano these won't work with default pins A6, A7 and these two pins need a pullup resistor
-    i = analogRead(BTN_A);
-//    return !(i IS_PUSHED_BTN) && (i IS_DISABLED_BTN);
-
     if (btnADisabled()) {
         config.btnAEnabled = false;
     }

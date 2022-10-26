@@ -10,6 +10,8 @@
 #define BLINK_FAST 2
 #define BLINK_ERR 3
 #define BLINK_ON 99
+void ledOn();
+void ledOff();
 
 ///////////////////////////////////////// BUTTONS       /////////////////////////////////////
 #define BTN_A PIN_A7

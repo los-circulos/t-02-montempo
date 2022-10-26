@@ -22,5 +22,7 @@ void drawLogoLock();
 void eraseLogoLock();
 void drawWelcome();
 void drawScreen(configT config);
+void drawWaitDot(uint8_t x);
+void drawFlyConfirmation(bool show);
 
 #endif //MONTEMPO_SCREEN_H

@@ -1,6 +1,13 @@
 #include "hardware.h"
 #include "config.h"
 
+void ledOn() {
+    digitalWrite(LED1, HIGH);
+}
+void ledOff() {
+    digitalWrite(LED1, LOW);
+}
+
 #define IS_PUSHED_BTN < 50
 #define IS_DISABLED_BTN < 200
 

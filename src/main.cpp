@@ -3,18 +3,9 @@
 #include "hardware.h"
 #include "main.h"
 #include "time.h"
-//#include <U8g2lib.h>
-#include <Wire.h>
 #include <screen.h>
-#include <U8x8lib.h>
 
-////public: U8X8_SSD1306_128X32_UNIVISION_HW_I2C(uint8_t reset = U8X8_PIN_NONE, uint8_t clock = U8X8_PIN_NONE, uint8_t data = U8X8_PIN_NONE) : U8X8() {
-//U8X8_SSD1306_128X32_UNIVISION_HW_I2C u8x8(/* reset=*/ U8X8_PIN_NONE);   // Adafruit ESP8266/32u4/ARM Boards + FeatherWing OLED
-
-// for u8g2 this works
-//U8G2_SSD1306_128X32_UNIVISION_F_HW_I2C u8g2(U8G2_R0);   // Adafruit ESP8266/32u4/ARM Boards + FeatherWing OLED
-
-int currentMode = MODE_WELCOME_LOCK;
+uint8_t currentMode = MODE_WELCOME_LOCK;
 unsigned long currentModeStarted = 0;
 // elapsed incremental cycles since last mode change. !! use only through elapsedInMode().
 unsigned long elapsedInModeCounter = 0;
@@ -22,6 +13,7 @@ unsigned long elapsedInModeCounter = 0;
 unsigned long m;
 
 void setMode(int newMode);
+bool elapsedInMode(unsigned int);
 
 void setup() {
 
@@ -41,7 +33,6 @@ void loop() {
     switch (currentMode) {
         case MODE_WELCOME_LOCK:
             // @todo check if any button is enabled
-//            if (!btnAnyButtonPressed()) {
             if (!ANY_BUTTON_PRESSED) {
                 setMode(MODE_WELCOME_COUNTDOWN);
                 eraseLogoLock();
@@ -51,30 +42,62 @@ void loop() {
             }
             break;
         case MODE_WELCOME_COUNTDOWN:
-//            if (btnAnyButtonPressed()) {
             if (ANY_BUTTON_PRESSED) {
                 setMode(MODE_WELCOME_LOCK);
             }
             else if (elapsedInModeCounter > 6) {
-                setMode(MODE_CONFIG);
+                if (config.testMode) {
+                    setMode(MODE_TEST);
+                }
+                else {
+                    setMode(MODE_CONFIG);
+                }
             }
-            else if (elapsedInMode(250)) {
-                u8x8.drawString(elapsedInModeCounter + 4, 3, ".");
+            else if (elapsedInMode(DELAY_COUNTDOWN)) {
+                drawWaitDot(elapsedInModeCounter);
             }
             break;
         case MODE_TEST:
+
             break;
         case MODE_CONFIG:
-            if (btnBDisabled() || btnBPushed()) {
-                u8x8.drawString(3, 0, "?");
-            }
-            else {
-                u8x8.drawString(3, 0, " ");
-            }
             if (elapsedInMode(200)) {
                 // @todo time this so we can see if it interferes with servo signal at all
                 readConfig();
                 drawScreen(config);
+
+                if (btnBDisabled() || btnBPushed()) {
+                    ledOn();
+                    if (btnADisabled() || btnAPushed()) {
+                        setMode(MODE_CONFIG_COUNTDOWN);
+                    }
+                    if (elapsedInModeCounter % 2 > 0) {
+                        drawFlyConfirmation(true);
+                    }
+                    else {
+                        drawFlyConfirmation(false);
+                    }
+                }
+
+            }
+
+            break;
+        case MODE_CONFIG_COUNTDOWN:
+            if ((!btnADisabled() && !btnAPushed()) || (!btnBDisabled() && !btnBPushed())) {
+                setMode(MODE_CONFIG);
+                drawFlyConfirmation(false);
+            }
+            else if (elapsedInModeCounter > 6) {
+                setMode(MODE_DELAY);
+            }
+            else if (elapsedInMode(DELAY_COUNTDOWN)) {
+                drawWaitDot(elapsedInModeCounter);
+            }
+            if (errorBlink()) {
+                ledOn();
+            }
+            else {
+                ledOff();
             }
             break;
         case MODE_DELAY:
@@ -95,6 +118,9 @@ void setMode(int newMode) {
         case MODE_CONFIG:
             clearScreen();
         break;
+        case MODE_CONFIG_COUNTDOWN:
+            ledOn();
+        break;
     }
 }
 
@@ -105,7 +131,7 @@ void setMode(int newMode) {
  * @param elapsedMillis
  */
 bool elapsedInMode(unsigned int elapsedMillis) {
-    unsigned int elapsedCnt = (m - currentModeStarted) / elapsedMillis;
+    unsigned long elapsedCnt = (m - currentModeStarted) / elapsedMillis;
     if (elapsedCnt > elapsedInModeCounter) {
         elapsedInModeCounter = elapsedCnt;
         return true;
