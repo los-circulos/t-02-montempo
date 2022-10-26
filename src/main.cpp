@@ -17,7 +17,7 @@ bool elapsedInMode(unsigned int);
 
 void setup() {
 
-    Serial.begin(9600);
+//    Serial.begin(9600);
 
     initConfig();
     initScreen();
@@ -35,7 +35,7 @@ void loop() {
 
     switch (currentMode) {
         case MODE_WELCOME_LOCK:
-            // @todo check if any button is enabled
+            // @todo during welcome lock I should show previous flight values
             if (!ANY_BUTTON_PRESSED) {
                 setMode(MODE_WELCOME_COUNTDOWN);
                 eraseLogoLock();
@@ -71,16 +71,21 @@ void loop() {
                 drawScreen(config);
 
                 if (btnBDisabled() || btnBPushed()) {
-                    ledOn();
                     if (btnADisabled() || btnAPushed()) {
                         setMode(MODE_CONFIG_COUNTDOWN);
                     }
                     if (elapsedInModeCounter % 2 > 0) {
                         drawFlyConfirmation(true);
+                        ledOn();
                     }
                     else {
                         drawFlyConfirmation(false);
+                        ledOff();
                     }
+                }
+                else {
+                    drawFlyConfirmation(false);
+                    ledOff();
                 }
 
             }
@@ -95,6 +100,7 @@ void loop() {
                 setMode(MODE_DELAY_LOCK);
             }
             else if (elapsedInMode(DELAY_COUNTDOWN)) {
+                drawFlyConfirmation(true);
                 drawWaitDot(elapsedInModeCounter);
             }
             blinkLed(BLINK_FAST);
@@ -149,9 +155,7 @@ void setMode(int newMode) {
     switch (newMode) {
         case MODE_CONFIG:
             clearScreen();
-        break;
-        case MODE_CONFIG_COUNTDOWN:
-            ledOn();
+            // interestingly, if I remove the break and the then duplicate clearScreen, it uses more memory
         break;
         case MODE_DELAY_LOCK:
             clearScreen();
@@ -163,6 +167,7 @@ void setMode(int newMode) {
             clearScreen();
         break;
     }
+    ledOff();
 }
 
 /**

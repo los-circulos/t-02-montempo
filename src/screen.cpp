@@ -57,37 +57,56 @@ void drawWelcome() {
 
 void drawScreen(configT config) {
 
-    SET_FONT_XL;
+//    SET_FONT_XL;
+    SET_FONT_L;
 
     if (config.testMode) {
-        u8x8.drawString(0, 0, "TEST");
+        u8x8.drawString(10, 0, "TEST");
     }
     else {
-        u8x8.drawString(0, 0, "FLY ");
+//        u8x8.drawString(0, 0, "FLY     ");
+        u8x8.drawString(10, 0, "FLY?");
     }
-    SET_FONT_S;
+//    SET_FONT_S;
+    SET_FONT_L;
 
     if (config.holdRPM) {
-        dtostrf(config.RPM/1000, 4, 1, floatBuffer);
-        sprintf(buffer, "RPM %s", floatBuffer);
-        u8x8.drawString(0, 3, buffer);
+        // 20744 JO
+//        dtostrf(((float) config.RPM)/1000, 4, 1, floatBuffer);
+//        sprintf(buffer, "RPM %s", floatBuffer);
+        // 20334 JO
+//        sprintf(buffer, "RPM %2d.", config.RPM/1000);
+//        u8x8.drawString(0, 3, buffer);
+//        sprintf(floatBuffer, "%d", (config.RPM/100)%10);
+//        u8x8.drawString(7, 3, floatBuffer);
+        // 20342
+        u8x8.drawString(0, 2, "RPM");
+        sprintf(buffer, "%2d.", config.RPM/1000);
+        u8x8.drawString(4, 2, buffer);
+        sprintf(buffer, "%d", (config.RPM/100)%10);
+        u8x8.drawString(7, 2, buffer);
     }
     else if (config.holdCurrent) {
-        u8x8.drawString(0, 3, "NOTYET:(");
+        u8x8.drawString(0, 2, "NOTYET:(");
     }
     else {
-        sprintf(buffer, "THR %2d%% ", config.throttle);
-        u8x8.drawString(0, 3, buffer);
+//        sprintf(buffer, "THR  %2d%%", config.throttle);
+        sprintf(buffer, "THR %% %2d", config.throttle);
+//        sprintf(buffer, "SMRT %2d%%", config.throttle);
+        u8x8.drawString(0, 2, buffer);
     }
 
     SET_FONT_L;
     float u = 12.456;
     dtostrf(u, 2, 2, floatBuffer);
-    sprintf(buffer, "%s V", floatBuffer);
-    u8x8.drawString(9,0, buffer);
+//    sprintf(buffer, " %s V", floatBuffer);
+    sprintf(buffer, "V  %s", floatBuffer);
+//    u8x8.drawString(9,0, buffer);
+    u8x8.drawString(0,0, buffer);
 
     sprintf(buffer, "%2d:%02d", config.timeFly / 60, config.timeFly % 60);
-    u8x8.drawString(11, 2, buffer);
+//    u8x8.drawString(11, 2, buffer);
+    u8x8.drawString(9, 2, buffer);
 
 }
 
@@ -99,10 +118,10 @@ void drawWaitDot(uint8_t x) {
 void drawFlyConfirmation(bool show) {
     SET_FONT_XL;
     if (show) {
-        u8x8.drawString(6, 0, "?");
+        u8x8.drawString(14, 0, "!");
     }
     else {
-        u8x8.drawString(6, 0, " ");
+        u8x8.drawString(14, 0, " ");
     }
 }
 
