@@ -7,7 +7,8 @@
 
 configT config;
 const unsigned int currentValues[] = {13,18,21,24,28,33,37,45};
-const unsigned int flyTimeValues[] = {60, 180, 300, 360};
+//const unsigned int flyTimeValues[] = {60, 180, 300, 360};
+const unsigned int flyTimeValues[] = {321, 180, 59, 371};
 
 uint8_t i;
 

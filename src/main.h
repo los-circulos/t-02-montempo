@@ -6,18 +6,37 @@
 #endif
 
 extern uint8_t currentMode;
+// lock on welcome screen if any button is pressed
+// (blink fast)
 #define MODE_WELCOME_LOCK 1
+// if no button pressed, show home screen and wait 3 secs
 #define MODE_WELCOME_COUNTDOWN 2
+
+// test config screen
 #define MODE_TEST 10
 
+// pre-flight config screen (confirm config)
 #define MODE_CONFIG 20
+// when all available buttons pressed (or there are no buttons), wait 3 secs to confirm
+//  (and to ignore unintentional button presses)
+// (blink fast)
 #define MODE_CONFIG_COUNTDOWN 21
+// wait until all available buttons are released
+// (blink fast)
 #define MODE_DELAY_LOCK 39
+// show DELAY countdown (25sec by default)
+// (blink slow, then blink fast in the last 5 seconds)
 #define MODE_DELAY 40
+// raise throttle from 0 to starting value during 5 secs
+// (led ON)
 #define MODE_SOFT_START 41
+// fly (control motor) based on previous program
+// (led on, flashes fast in last 5 seconds)
 #define MODE_FLY 42
+// blink fast but with extra delay, show in-flight data for recording etc
 #define MODE_AFTER 50
 
 #define DELAY_COUNTDOWN 200
+#define DELAY_COUNTDOWN_FAST 100
 
 #endif //MONTEMPO_MAIN_H
