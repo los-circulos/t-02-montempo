@@ -14,9 +14,11 @@ struct configT {
     unsigned int timeDelay = 3;
 //    unsigned int softStartTime = 5;
     unsigned int softStartTime = 0;
-    unsigned int timeFly = 311;
+    unsigned int timeFly = 180;
+//    unsigned int cutoffVoltage = 36;
+    float cutoffVoltage = 3.6;
     /** which screen to show */
-    int screen = 0;
+    int defaultScreen = 0;
     bool rotateScreens = true;
     int screenRotateTime = 2;
     bool testMode = false;
