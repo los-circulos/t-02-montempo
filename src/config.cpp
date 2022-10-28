@@ -144,7 +144,7 @@ void readTestConfig() {
     }
     // 3...3.7V / 0.1
     else if (testMode == TEST_MODE_VOLT_CUT) {
-        testValue = 37 - readDips(3);
+        testValue = 7 - readDips(3);
     }
     // 20..50/2
     else if (testMode == TEST_MODE_CURRENT_CUT) {

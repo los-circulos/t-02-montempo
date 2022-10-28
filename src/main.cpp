@@ -75,7 +75,14 @@ void loop() {
         case MODE_TEST_COUNTDOWN:
             countDown(MODE_TEST_RUN);
             break;
+        case MODE_TEST_SAVE:
+            if (testMode == TEST_MODE_TEST) {
+                setMode(MODE_TEST_RUN);
+                return;
+            }
+            break;
         case MODE_TEST_RUN:
+            drawRunScreen();
             break;
         case MODE_CONFIG:
             if (elapsedInMode(200)) {

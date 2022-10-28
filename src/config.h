@@ -15,6 +15,7 @@
 #define THROTTLE_HOLD_POWER 2
 #define THROTTLE_HOLD_SMART 3
 
+// @todo this is a runtime setup, not config
 struct configT {
     unsigned int throttle = 80;
     bool smartThrottle = false;

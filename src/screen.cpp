@@ -10,22 +10,24 @@ int currentScreen = SCREEN_PRE;
 char buffer[20];
 char floatBuffer[6];
 
-char *testModeLabels[] = {"TEST RUN", "SET SMART", "T1 CUT", "T2 CUT", "VOLT CUT", "AMP CUT", "SET MODE", "UNUSED"};
-char *testSetModeLabels[] = {"THRO ", "RPM  ", "POWER", "SMART"};
+char *testModeLabels[] = {"MOTOR", "SMART", "T1CUT", "T2CUT", "V CUT", "A CUT", "MODE ", "-NOT-"};
+char *testSetModeLabels[] = {"THRO", "RPM ", "POWR", "SMRT"};
+char testScreenUnits[] = "%%CCVA ";
+char *testScreenHint = "PUSH BTNS 2 SAVE";
 
 #define SET_FONT_XL     u8x8.setFont(FONT_XL)
 #define SET_FONT_L     u8x8.setFont(FONT_L)
 #define SET_FONT_S     u8x8.setFont(FONT_S)
 
-void setFontXL() {
-    u8x8.setFont(FONT_XL);
-}
-void setFontL() {
-    u8x8.setFont(FONT_L);
-}
-void setFontS() {
-    u8x8.setFont(FONT_S);
-}
+//void setFontXL() {
+//    u8x8.setFont(FONT_XL);
+//}
+//void setFontL() {
+//    u8x8.setFont(FONT_L);
+//}
+//void setFontS() {
+//    u8x8.setFont(FONT_S);
+//}
 
 void initScreen() {
     u8x8.begin();
@@ -137,7 +139,7 @@ void drawFlyConfirmation(bool show) {
 }
 
 void drawRemainingTime(unsigned int secsRemain) {
-    setFontXL();
+    SET_FONT_XL;
     sprintf(
         buffer,
         "%02d%s%02d",
@@ -149,8 +151,36 @@ void drawRemainingTime(unsigned int secsRemain) {
 }
 
 void drawTestScreen() {
-    setFontL();
-    sprintf(buffer, "%8s %4d", testModeLabels[testMode], testValue);
-//    sprintf(buffer, "%8s%d %3d", testModeLabels[testMode], testMode, testValue);
-    u8x8.drawString(0, 0, buffer);
+#ifdef SCREEN_32X4
+    SET_FONT_L;
+    u8x8.drawString(0, 0, testModeLabels[testMode]);
+
+    switch (testMode) {
+    case TEST_MODE_TEST:
+    case TEST_MODE_SMART:
+    case TEST_MODE_T1_CUT:
+    case TEST_MODE_T2_CUT:
+    case TEST_MODE_CURRENT_CUT:
+        sprintf(buffer, " %2d%c", testValue, testScreenUnits[testMode]);
+        break;
+    case TEST_MODE_VOLT_CUT:
+        sprintf(buffer, "3.%1dV", testValue);
+        break;
+    case TEST_MODE_MODE:
+        sprintf(buffer, "%4s", testSetModeLabels[testValue]);
+        break;
+    case TEST_MODE_UNKNOWN:
+    default:
+        sprintf(buffer, "USED");
+    }
+    SET_FONT_XL;
+    u8x8.drawString(6, 0, buffer);
+    // I put a short help in bottom line, for about 40 bytes of memory with string.
+    SET_FONT_S;
+    u8x8.drawString(0, 3, testScreenHint);
+#endif
+}
+
+void drawRunScreen() {
+
 }

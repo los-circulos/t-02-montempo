@@ -92,6 +92,9 @@ unsigned char readDips(unsigned char cnt);
 ///////////////////////////////////////// SCREEN        /////////////////////////////////////
 // oled screen on default pins A4, A5
 #define SCREEN_SSD1306_128X32
+#ifdef SCREEN_SSD1306_128X32
+#define SCREEN_32X4
+#endif
 // no screen, timer can still work
 // #define SCREEN_NONE
 
