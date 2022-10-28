@@ -15,6 +15,7 @@ unsigned long elapsedInModeCounter = 0;
 void notImplemented();
 void setMode(int newMode);
 bool elapsedInMode(unsigned int);
+void countDown(char prevMode, char nextMode);
 
 void setup() {
 
@@ -88,21 +89,9 @@ void loop() {
             }
             break;
         case MODE_TEST_COUNTDOWN:
-            if ((!btnADisabled() && !btnAPushed()) || (!btnBDisabled() && !btnBPushed())) {
-                setMode(MODE_TEST);
-                drawFlyConfirmation(false);
-            }
-            else if (elapsedInModeCounter > 6) {
-                setMode(MODE_TEST_RUN);
-            }
-            else if (elapsedInMode(DELAY_COUNTDOWN)) {
-                drawFlyConfirmation(true);
-                drawWaitDot(elapsedInModeCounter);
-            }
-            blinkLed(BLINK_FAST);
+            countDown(MODE_TEST, MODE_TEST_RUN);
             break;
         case MODE_TEST_RUN:
-
             break;
         case MODE_CONFIG:
             if (elapsedInMode(200)) {
@@ -131,18 +120,7 @@ void loop() {
             }
             break;
         case MODE_CONFIG_COUNTDOWN:
-            if ((!btnADisabled() && !btnAPushed()) || (!btnBDisabled() && !btnBPushed())) {
-                setMode(MODE_CONFIG);
-                drawFlyConfirmation(false);
-            }
-            else if (elapsedInModeCounter > 6) {
-                setMode(MODE_DELAY_LOCK);
-            }
-            else if (elapsedInMode(DELAY_COUNTDOWN)) {
-                drawFlyConfirmation(true);
-                drawWaitDot(elapsedInModeCounter);
-            }
-            blinkLed(BLINK_FAST);
+            countDown(MODE_CONFIG, MODE_DELAY_LOCK);
             break;
         case MODE_DELAY_LOCK:
             if (!ANY_BUTTON_PRESSED) {
@@ -244,4 +222,19 @@ bool elapsedInMode(unsigned int elapsedMillis) {
         return true;
     }
     return false;
+}
+
+void countDown(char prevMode, char nextMode) {
+    if ((!btnADisabled() && !btnAPushed()) || (!btnBDisabled() && !btnBPushed())) {
+        setMode(prevMode);
+        drawFlyConfirmation(false);
+    }
+    else if (elapsedInModeCounter > 6) {
+        setMode(nextMode);
+    }
+    else if (elapsedInMode(DELAY_COUNTDOWN)) {
+        drawFlyConfirmation(true);
+        drawWaitDot(elapsedInModeCounter);
+    }
+    blinkLed(BLINK_FAST);
 }
