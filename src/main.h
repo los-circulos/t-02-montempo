@@ -14,6 +14,8 @@ extern uint8_t currentMode;
 
 // test config screen
 #define MODE_TEST 10
+#define MODE_TEST_COUNTDOWN 11
+#define MODE_TEST_RUN 12
 
 // pre-flight config screen (confirm config)
 #define MODE_CONFIG 20

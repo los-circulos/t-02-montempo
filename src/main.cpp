@@ -50,22 +50,61 @@ void loop() {
                 setMode(MODE_WELCOME_LOCK);
             }
             else if (elapsedInModeCounter > 6) {
-                if (config.testMode) {
+//                if (config.testMode) {
+//                    setMode(MODE_TEST);
+//                }
+//                else {
+//                    setMode(MODE_CONFIG);
+//                }
                     setMode(MODE_TEST);
-                }
-                else {
-                    setMode(MODE_CONFIG);
-                }
             }
             else if (elapsedInMode(DELAY_COUNTDOWN)) {
                 drawWaitDot(elapsedInModeCounter);
             }
             break;
         case MODE_TEST:
+            if (elapsedInMode(200)) {
+                readTestConfig();
+                drawTestScreen();
+
+                if (btnBDisabled() || btnBPushed()) {
+                    if (btnADisabled() || btnAPushed()) {
+                        setMode(MODE_TEST_COUNTDOWN);
+                    }
+                    if (elapsedInModeCounter % 2 > 0) {
+                        drawFlyConfirmation(true);
+                        ledOn();
+                    }
+                    else {
+                        drawFlyConfirmation(false);
+                        ledOff();
+                    }
+                }
+                else {
+                    drawFlyConfirmation(false);
+                    ledOff();
+                }
+
+            }
+            break;
+        case MODE_TEST_COUNTDOWN:
+            if ((!btnADisabled() && !btnAPushed()) || (!btnBDisabled() && !btnBPushed())) {
+                setMode(MODE_TEST);
+                drawFlyConfirmation(false);
+            }
+            else if (elapsedInModeCounter > 6) {
+                setMode(MODE_TEST_RUN);
+            }
+            else if (elapsedInMode(DELAY_COUNTDOWN)) {
+                drawFlyConfirmation(true);
+                drawWaitDot(elapsedInModeCounter);
+            }
+            blinkLed(BLINK_FAST);
+            break;
+        case MODE_TEST_RUN:
 
             break;
         case MODE_CONFIG:
-
             if (elapsedInMode(200)) {
 
                 readConfig();
@@ -90,7 +129,6 @@ void loop() {
                 }
 
             }
-
             break;
         case MODE_CONFIG_COUNTDOWN:
             if ((!btnADisabled() && !btnAPushed()) || (!btnBDisabled() && !btnBPushed())) {
@@ -114,7 +152,6 @@ void loop() {
             else if (elapsedInMode(100)) {
                 drawLogoLock();
             }
-
             break;
         case MODE_DELAY:
             if (ANY_BUTTON_PRESSED) {

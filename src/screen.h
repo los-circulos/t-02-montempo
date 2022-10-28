@@ -26,5 +26,6 @@ void drawScreen(configT config);
 void drawWaitDot(uint8_t x);
 void drawFlyConfirmation(bool show);
 void drawRemainingTime(unsigned int secsRemain);
+void drawTestScreen();
 
 #endif //MONTEMPO_SCREEN_H

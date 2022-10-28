@@ -10,6 +10,9 @@ int currentScreen = SCREEN_PRE;
 char buffer[20];
 char floatBuffer[6];
 
+char *testModeLabels[] = {"TEST RUN", "SET SMART", "T1 CUT", "T2 CUT", "VOLT CUT", "AMP CUT", "SET MODE", "UNUSED"};
+char *testSetModeLabels[] = {"THRO ", "RPM  ", "POWER", "SMART"};
+
 #define SET_FONT_XL     u8x8.setFont(FONT_XL)
 #define SET_FONT_L     u8x8.setFont(FONT_L)
 #define SET_FONT_S     u8x8.setFont(FONT_S)
@@ -151,4 +154,11 @@ void drawRemainingTime(unsigned int secsRemain) {
         secsRemain % 60
     );
     u8x8.drawString(3, 0, buffer);
+}
+
+void drawTestScreen() {
+    setFontL();
+//    u8x8.drawString(0, 0, testModeLabels[testMode]);
+    sprintf(buffer, "%8s %d %2d%%", testModeLabels[testMode], testMode, testValue);
+    u8x8.drawString(0, 0, buffer);
 }

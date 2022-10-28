@@ -5,14 +5,16 @@
 #define RPM_BASE 8000
 
 configT config;
-//const unsigned int currentValues[] = {13,18,21,24,28,33,37,45};
+uint8_t testMode;
+int testValue;
+
 // 30A * 15V = 450W (when holding power) / 20A * 15V = 300W
 const unsigned int powerValues[] = { 160, 190, 220, 260, 300, 350, 400, 450 };
 //const unsigned int flyTimeValues[] = {60, 180, 300, 360};
 // 3:00 default, 5:11 is a basic value, 371 + 25sec = leaves 24sec of 7mins to start timer and to land. 0 stands for run until voltage cut
 const unsigned int flyTimeValues[] = {180, 381, 311, 0};
 
-uint8_t i;
+unsigned char i;
 
 void initConfig() {
 
@@ -21,9 +23,9 @@ void initConfig() {
     config.testMode = true;
     for (i=CONFIG_DIP_1; i<=CONFIG_DIP_8; i++) {
         pinMode(i, INPUT_PULLUP);
-        if (digitalRead(i)) {
-            config.testMode = false;
-        }
+//        if (digitalRead(i)) {
+//            config.testMode = false;
+//        }
     }
 
     pinMode(LED1, OUTPUT);
@@ -58,6 +60,11 @@ void readConfig() {
             - !digitalRead(CONFIG_DIP_1) * 13
             - !digitalRead(CONFIG_DIP_2) * 7
             - !digitalRead(CONFIG_DIP_3) * 3;
+//            - !digitalRead(CONFIG_DIP_1) * 2
+//            - !digitalRead(CONFIG_DIP_1) * 4
+//            - !digitalRead(CONFIG_DIP_1) * 8
+//            - !digitalRead(CONFIG_DIP_1) * 16
+//            ;
 
     config.RPM = RPM_BASE
             + !digitalRead(CONFIG_DIP_1) * 2000
@@ -92,5 +99,63 @@ void readConfig() {
     config.rotateScreens = !digitalRead(CONFIG_DIP_8);
 
 #endif
+
+}
+
+void readTestConfig() {
+    i = !digitalRead(CONFIG_DIP_8) * 8 + !digitalRead(CONFIG_DIP_7) * 4 + !digitalRead(CONFIG_DIP_6) * 2 + !digitalRead(CONFIG_DIP_5) * 1;
+
+    if (i>=12) {
+        testMode = TEST_MODE_TEST;
+    }
+    else if (i >= 10) {
+        testMode = TEST_MODE_T2_CUT;
+    }
+    else if (i >= 8) {
+        testMode = TEST_MODE_T1_CUT;
+    }
+    else if (i == 7) {
+        testMode = TEST_MODE_MODE;
+    }
+    else if (i == 6) {
+        testMode = TEST_MODE_CURRENT_CUT;
+    }
+    else if (i == 4) {
+        testMode = TEST_MODE_VOLT_CUT;
+    }
+    else if (i < 4) {
+        testMode = TEST_MODE_SMART;
+    }
+    else {
+        testMode = TEST_MODE_UNKNOWN;
+    }
+
+    // a switch would take only 4 bytes less of memory
+    if (testMode <= TEST_MODE_SMART) {
+        testValue = 98
+            - digitalRead(CONFIG_DIP_1) * 2
+            - digitalRead(CONFIG_DIP_2) * 4
+            - digitalRead(CONFIG_DIP_3) * 8
+            - digitalRead(CONFIG_DIP_4) * 16
+            - digitalRead(CONFIG_DIP_5) * 20
+            - digitalRead(CONFIG_DIP_6) * 48
+            ;
+
+    }
+    else if (testMode <= TEST_MODE_T2_CUT) {
+        testValue = testValue && B11111000;
+        testValue = 0;
+    }
+    else if (testMode == TEST_MODE_VOLT_CUT) {
+        testValue = testValue && B11110000;
+        testValue = 0;
+    }
+    else if (testMode == TEST_MODE_CURRENT_CUT) {
+        testValue = testValue && B11110000;
+        testValue = 0;
+    }
+    else {
+        testValue = digitalRead(CONFIG_DIP_1) * 1 + digitalRead(CONFIG_DIP_2) * 2;
+    }
 
 }
