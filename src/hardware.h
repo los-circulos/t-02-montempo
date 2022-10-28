@@ -84,6 +84,7 @@ void throttlePcnt(unsigned int pcnt);
 #define CONFIG_DIP_6 10
 #define CONFIG_DIP_7 11
 #define CONFIG_DIP_8 12
+unsigned char readDips(unsigned char cnt);
 #endif
 // read config from SD card
 // #define CONFIG_SD

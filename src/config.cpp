@@ -133,29 +133,28 @@ void readTestConfig() {
     // a switch would take only 4 bytes less of memory
     if (testMode <= TEST_MODE_SMART) {
         testValue = 98
-            - digitalRead(CONFIG_DIP_1) * 2
-            - digitalRead(CONFIG_DIP_2) * 4
-            - digitalRead(CONFIG_DIP_3) * 8
-            - digitalRead(CONFIG_DIP_4) * 16
-            - digitalRead(CONFIG_DIP_5) * 20
-            - digitalRead(CONFIG_DIP_6) * 48
-            ;
+            - readDips(4) * 2
+            - !digitalRead(CONFIG_DIP_5) * 20
+            - !digitalRead(CONFIG_DIP_6) * 48;
 
     }
+    // 28..90C /2
     else if (testMode <= TEST_MODE_T2_CUT) {
-        testValue = testValue && B11111000;
-        testValue = 0;
+        testValue = 90 - readDips(5) * 2;
     }
+    // 3...3.7V / 0.1
     else if (testMode == TEST_MODE_VOLT_CUT) {
-        testValue = testValue && B11110000;
-        testValue = 0;
+        testValue = 37 - readDips(3);
     }
+    // 20..50/2
     else if (testMode == TEST_MODE_CURRENT_CUT) {
-        testValue = testValue && B11110000;
-        testValue = 0;
+        testValue = 50 - readDips(4)*2;
+    }
+    else if (testMode == TEST_MODE_MODE) {
+        testValue = readDips(2);
     }
     else {
-        testValue = digitalRead(CONFIG_DIP_1) * 1 + digitalRead(CONFIG_DIP_2) * 2;
+        testValue = readDips(2);
     }
 
 }

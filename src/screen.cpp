@@ -70,17 +70,14 @@ void drawWelcome() {
 
 void drawScreen(configT config) {
 
-//    SET_FONT_XL;
     SET_FONT_L;
 
     if (config.testMode) {
         u8x8.drawString(10, 0, "TEST");
     }
     else {
-//        u8x8.drawString(0, 0, "FLY     ");
         u8x8.drawString(10, 0, "FLY?");
     }
-//    SET_FONT_S;
     SET_FONT_L;
 
     if (config.holdRPM) {
@@ -109,22 +106,17 @@ void drawScreen(configT config) {
     }
     // constant throttle
     else {
-//        sprintf(buffer, "THR  %2d%%", config.throttle);
         sprintf(buffer, "THR %% %2d", config.throttle);
-//        sprintf(buffer, "SMRT %2d%%", config.throttle);
         u8x8.drawString(0, 2, buffer);
     }
 
     SET_FONT_L;
     float u = 12.456;
     dtostrf(u, 2, 2, floatBuffer);
-//    sprintf(buffer, " %s V", floatBuffer);
     sprintf(buffer, "V  %s", floatBuffer);
-//    u8x8.drawString(9,0, buffer);
     u8x8.drawString(0,0, buffer);
 
     sprintf(buffer, "%2d:%02d", config.timeFly / 60, config.timeFly % 60);
-//    u8x8.drawString(11, 2, buffer);
     u8x8.drawString(9, 2, buffer);
 
 }
@@ -158,7 +150,7 @@ void drawRemainingTime(unsigned int secsRemain) {
 
 void drawTestScreen() {
     setFontL();
-//    u8x8.drawString(0, 0, testModeLabels[testMode]);
-    sprintf(buffer, "%8s %d %2d%%", testModeLabels[testMode], testMode, testValue);
+    sprintf(buffer, "%8s %4d", testModeLabels[testMode], testValue);
+//    sprintf(buffer, "%8s%d %3d", testModeLabels[testMode], testMode, testValue);
     u8x8.drawString(0, 0, buffer);
 }

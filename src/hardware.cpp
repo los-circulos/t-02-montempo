@@ -38,3 +38,15 @@ void throttlePcnt(unsigned int pcnt) {
     unsigned int i = THROTTLE_MICROS_MIN + (THROTTLE_MICROS_MAX - THROTTLE_MICROS_MIN) * pcnt / 100;
     throttle.writeMicroseconds(i);
 }
+
+#ifdef CONFIG_DIP8
+unsigned char readDips(unsigned char cnt) {
+    unsigned char i, v = 1;
+    unsigned char ret = 0;
+    for (i=0; i<cnt; i++) {
+        ret += !digitalRead(CONFIG_DIP_1+i) * v;
+        v *= 2;
+    }
+    return ret;
+}
+#endif

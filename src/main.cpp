@@ -15,7 +15,8 @@ unsigned long elapsedInModeCounter = 0;
 void notImplemented();
 void setMode(int newMode);
 bool elapsedInMode(unsigned int);
-void countDown(char prevMode, char nextMode);
+void confirmation();
+void countDown(char nextMode);
 
 void setup() {
 
@@ -51,45 +52,28 @@ void loop() {
                 setMode(MODE_WELCOME_LOCK);
             }
             else if (elapsedInModeCounter > 6) {
-//                if (config.testMode) {
-//                    setMode(MODE_TEST);
-//                }
-//                else {
-//                    setMode(MODE_CONFIG);
-//                }
+                if (config.testMode) {
                     setMode(MODE_TEST);
+                }
+                else {
+                    setMode(MODE_CONFIG);
+                }
+//                    setMode(MODE_TEST);
             }
             else if (elapsedInMode(DELAY_COUNTDOWN)) {
                 drawWaitDot(elapsedInModeCounter);
             }
             break;
         case MODE_TEST:
+            // @todo deny test/setup if both buttons are disabled
             if (elapsedInMode(200)) {
                 readTestConfig();
                 drawTestScreen();
-
-                if (btnBDisabled() || btnBPushed()) {
-                    if (btnADisabled() || btnAPushed()) {
-                        setMode(MODE_TEST_COUNTDOWN);
-                    }
-                    if (elapsedInModeCounter % 2 > 0) {
-                        drawFlyConfirmation(true);
-                        ledOn();
-                    }
-                    else {
-                        drawFlyConfirmation(false);
-                        ledOff();
-                    }
-                }
-                else {
-                    drawFlyConfirmation(false);
-                    ledOff();
-                }
-
+                confirmation();
             }
             break;
         case MODE_TEST_COUNTDOWN:
-            countDown(MODE_TEST, MODE_TEST_RUN);
+            countDown(MODE_TEST_RUN);
             break;
         case MODE_TEST_RUN:
             break;
@@ -98,29 +82,11 @@ void loop() {
 
                 readConfig();
                 drawScreen(config);
-
-                if (btnBDisabled() || btnBPushed()) {
-                    if (btnADisabled() || btnAPushed()) {
-                        setMode(MODE_CONFIG_COUNTDOWN);
-                    }
-                    if (elapsedInModeCounter % 2 > 0) {
-                        drawFlyConfirmation(true);
-                        ledOn();
-                    }
-                    else {
-                        drawFlyConfirmation(false);
-                        ledOff();
-                    }
-                }
-                else {
-                    drawFlyConfirmation(false);
-                    ledOff();
-                }
-
+                confirmation();
             }
             break;
         case MODE_CONFIG_COUNTDOWN:
-            countDown(MODE_CONFIG, MODE_DELAY_LOCK);
+            countDown(MODE_DELAY_LOCK);
             break;
         case MODE_DELAY_LOCK:
             if (!ANY_BUTTON_PRESSED) {
@@ -224,9 +190,29 @@ bool elapsedInMode(unsigned int elapsedMillis) {
     return false;
 }
 
-void countDown(char prevMode, char nextMode) {
+void confirmation() {
+    if (btnBDisabled() || btnBPushed()) {
+        if (btnADisabled() || btnAPushed()) {
+            setMode(currentMode + 1);
+        }
+        if (elapsedInModeCounter % 2 > 0) {
+            drawFlyConfirmation(true);
+            ledOn();
+        }
+        else {
+            drawFlyConfirmation(false);
+            ledOff();
+        }
+    }
+    else {
+        drawFlyConfirmation(false);
+        ledOff();
+    }
+}
+
+void countDown(char nextMode) {
     if ((!btnADisabled() && !btnAPushed()) || (!btnBDisabled() && !btnBPushed())) {
-        setMode(prevMode);
+        setMode(currentMode - 1);
         drawFlyConfirmation(false);
     }
     else if (elapsedInModeCounter > 6) {
