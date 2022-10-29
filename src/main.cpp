@@ -3,6 +3,7 @@
 #include "hardware.h"
 #include "main.h"
 #include "mytime.h"
+#include "saved.h"
 #include <screen.h>
 
 uint8_t currentMode = MODE_WELCOME_LOCK;
@@ -22,6 +23,7 @@ void setup() {
 
 //    Serial.begin(9600);
 
+    initSaved();
     initConfig();
     initScreen();
 
@@ -39,7 +41,7 @@ void loop() {
     switch (currentMode) {
         case MODE_WELCOME_LOCK:
             // @todo during welcome lock I should show previous flight values
-            if (!ANY_BUTTON_PRESSED) {
+            if (!ANY_BUTTON_PUSHED) {
                 setMode(MODE_WELCOME_COUNTDOWN);
                 eraseLogoLock();
             }
@@ -48,7 +50,7 @@ void loop() {
             }
             break;
         case MODE_WELCOME_COUNTDOWN:
-            if (ANY_BUTTON_PRESSED) {
+            if (ANY_BUTTON_PUSHED) {
                 setMode(MODE_WELCOME_LOCK);
             }
             else if (elapsedInModeCounter > 6) {
@@ -73,12 +75,40 @@ void loop() {
             }
             break;
         case MODE_TEST_COUNTDOWN:
-            countDown(MODE_TEST_RUN);
+//            countDown(MODE_TEST_RUN);
+            countDown(MODE_TEST_SAVE);
             break;
         case MODE_TEST_SAVE:
-            if (testMode == TEST_MODE_TEST) {
+            if (testMode == TESTMODE_SPIN) {
                 setMode(MODE_TEST_RUN);
                 return;
+            }
+            else if (testMode == TESTMODE_SMART) {
+                saved.smartEndThrottle = testValue;
+            }
+            else if (testMode == TESTMODE_T1_CUT) {
+                saved.t1Cut = testValue;
+            }
+            else if (testMode == TESTMODE_T2_CUT) {
+                saved.t2Cut = testValue;
+            }
+            else if (testMode == TESTMODE_VOLT_CUT) {
+                saved.voltCut = testValue;
+            }
+            else if (testMode == TESTMODE_CURRENT_CUT) {
+                saved.currentCut = testValue;
+            }
+            else if (testMode == TESTMODE_MODE) {
+                saved.holdMode = testValue;
+            }
+            saveSaved();
+            break;
+        case MODE_TEST_SAVED:
+            if (elapsedInMode(200)) {
+                if ((elapsedInModeCounter > 10) && !ANY_BUTTON_PUSHED) {
+                    setMode(MODE_TEST);
+                }
+                drawSaved();
             }
             break;
         case MODE_TEST_RUN:
@@ -96,7 +126,7 @@ void loop() {
             countDown(MODE_DELAY_LOCK);
             break;
         case MODE_DELAY_LOCK:
-            if (!ANY_BUTTON_PRESSED) {
+            if (!ANY_BUTTON_PUSHED) {
                 setMode(MODE_DELAY);
                 eraseLogoLock();
             }
@@ -105,7 +135,7 @@ void loop() {
             }
             break;
         case MODE_DELAY:
-            if (ANY_BUTTON_PRESSED) {
+            if (ANY_BUTTON_PUSHED) {
                 setMode(MODE_CONFIG);
             }
             // NOTE this has to be in sync with BLINK_FAST blinking, hence the high rate
@@ -170,6 +200,7 @@ void setMode(int newMode) {
             // interestingly, if I remove the break and the then duplicate clearScreen, it uses more memory
         break;
         case MODE_DELAY_LOCK:
+        case MODE_TEST_RUN:
             clearScreen();
         break;
         case MODE_TEST:

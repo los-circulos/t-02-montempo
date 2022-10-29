@@ -50,21 +50,12 @@ void initConfig() {
 
 void readConfig() {
 
-//#ifdef CONFIG_JMP_4
-//    // not implemented atm
-//#endif
-
 #ifdef CONFIG_DIP_8
 
     config.throttle = 98
             - !digitalRead(CONFIG_DIP_1) * 13
             - !digitalRead(CONFIG_DIP_2) * 7
             - !digitalRead(CONFIG_DIP_3) * 3;
-//            - !digitalRead(CONFIG_DIP_1) * 2
-//            - !digitalRead(CONFIG_DIP_1) * 4
-//            - !digitalRead(CONFIG_DIP_1) * 8
-//            - !digitalRead(CONFIG_DIP_1) * 16
-//            ;
 
     config.RPM = RPM_BASE
             + !digitalRead(CONFIG_DIP_1) * 2000
@@ -106,51 +97,50 @@ void readTestConfig() {
     i = !digitalRead(CONFIG_DIP_8) * 8 + !digitalRead(CONFIG_DIP_7) * 4 + !digitalRead(CONFIG_DIP_6) * 2 + !digitalRead(CONFIG_DIP_5) * 1;
 
     if (i>=12) {
-        testMode = TEST_MODE_TEST;
+        testMode = TESTMODE_SPIN;
     }
     else if (i >= 10) {
-        testMode = TEST_MODE_T2_CUT;
+        testMode = TESTMODE_T2_CUT;
     }
     else if (i >= 8) {
-        testMode = TEST_MODE_T1_CUT;
+        testMode = TESTMODE_T1_CUT;
     }
     else if (i == 7) {
-        testMode = TEST_MODE_MODE;
+        testMode = TESTMODE_MODE;
     }
     else if (i == 6) {
-        testMode = TEST_MODE_CURRENT_CUT;
+        testMode = TESTMODE_CURRENT_CUT;
     }
     else if (i == 4) {
-        testMode = TEST_MODE_VOLT_CUT;
+        testMode = TESTMODE_VOLT_CUT;
     }
     else if (i < 4) {
-        testMode = TEST_MODE_SMART;
+        testMode = TESTMODE_SMART;
     }
     else {
-        testMode = TEST_MODE_UNKNOWN;
+        testMode = TESTMODE_UNKNOWN;
     }
 
     // a switch would take only 4 bytes less of memory
-    if (testMode <= TEST_MODE_SMART) {
+    if (testMode <= TESTMODE_SMART) {
         testValue = 98
             - readDips(4) * 2
             - !digitalRead(CONFIG_DIP_5) * 20
             - !digitalRead(CONFIG_DIP_6) * 48;
-
     }
     // 28..90C /2
-    else if (testMode <= TEST_MODE_T2_CUT) {
+    else if (testMode <= TESTMODE_T2_CUT) {
         testValue = 90 - readDips(5) * 2;
     }
     // 3...3.7V / 0.1
-    else if (testMode == TEST_MODE_VOLT_CUT) {
+    else if (testMode == TESTMODE_VOLT_CUT) {
         testValue = 7 - readDips(3);
     }
     // 20..50/2
-    else if (testMode == TEST_MODE_CURRENT_CUT) {
+    else if (testMode == TESTMODE_CURRENT_CUT) {
         testValue = 50 - readDips(4)*2;
     }
-    else if (testMode == TEST_MODE_MODE) {
+    else if (testMode == TESTMODE_MODE) {
         testValue = readDips(2);
     }
     else {

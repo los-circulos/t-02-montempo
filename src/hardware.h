@@ -19,7 +19,7 @@ bool btnADisabled();
 bool btnBPushed();
 bool btnBDisabled();
 //bool btnAnyButtonPressed();
-#define ANY_BUTTON_PRESSED (btnAPushed() || btnBPushed())
+#define ANY_BUTTON_PUSHED (btnAPushed() || btnBPushed())
 
 ///////////////////////////////////////// SENSORS       /////////////////////////////////////
 // throttle pin

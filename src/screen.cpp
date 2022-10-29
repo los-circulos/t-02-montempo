@@ -2,6 +2,7 @@
 #include "hardware.h"
 #include "screen.h"
 #include "mytime.h"
+#include "saved.h"
 
 U8X8_SSD1306_128X32_UNIVISION_HW_I2C u8x8(/* reset=*/ U8X8_PIN_NONE);   // Adafruit ESP8266/32u4/ARM Boards + FeatherWing OLED
 int currentScreen = SCREEN_PRE;
@@ -13,7 +14,10 @@ char floatBuffer[6];
 char *testModeLabels[] = {"MOTOR", "SMART", "T1CUT", "T2CUT", "V CUT", "A CUT", "MODE ", "-NOT-"};
 char *testSetModeLabels[] = {"THRO", "RPM ", "POWR", "SMRT"};
 char testScreenUnits[] = "%%CCVA ";
-char *testScreenHint = "PUSH BTNS 2 SAVE";
+char *testScreenHint = "PUSH BTNS 2 S";
+char *testScreenHintSpin = "PIN";
+char *testScreenHintSave = "AVE";
+char *runScreenHint = "SAVE AT 1K RPM";
 
 #define SET_FONT_XL     u8x8.setFont(FONT_XL)
 #define SET_FONT_L     u8x8.setFont(FONT_L)
@@ -156,31 +160,88 @@ void drawTestScreen() {
     u8x8.drawString(0, 0, testModeLabels[testMode]);
 
     switch (testMode) {
-    case TEST_MODE_TEST:
-    case TEST_MODE_SMART:
-    case TEST_MODE_T1_CUT:
-    case TEST_MODE_T2_CUT:
-    case TEST_MODE_CURRENT_CUT:
+    case TESTMODE_SPIN:
+    case TESTMODE_SMART:
+    case TESTMODE_T1_CUT:
+    case TESTMODE_T2_CUT:
+    case TESTMODE_CURRENT_CUT:
         sprintf(buffer, " %2d%c", testValue, testScreenUnits[testMode]);
+        // @todo I could probably save a couple of bytes by printing one case here, so there'd be one case less in second switch
+//        sprintf(floatBuffer, "%4d", saved.k);
         break;
-    case TEST_MODE_VOLT_CUT:
+    case TESTMODE_VOLT_CUT:
         sprintf(buffer, "3.%1dV", testValue);
+        sprintf(floatBuffer, "3.%1dV", saved.voltCut);
         break;
-    case TEST_MODE_MODE:
+    case TESTMODE_MODE:
         sprintf(buffer, "%4s", testSetModeLabels[testValue]);
+        sprintf(floatBuffer, "%4s", testSetModeLabels[saved.holdMode]);
         break;
-    case TEST_MODE_UNKNOWN:
+//    case TESTMODE_UNKNOWN:
     default:
         sprintf(buffer, "USED");
+        sprintf(floatBuffer, "----");
     }
+    switch (testMode) {
+    case TESTMODE_SPIN:
+        sprintf(floatBuffer, "%4d", saved.k);
+        break;
+    case TESTMODE_SMART:
+        sprintf(floatBuffer, "%4d", saved.smartEndThrottle);
+        break;
+    case TESTMODE_T1_CUT:
+        sprintf(floatBuffer, " %2d%c", saved.t1Cut, testScreenUnits[testMode]);
+        break;
+    case TESTMODE_T2_CUT:
+        sprintf(floatBuffer, " %2d%c", saved.t2Cut, testScreenUnits[testMode]);
+        break;
+    case TESTMODE_CURRENT_CUT:
+        sprintf(floatBuffer, " %2d%c", saved.currentCut, testScreenUnits[testMode]);
+        break;
+    }
+
     SET_FONT_XL;
     u8x8.drawString(6, 0, buffer);
-    // I put a short help in bottom line, for about 40 bytes of memory with string.
     SET_FONT_S;
-    u8x8.drawString(0, 3, testScreenHint);
+//    u8x8.drawString(0, 2, "OLD:");
+//    u8x8.drawString(4, 2, floatBuffer);
+//    u8x8.drawString(0, 2, floatBuffer);
+//    // I put a short help in bottom line, for about 40 bytes of memory with string.
+//    u8x8.drawString(0, 3, testScreenHint);
+//    u8x8.drawString(13, 3, testMode == TESTMODE_SPIN ? testScreenHintSpin : testScreenHintSave);
+//    u8x8.drawString(5, 3, "<OLD  ^NEW");
+    u8x8.drawString(5, 3, "<OLD  ^");
+    if (testMode == TESTMODE_SPIN) {
+        u8x8.drawString(12, 3, "SPIN");
+    }
+    else {
+        u8x8.drawString(12, 3, "SAVE");
+    }
+    SET_FONT_L;
+//    u8x8.drawString(0, 2, "OLD:");
+    u8x8.drawString(0, 2, floatBuffer);
+
 #endif
 }
 
 void drawRunScreen() {
+#ifdef SCREEN_32X4
+    SET_FONT_L;
+//    u8x8.drawString(0, 0, "              ");
+//    u8x8.drawString(0, 1, "              ");
+    u8x8.drawString(0, 0, "THR __  V __._");
+    u8x8.drawString(0, 2, "RPM ____ A ___");
 
+//    u8x8.drawString(0, 0, "THR __  V __._");
+//    u8x8.drawString(0, 1, "T1__ T2__ P___");
+
+#endif
+}
+
+void drawSaved() {
+#ifdef SCREEN_32X4
+    SET_FONT_XL;
+    u8x8.drawString(0, 0, "SAVED!  ");
+    drawLogoLock();
+#endif
 }

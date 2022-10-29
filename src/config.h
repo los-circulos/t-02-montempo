@@ -1,14 +1,16 @@
 #ifndef MONTEMPO_CONFIG_H
 #define MONTEMPO_CONFIG_H
 
-#define TEST_MODE_TEST 0
-#define TEST_MODE_SMART 1
-#define TEST_MODE_T1_CUT 2
-#define TEST_MODE_T2_CUT 3
-#define TEST_MODE_VOLT_CUT 4
-#define TEST_MODE_CURRENT_CUT 5
-#define TEST_MODE_MODE 6
-#define TEST_MODE_UNKNOWN 7
+#define TESTMODE_SPIN 0
+#define TESTMODE_SMART 1
+#define TESTMODE_T1_CUT 2
+#define TESTMODE_T2_CUT 3
+#define TESTMODE_VOLT_CUT 4
+#define TESTMODE_CURRENT_CUT 5
+#define TESTMODE_MODE 6
+#define TESTMODE_UNKNOWN 7
+// todo write logs, and write log browser with this mode
+#define TESTMODE_LOGS 7
 
 #define THROTTLE_CONST 0
 #define THROTTLE_HOLD_RPM 1
