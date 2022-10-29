@@ -75,7 +75,6 @@ void loop() {
             }
             break;
         case MODE_TEST_COUNTDOWN:
-//            countDown(MODE_TEST_RUN);
             countDown(MODE_TEST_SAVE);
             break;
         case MODE_TEST_SAVE:

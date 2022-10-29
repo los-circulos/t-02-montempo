@@ -18,16 +18,18 @@ extern U8X8_SSD1306_128X32_UNIVISION_HW_I2C u8x8;
 
 void initScreen();
 void clearScreen();
-void drawNotImplemented();
+
+void drawFlyConfirmation(bool show);
 void drawLogoLock();
 void eraseLogoLock();
+void drawNotImplemented();
+void drawRemainingTime(unsigned int secsRemain);
+void drawSaved();
+void drawWaitDot(uint8_t x);
+
 void drawWelcome();
 void drawScreen(configT config);
-void drawWaitDot(uint8_t x);
-void drawFlyConfirmation(bool show);
-void drawRemainingTime(unsigned int secsRemain);
 void drawTestScreen();
 void drawRunScreen();
-void drawSaved();
 
 #endif //MONTEMPO_SCREEN_H

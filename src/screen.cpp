@@ -14,43 +14,45 @@ char floatBuffer[6];
 char *testModeLabels[] = {"MOTOR", "SMART", "T1CUT", "T2CUT", "V CUT", "A CUT", "MODE ", "-NOT-"};
 char *testSetModeLabels[] = {"THRO", "RPM ", "POWR", "SMRT"};
 char testScreenUnits[] = "%%CCVA ";
-char *testScreenHint = "PUSH BTNS 2 S";
-char *testScreenHintSpin = "PIN";
-char *testScreenHintSave = "AVE";
 char *runScreenHint = "SAVE AT 1K RPM";
 
-#define SET_FONT_XL     u8x8.setFont(FONT_XL)
-#define SET_FONT_L     u8x8.setFont(FONT_L)
-#define SET_FONT_S     u8x8.setFont(FONT_S)
+#define FMT_TEST_VALUE_COMMON " %2d%c"
+#define FMT_TEST_VALUE_COMMON " %2d%c"
+#define FMT_TEST_VALUE_VOLTS "3.%1dV"
+#define FMT_TEST_VALUE_COMMON " %2d%c"
+#define FMT_TEST_4DECIMALS "%4d"
 
-//void setFontXL() {
-//    u8x8.setFont(FONT_XL);
-//}
-//void setFontL() {
-//    u8x8.setFont(FONT_L);
-//}
-//void setFontS() {
-//    u8x8.setFont(FONT_S);
-//}
+#ifdef SCREEN_32X4
+#define SET_FONT_XL u8x8.setFont(FONT_XL)
+#define SET_FONT_L u8x8.setFont(FONT_L)
+#define SET_FONT_S u8x8.setFont(FONT_S)
+#endif
 
 void initScreen() {
+#ifdef SCREEN_32X4
     u8x8.begin();
     u8x8.setPowerSave(0);
+#endif
 }
 void clearScreen() {
+#ifdef SCREEN_32X4
     u8x8.clear();
+#endif
 }
 
-void drawNotImplemented() {
+void drawFlyConfirmation(bool show) {
+#ifdef SCREEN_32X4
     SET_FONT_XL;
-    if (blinkLed(BLINK_FAST)) {
-        u8x8.drawString(0, 1, "NOT YET");
+    if (show) {
+        u8x8.drawString(14, 0, "!");
     }
     else {
-        clearScreen();
+        u8x8.drawString(14, 0, " ");
     }
+#endif
 }
 void drawLogoLock() {
+#ifdef SCREEN_32X4
     SET_FONT_S;
     if (blinkLed(BLINK_FAST)) {
         u8x8.drawString(4, 3, " !REL! ");
@@ -58,23 +60,63 @@ void drawLogoLock() {
     else {
         eraseLogoLock();
     }
+#endif
 }
-
 void eraseLogoLock() {
+#ifdef SCREEN_32X4
     u8x8.drawString(4, 3, "       ");
+#endif
+}
+void drawNotImplemented() {
+    if (blinkLed(BLINK_FAST)) {
+#ifdef SCREEN_32X4
+        SET_FONT_XL;
+        u8x8.drawString(0, 1, "NOT YET");
+#endif
+    }
+    else {
+        clearScreen();
+    }
+}
+void drawRemainingTime(unsigned int secsRemain) {
+    sprintf(
+            buffer,
+            "%02d%s%02d",
+            secsRemain/60,
+            blinkLed(secsRemain < 5 ? BLINK_FAST : BLINK_NORMAL) ? "." : " ",
+            secsRemain % 60
+    );
+#ifdef SCREEN_32X4
+    SET_FONT_XL;
+    u8x8.drawString(3, 0, buffer);
+#endif
+}
+void drawSaved() {
+#ifdef SCREEN_32X4
+    SET_FONT_XL;
+    u8x8.drawString(0, 0, "SAVED!  ");
+#endif
+    drawLogoLock();
+}
+void drawWaitDot(uint8_t x) {
+#ifdef SCREEN_32X4
+    SET_FONT_S;
+    u8x8.drawString(x + 4, 3, ".");
+#endif
 }
 
 void drawWelcome() {
-    // show current settings
     clearScreen();
+#ifdef SCREEN_32X4
     SET_FONT_XL;
     u8x8.drawString(0, 0, "MONTEMPO");
     SET_FONT_S;
     u8x8.drawString(0, 3, "F2B");
     u8x8.drawString(12, 3, "V1.0");
+#endif
 }
-
 void drawScreen(configT config) {
+#ifdef SCREEN_32X4
 
     SET_FONT_L;
 
@@ -125,39 +167,9 @@ void drawScreen(configT config) {
     sprintf(buffer, "%2d:%02d", config.timeFly / 60, config.timeFly % 60);
     u8x8.drawString(9, 2, buffer);
 
+#endif
 }
-
-void drawWaitDot(uint8_t x) {
-    SET_FONT_S;
-    u8x8.drawString(x + 4, 3, ".");
-}
-
-void drawFlyConfirmation(bool show) {
-    SET_FONT_XL;
-    if (show) {
-        u8x8.drawString(14, 0, "!");
-    }
-    else {
-        u8x8.drawString(14, 0, " ");
-    }
-}
-
-void drawRemainingTime(unsigned int secsRemain) {
-    SET_FONT_XL;
-    sprintf(
-        buffer,
-        "%02d%s%02d",
-        secsRemain/60,
-        blinkLed(secsRemain < 5 ? BLINK_FAST : BLINK_NORMAL) ? "." : " ",
-        secsRemain % 60
-    );
-    u8x8.drawString(3, 0, buffer);
-}
-
 void drawTestScreen() {
-#ifdef SCREEN_32X4
-    SET_FONT_L;
-    u8x8.drawString(0, 0, testModeLabels[testMode]);
 
     switch (testMode) {
     case TESTMODE_SPIN:
@@ -165,51 +177,48 @@ void drawTestScreen() {
     case TESTMODE_T1_CUT:
     case TESTMODE_T2_CUT:
     case TESTMODE_CURRENT_CUT:
-        sprintf(buffer, " %2d%c", testValue, testScreenUnits[testMode]);
-        // @todo I could probably save a couple of bytes by printing one case here, so there'd be one case less in second switch
-//        sprintf(floatBuffer, "%4d", saved.k);
+        sprintf(buffer, FMT_TEST_VALUE_COMMON, testValue, testScreenUnits[testMode]);
         break;
     case TESTMODE_VOLT_CUT:
-        sprintf(buffer, "3.%1dV", testValue);
-        sprintf(floatBuffer, "3.%1dV", saved.voltCut);
+        sprintf(buffer, FMT_TEST_VALUE_VOLTS, testValue);
+        sprintf(floatBuffer, FMT_TEST_VALUE_VOLTS, saved.voltCut);
         break;
     case TESTMODE_MODE:
-        sprintf(buffer, "%4s", testSetModeLabels[testValue]);
-        sprintf(floatBuffer, "%4s", testSetModeLabels[saved.holdMode]);
+        strcpy(buffer, testSetModeLabels[testValue]);
+        strcpy(floatBuffer, testSetModeLabels[saved.holdMode]);
         break;
-//    case TESTMODE_UNKNOWN:
+    case TESTMODE_UNKNOWN:
     default:
         sprintf(buffer, "USED");
         sprintf(floatBuffer, "----");
     }
     switch (testMode) {
     case TESTMODE_SPIN:
-        sprintf(floatBuffer, "%4d", saved.k);
+        sprintf(floatBuffer, FMT_TEST_4DECIMALS, saved.k);
         break;
     case TESTMODE_SMART:
-        sprintf(floatBuffer, "%4d", saved.smartEndThrottle);
+        sprintf(floatBuffer, FMT_TEST_4DECIMALS, saved.smartEndThrottle);
         break;
     case TESTMODE_T1_CUT:
-        sprintf(floatBuffer, " %2d%c", saved.t1Cut, testScreenUnits[testMode]);
+        sprintf(floatBuffer, FMT_TEST_VALUE_COMMON, saved.t1Cut, testScreenUnits[testMode]);
         break;
     case TESTMODE_T2_CUT:
-        sprintf(floatBuffer, " %2d%c", saved.t2Cut, testScreenUnits[testMode]);
+        sprintf(floatBuffer, FMT_TEST_VALUE_COMMON, saved.t2Cut, testScreenUnits[testMode]);
         break;
     case TESTMODE_CURRENT_CUT:
-        sprintf(floatBuffer, " %2d%c", saved.currentCut, testScreenUnits[testMode]);
+        sprintf(floatBuffer, FMT_TEST_VALUE_COMMON, saved.currentCut, testScreenUnits[testMode]);
         break;
     }
+
+#ifdef SCREEN_32X4
+
+    SET_FONT_L;
+    u8x8.drawString(0, 0, testModeLabels[testMode]);
+    u8x8.drawString(0, 2, floatBuffer);
 
     SET_FONT_XL;
     u8x8.drawString(6, 0, buffer);
     SET_FONT_S;
-//    u8x8.drawString(0, 2, "OLD:");
-//    u8x8.drawString(4, 2, floatBuffer);
-//    u8x8.drawString(0, 2, floatBuffer);
-//    // I put a short help in bottom line, for about 40 bytes of memory with string.
-//    u8x8.drawString(0, 3, testScreenHint);
-//    u8x8.drawString(13, 3, testMode == TESTMODE_SPIN ? testScreenHintSpin : testScreenHintSave);
-//    u8x8.drawString(5, 3, "<OLD  ^NEW");
     u8x8.drawString(5, 3, "<OLD  ^");
     if (testMode == TESTMODE_SPIN) {
         u8x8.drawString(12, 3, "SPIN");
@@ -217,13 +226,9 @@ void drawTestScreen() {
     else {
         u8x8.drawString(12, 3, "SAVE");
     }
-    SET_FONT_L;
-//    u8x8.drawString(0, 2, "OLD:");
-    u8x8.drawString(0, 2, floatBuffer);
 
 #endif
 }
-
 void drawRunScreen() {
 #ifdef SCREEN_32X4
     SET_FONT_L;
@@ -238,10 +243,3 @@ void drawRunScreen() {
 #endif
 }
 
-void drawSaved() {
-#ifdef SCREEN_32X4
-    SET_FONT_XL;
-    u8x8.drawString(0, 0, "SAVED!  ");
-    drawLogoLock();
-#endif
-}
