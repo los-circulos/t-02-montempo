@@ -60,7 +60,6 @@ void loop() {
                 else {
                     setMode(MODE_CONFIG);
                 }
-//                    setMode(MODE_TEST);
             }
             else if (elapsedInMode(DELAY_COUNTDOWN)) {
                 drawWaitDot(elapsedInModeCounter);
@@ -101,13 +100,25 @@ void loop() {
                 saved.holdMode = testValue;
             }
             saveSaved();
+            setMode(MODE_TEST_SAVED);
             break;
         case MODE_TEST_SAVED:
-            if (elapsedInMode(200)) {
-                if ((elapsedInModeCounter > 10) && !ANY_BUTTON_PUSHED) {
-                    setMode(MODE_TEST);
+            if (elapsedInMode(100)) {
+                if (ANY_BUTTON_PUSHED) {
+                    drawLogoLock();
+                    ledOn();
+                    currentModeStarted = currentTime;
+                    elapsedInModeCounter = 0;
                 }
-                drawSaved();
+//                else if (elapsedInModeCounter < 12) {
+//                    drawWaitDot(elapsedInModeCounter/2);
+                else if (elapsedInModeCounter < 6) {
+                    drawWaitDot(elapsedInModeCounter);
+                }
+                else {
+                    setMode(MODE_TEST);
+                    return;
+                }
             }
             break;
         case MODE_TEST_RUN:
@@ -207,6 +218,9 @@ void setMode(int newMode) {
             throttle.attach(PIN_THROTTLE);
             throttleOff();
             clearScreen();
+        break;
+        case MODE_TEST_SAVED:
+            drawSaved();
         break;
     }
     ledOff();

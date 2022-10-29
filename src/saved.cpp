@@ -21,10 +21,10 @@ void initSaved() {
         saveSaved();
     }
     else {
-//        EEPROM.get(ADDR_SAVED, saved);
+        EEPROM.get(ADDR_SAVED, saved);
     }
 }
 
 void saveSaved() {
-//    EEPROM.put(ADDR_SAVED, saved);
+    EEPROM.put(ADDR_SAVED, saved);
 }

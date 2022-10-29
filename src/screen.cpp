@@ -4,7 +4,22 @@
 #include "mytime.h"
 #include "saved.h"
 
+////////////////////////////////////////////////////////////////////////////////
+// screen hardware specific START
+////////////////////////////////////////////////////////////////////////////////
+#ifdef SCREEN_32X4
+
 U8X8_SSD1306_128X32_UNIVISION_HW_I2C u8x8(/* reset=*/ U8X8_PIN_NONE);   // Adafruit ESP8266/32u4/ARM Boards + FeatherWing OLED
+
+#define SET_FONT_XL u8x8.setFont(FONT_XL)
+#define SET_FONT_L u8x8.setFont(FONT_L)
+#define SET_FONT_S u8x8.setFont(FONT_S)
+
+#endif
+////////////////////////////////////////////////////////////////////////////////
+// screen hardware specific END
+////////////////////////////////////////////////////////////////////////////////
+
 int currentScreen = SCREEN_PRE;
 
 // should never be more than 17, but let's play safe
@@ -21,12 +36,6 @@ char *runScreenHint = "SAVE AT 1K RPM";
 #define FMT_TEST_VALUE_VOLTS "3.%1dV"
 #define FMT_TEST_VALUE_COMMON " %2d%c"
 #define FMT_TEST_4DECIMALS "%4d"
-
-#ifdef SCREEN_32X4
-#define SET_FONT_XL u8x8.setFont(FONT_XL)
-#define SET_FONT_L u8x8.setFont(FONT_L)
-#define SET_FONT_S u8x8.setFont(FONT_S)
-#endif
 
 void initScreen() {
 #ifdef SCREEN_32X4
@@ -92,11 +101,12 @@ void drawRemainingTime(unsigned int secsRemain) {
 #endif
 }
 void drawSaved() {
+    clearScreen();
 #ifdef SCREEN_32X4
     SET_FONT_XL;
     u8x8.drawString(0, 0, "SAVED!  ");
 #endif
-    drawLogoLock();
+//    drawLogoLock();
 }
 void drawWaitDot(uint8_t x) {
 #ifdef SCREEN_32X4
@@ -242,4 +252,3 @@ void drawRunScreen() {
 
 #endif
 }
-
