@@ -109,7 +109,7 @@ void readTestConfig() {
         testMode = TESTMODE_MODE;
     }
     else if (i == 6) {
-        testMode = TESTMODE_CURRENT_CUT;
+        testMode = TESTMODE_POLES;
     }
     else if (i == 4) {
         testMode = TESTMODE_VOLT_CUT;
@@ -118,7 +118,7 @@ void readTestConfig() {
         testMode = TESTMODE_SMART;
     }
     else {
-        testMode = TESTMODE_UNKNOWN;
+        testMode = TESTMODE_CURRENT_CUT;
     }
 
     // a switch would take only 4 bytes less of memory
@@ -143,8 +143,10 @@ void readTestConfig() {
     else if (testMode == TESTMODE_MODE) {
         testValue = readDips(2);
     }
+    else if (testMode == TESTMODE_POLES){
+        testValue = 34 - readDips(4) * 2;
+    }
     else {
         testValue = readDips(2);
     }
-
 }

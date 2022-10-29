@@ -8,7 +8,7 @@
 #define TESTMODE_VOLT_CUT 4
 #define TESTMODE_CURRENT_CUT 5
 #define TESTMODE_MODE 6
-#define TESTMODE_UNKNOWN 7
+#define TESTMODE_POLES 7
 // todo write logs, and write log browser with this mode
 #define TESTMODE_LOGS 7
 

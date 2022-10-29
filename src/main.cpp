@@ -99,6 +99,9 @@ void loop() {
             else if (testMode == TESTMODE_MODE) {
                 saved.holdMode = testValue;
             }
+            else if (testMode == TESTMODE_POLES) {
+                saved.poles = testValue;
+            }
             saveSaved();
             setMode(MODE_TEST_SAVED);
             break;

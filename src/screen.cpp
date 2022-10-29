@@ -26,9 +26,9 @@ int currentScreen = SCREEN_PRE;
 char buffer[20];
 char floatBuffer[6];
 
-char *testModeLabels[] = {"MOTOR", "SMART", "T1CUT", "T2CUT", "V CUT", "A CUT", "MODE ", "-NOT-"};
+char *testModeLabels[] = {"MOTOR", "SMART", "T1CUT", "T2CUT", "V CUT", "A CUT", "MODE ", "POLES"};
 char *testSetModeLabels[] = {"THRO", "RPM ", "POWR", "SMRT"};
-char testScreenUnits[] = "%%CCVA ";
+char testScreenUnits[] = "%%CCVA P";
 char *runScreenHint = "SAVE AT 1K RPM";
 
 #define FMT_TEST_VALUE_COMMON " %2d%c"
@@ -187,6 +187,7 @@ void drawTestScreen() {
     case TESTMODE_T1_CUT:
     case TESTMODE_T2_CUT:
     case TESTMODE_CURRENT_CUT:
+    case TESTMODE_POLES:
         sprintf(buffer, FMT_TEST_VALUE_COMMON, testValue, testScreenUnits[testMode]);
         break;
     case TESTMODE_VOLT_CUT:
@@ -197,14 +198,15 @@ void drawTestScreen() {
         strcpy(buffer, testSetModeLabels[testValue]);
         strcpy(floatBuffer, testSetModeLabels[saved.holdMode]);
         break;
-    case TESTMODE_UNKNOWN:
+//    case TESTMODE_UNKNOWN:
     default:
         sprintf(buffer, "USED");
         sprintf(floatBuffer, "----");
     }
     switch (testMode) {
     case TESTMODE_SPIN:
-        sprintf(floatBuffer, FMT_TEST_4DECIMALS, saved.k);
+//        sprintf(floatBuffer, FMT_TEST_4DECIMALS, saved.poles);
+        strcpy(floatBuffer, "");
         break;
     case TESTMODE_SMART:
         sprintf(floatBuffer, FMT_TEST_4DECIMALS, saved.smartEndThrottle);
@@ -217,6 +219,9 @@ void drawTestScreen() {
         break;
     case TESTMODE_CURRENT_CUT:
         sprintf(floatBuffer, FMT_TEST_VALUE_COMMON, saved.currentCut, testScreenUnits[testMode]);
+        break;
+    case TESTMODE_POLES:
+        sprintf(floatBuffer, FMT_TEST_4DECIMALS, saved.poles);
         break;
     }
 
