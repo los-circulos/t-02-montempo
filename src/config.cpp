@@ -37,6 +37,8 @@ void initConfig() {
     else {
         pinMode(BTN_A, INPUT_PULLUP);
     }
+    // @todo?
+//    if (btnBDisabled() || btnBPushed()) {
     if (btnBDisabled()) {
         config.btnBEnabled = false;
     }

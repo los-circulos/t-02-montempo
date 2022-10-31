@@ -125,7 +125,16 @@ void loop() {
             }
             break;
         case MODE_TEST_RUN:
-            drawRunScreen();
+            if (elapsedInMode(200)) {
+                if ((testMode != TESTMODE_SPIN) || !ANY_BUTTON_PUSHED) {
+                    setMode(MODE_WELCOME_LOCK);
+                }
+                else {
+                    readTestConfig();
+                    throttlePcnt(testValue);
+                    drawRunScreen();
+                }
+            }
             break;
         case MODE_CONFIG:
             if (elapsedInMode(200)) {

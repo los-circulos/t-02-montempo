@@ -29,7 +29,7 @@ char floatBuffer[6];
 char *testModeLabels[] = {"MOTOR", "SMART", "T1CUT", "T2CUT", "V CUT", "A CUT", "MODE ", "POLES"};
 char *testSetModeLabels[] = {"THRO", "RPM ", "POWR", "SMRT"};
 char testScreenUnits[] = "%%CCVA P";
-char *runScreenHint = "SAVE AT 1K RPM";
+char *spinScreenHint = "SAVE AT 1K RPM";
 
 #define FMT_TEST_VALUE_COMMON " %2d%c"
 #define FMT_TEST_VALUE_COMMON " %2d%c"
@@ -249,8 +249,11 @@ void drawRunScreen() {
     SET_FONT_L;
 //    u8x8.drawString(0, 0, "              ");
 //    u8x8.drawString(0, 1, "              ");
-    u8x8.drawString(0, 0, "THR __  V __._");
+//    u8x8.drawString(0, 0, "THR __  V __._");
     u8x8.drawString(0, 2, "RPM ____ A ___");
+
+    sprintf(buffer, "THR %2d  V __._", testValue);
+    u8x8.drawString(0, 0, buffer);
 
 //    u8x8.drawString(0, 0, "THR __  V __._");
 //    u8x8.drawString(0, 1, "T1__ T2__ P___");
