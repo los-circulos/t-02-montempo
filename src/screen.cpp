@@ -183,15 +183,14 @@ void drawTestScreen() {
     case TESTMODE_MODE:
         strcpy(buffer, holdModeLabels[testValue]);
         strcpy(floatBuffer, holdModeLabels[saved.holdMode]);
-        break;
-//    case TESTMODE_UNKNOWN:
-    default:
-        sprintf(buffer, "USED");
-        sprintf(floatBuffer, "----");
+    // omitting this saves 30 bytes but testMode rather be valid then lol
+//        break;
+//    default:
+//        sprintf(buffer, "USED");
+//        sprintf(floatBuffer, "----");
     }
     switch (testMode) {
     case TESTMODE_SPIN:
-//        sprintf(floatBuffer, FMT_TEST_4DECIMALS, saved.poles);
         strcpy(floatBuffer, "    ");
         break;
     case TESTMODE_SMART:

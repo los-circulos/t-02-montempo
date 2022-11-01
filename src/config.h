@@ -25,7 +25,8 @@ struct configT {
     unsigned int power = 300;
     bool holdPower = false;
     bool runUntilCutoff = false;
-    unsigned int timeDelay = 25;
+//    unsigned int timeDelay = 25;
+    unsigned int timeDelay = 10;
 //    unsigned int timeDelay = 3;
 
 //    unsigned int softStartTime = 5;

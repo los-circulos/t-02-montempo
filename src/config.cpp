@@ -9,11 +9,9 @@ uint8_t testMode;
 int testValue;
 
 // 30A * 15V = 450W (when holding power) / 20A * 15V = 300W
-const unsigned int powerValues[] = { 160, 190, 220, 260, 300, 350, 400, 450 };
-//const unsigned int flyTimeValues[] = {60, 180, 300, 360};
-// 3:00 default, 370 + 25sec = leaves 25sec of 7mins to start timer and to land. 0 stands for run until voltage cut
-//const unsigned int flyTimeValues[] = {180, 381, 311, 0};
-//const unsigned int flyTimeValues[] = { 0, 60, 180, 240, 270, 300, 340, 370 };
+//const unsigned int powerValues[] = { 160, 190, 220, 260, 300, 350, 400, 450 };
+const unsigned int powerValues[] = { 120, 140, 160, 180, 200, 220, 240, 260, 280, 300, 330, 360, 390, 420, 450, 480 };
+// 3:00 default, 370 + 25sec = leaves 25sec of the 7mins to start timer and to land. 0 stands for run until voltage cut
 const unsigned int flyTimeValues[] = { 180, 60, 240, 300, 340, 355, 370, 0 };
 
 unsigned char i;

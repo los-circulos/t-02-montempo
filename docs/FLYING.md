@@ -41,8 +41,8 @@ Values:
    - default: 98% throttle (all DIPs "down")
  - for RPM: 8000...12500, 300 1/min steps
    - default: 8000 (all DIPs "down")
- - for power: 160...450W from 160, 190, 220, 260, 300, 350, 400, 450 selectable
-   - default: 160 (all DIPs "down")
+ - for power: 120...500W with 20W increments between 120...300W, and 30W increments between 300...480W 
+   - default: 120 (all DIPs "down")
 
 ### Setting fly time
 
