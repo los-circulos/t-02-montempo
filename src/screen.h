@@ -40,7 +40,7 @@ void drawSaved();
 void drawWaitDot(uint8_t x);
 
 void drawWelcome();
-void drawScreen(configT config);
+void drawPreflight(configT config);
 void drawTestScreen();
 void drawRunScreen();
 

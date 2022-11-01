@@ -20,11 +20,11 @@ extern uint8_t currentMode;
 #define MODE_TEST_SPIN 15
 
 // pre-flight config screen (confirm config)
-#define MODE_CONFIG 20
+#define MODE_PREFLIGHT_PROGRAM 20
 // when all available buttons pressed (or there are no buttons), wait 3 secs to confirm
 //  (and to ignore unintentional button presses)
 // (blink fast)
-#define MODE_CONFIG_COUNTDOWN 21
+#define MODE_PREFLIGHT_PROGRAM_COUNTDOWN 21
 // wait until all available buttons are released
 // (blink fast)
 #define MODE_DELAY_LOCK 39

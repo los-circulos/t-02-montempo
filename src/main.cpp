@@ -30,7 +30,6 @@ void setup() {
     drawWelcome();
 
     // this will leave the ESC initialized but not armed
-//    throttle.writeMicroseconds(0);
     throttle.attach(PIN_THROTTLE);
     throttle.writeMicroseconds(0);
 
@@ -61,7 +60,7 @@ void loop() {
                     setMode(MODE_TEST);
                 }
                 else {
-                    setMode(MODE_CONFIG);
+                    setMode(MODE_PREFLIGHT_PROGRAM);
                 }
             }
             else if (elapsedInMode(DELAY_COUNTDOWN)) {
@@ -140,14 +139,14 @@ void loop() {
                 }
             }
             break;
-        case MODE_CONFIG:
+        case MODE_PREFLIGHT_PROGRAM:
             if (elapsedInMode(200)) {
                 readConfig();
-                drawScreen(config);
+                drawPreflight(config);
                 confirmation();
             }
             break;
-        case MODE_CONFIG_COUNTDOWN:
+        case MODE_PREFLIGHT_PROGRAM_COUNTDOWN:
             countDown(MODE_DELAY_LOCK);
             break;
         case MODE_DELAY_LOCK:
@@ -161,7 +160,7 @@ void loop() {
             break;
         case MODE_DELAY:
             if (ANY_BUTTON_PUSHED) {
-                setMode(MODE_CONFIG);
+                setMode(MODE_PREFLIGHT_PROGRAM);
             }
             // NOTE this has to be in sync with BLINK_FAST blinking, hence the high rate
             if (elapsedInMode(100)) {
@@ -220,7 +219,7 @@ void setMode(int newMode) {
     currentModeStarted = currentTime;
     elapsedInModeCounter = 0;
     switch (newMode) {
-        case MODE_CONFIG:
+        case MODE_PREFLIGHT_PROGRAM:
             clearScreen();
             // interestingly, if I remove the break and the then duplicate clearScreen, it uses more memory
         break;

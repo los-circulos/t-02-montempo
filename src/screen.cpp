@@ -131,18 +131,12 @@ void drawWelcome() {
     u8x8.drawString(12, 3, "V1.0");
 #endif
 }
-void drawScreen(configT config) {
+void drawPreflight(configT config) {
 #ifdef SCREEN_32X4
 
     SET_FONT_L;
 
-    if (config.testMode) {
-        u8x8.drawString(10, 0, "TEST");
-    }
-    else {
-        u8x8.drawString(10, 0, "FLY?");
-    }
-    SET_FONT_L;
+    u8x8.drawString(10, 0, "FLY?");
 
     if (config.holdRPM) {
         // 20744 JO
