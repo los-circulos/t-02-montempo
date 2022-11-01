@@ -12,15 +12,15 @@
 #define HOLD_MODE_SMART_THROTTLE 3
 
 struct savedT {
-//    unsigned int k = 720;
-    // the default is very low so if RPM hold is attempted without setting up, it will just underdrive the motor
-    unsigned char poles = 4;
-    unsigned char holdMode = HOLD_MODE_FLAT_THROTTLE;
     unsigned char smartEndThrottle = 90;
-    unsigned char voltCut = 7;
-    unsigned char currentCut = 50;
     unsigned char t1Cut = 90;
     unsigned char t2Cut = 90;
+    unsigned char holdMode = HOLD_MODE_FLAT_THROTTLE;
+    // the default is very low so if RPM hold is attempted without setting up, it will just underdrive the motor
+    unsigned char poles = 4;
+    // 3.7
+    unsigned char voltCut = 7;
+    unsigned char currentCut = 30;
 };
 
 extern savedT saved;

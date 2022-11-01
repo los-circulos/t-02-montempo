@@ -27,9 +27,8 @@ char buffer[20];
 char floatBuffer[6];
 
 char *testModeLabels[] = {"MOTOR", "SMART", "T1CUT", "T2CUT", "V CUT", "A CUT", "MODE ", "POLES"};
-char *testSetModeLabels[] = {"THRO", "RPM ", "PWR ", "SMRT"};
-char testScreenUnits[] = "%%CCVA P";
-//char *spinScreenHint = "SAVE AT 1K RPM";
+char testModeUnits[] = "%%CCVA P";
+char *holdModeLabels[] = {"THRO", "RPM ", "PWR ", "SMRT"};
 
 #define FMT_TEST_VALUE_COMMON " %2d%c"
 #define FMT_TEST_VALUE_COMMON " %2d%c"
@@ -138,37 +137,24 @@ void drawPreflight(configT config) {
 
     u8x8.drawString(10, 0, "FLY?");
 
-    if (config.holdRPM) {
-        // 20744 JO
-//        dtostrf(((float) config.RPM)/1000, 4, 1, floatBuffer);
-//        sprintf(buffer, "RPM %s", floatBuffer);
-        // 20334 JO
-//        sprintf(buffer, "RPM %2d.", config.RPM/1000);
-//        u8x8.drawString(0, 3, buffer);
-//        sprintf(floatBuffer, "%d", (config.RPM/100)%10);
-//        u8x8.drawString(7, 3, floatBuffer);
-        // 20342
-        u8x8.drawString(0, 2, "RPM ");
-        sprintf(buffer, "%2d.", config.RPM/1000);
-        u8x8.drawString(4, 2, buffer);
-        sprintf(buffer, "%d", (config.RPM/100)%10);
-        u8x8.drawString(7, 2, buffer);
+    // NOTE a switch would eat 4bytes more here
+    if (saved.holdMode == HOLD_MODE_RPM) {
+        sprintf(buffer, "RPM %2d.%d", config.RPM/1000, (config.RPM/100)%10);
+        u8x8.drawString(0, 2, buffer);
     }
-    else if (config.holdPower) {
+    else if (saved.holdMode == HOLD_MODE_POWER) {
         sprintf(buffer, "PWR  %3d", config.power);
         u8x8.drawString(0, 2, buffer);
     }
-    else if (config.smartThrottle) {
-        sprintf(buffer, "SMRT%% %2d", config.throttle);
+    else if (saved.holdMode == HOLD_MODE_SMART_THROTTLE) {
+        sprintf(buffer, "SMRT %2d%%", config.throttle);
         u8x8.drawString(0, 2, buffer);
     }
-    // constant throttle
     else {
-        sprintf(buffer, "THR %% %2d", config.throttle);
+        sprintf(buffer, "THRO %2d%%", config.throttle);
         u8x8.drawString(0, 2, buffer);
     }
 
-    SET_FONT_L;
     float u = 12.456;
     dtostrf(u, 2, 2, floatBuffer);
     sprintf(buffer, "V  %s", floatBuffer);
@@ -188,15 +174,15 @@ void drawTestScreen() {
     case TESTMODE_T2_CUT:
     case TESTMODE_CURRENT_CUT:
     case TESTMODE_POLES:
-        sprintf(buffer, FMT_TEST_VALUE_COMMON, testValue, testScreenUnits[testMode]);
+        sprintf(buffer, FMT_TEST_VALUE_COMMON, testValue, testModeUnits[testMode]);
         break;
     case TESTMODE_VOLT_CUT:
         sprintf(buffer, FMT_TEST_VALUE_VOLTS, testValue);
         sprintf(floatBuffer, FMT_TEST_VALUE_VOLTS, saved.voltCut);
         break;
     case TESTMODE_MODE:
-        strcpy(buffer, testSetModeLabels[testValue]);
-        strcpy(floatBuffer, testSetModeLabels[saved.holdMode]);
+        strcpy(buffer, holdModeLabels[testValue]);
+        strcpy(floatBuffer, holdModeLabels[saved.holdMode]);
         break;
 //    case TESTMODE_UNKNOWN:
     default:
@@ -212,13 +198,13 @@ void drawTestScreen() {
         sprintf(floatBuffer, FMT_TEST_4DECIMALS, saved.smartEndThrottle);
         break;
     case TESTMODE_T1_CUT:
-        sprintf(floatBuffer, FMT_TEST_VALUE_COMMON, saved.t1Cut, testScreenUnits[testMode]);
+        sprintf(floatBuffer, FMT_TEST_VALUE_COMMON, saved.t1Cut, testModeUnits[testMode]);
         break;
     case TESTMODE_T2_CUT:
-        sprintf(floatBuffer, FMT_TEST_VALUE_COMMON, saved.t2Cut, testScreenUnits[testMode]);
+        sprintf(floatBuffer, FMT_TEST_VALUE_COMMON, saved.t2Cut, testModeUnits[testMode]);
         break;
     case TESTMODE_CURRENT_CUT:
-        sprintf(floatBuffer, FMT_TEST_VALUE_COMMON, saved.currentCut, testScreenUnits[testMode]);
+        sprintf(floatBuffer, FMT_TEST_VALUE_COMMON, saved.currentCut, testModeUnits[testMode]);
         break;
     case TESTMODE_POLES:
         sprintf(floatBuffer, FMT_TEST_4DECIMALS, saved.poles);

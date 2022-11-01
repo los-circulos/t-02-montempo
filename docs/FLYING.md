@@ -38,8 +38,11 @@ Use the first 4 DIP switches to change the value. The actual value will be refle
 Values:
  - for throttle, constant throttle and SMART modes: 68...98% in 2% steps, 98% default
    - for SMART mode this is the initial throttle. End target throttle remains the same constant
+   - default: 98% throttle (all DIPs "down")
  - for RPM: 8000...12500, 300 1/min steps
+   - default: 8000 (all DIPs "down")
  - for power: 160...450W from 160, 190, 220, 260, 300, 350, 400, 450 selectable
+   - default: 160 (all DIPs "down")
 
 ### Setting fly time
 

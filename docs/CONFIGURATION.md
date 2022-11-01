@@ -67,24 +67,31 @@ If any of the buttons is released while the dots are still running, the setting 
  - "SMART" - smart throttle end value (see FLYING.md about SMART mode and how to set a good value)
    - . . . . . . D D
    - value: throttle value at the end of a "SMART" mode fly, in percentage %, 2% steps 0-98%
+   - code default: 90%
  - "T1CUT" - temperature sensor #1 cutoff value
    - . . . . . D D U
    - value: temperature, in °C, 2°C steps 28...90°C
+   - code default: 90
  - "T2CUT" - temperature sensor #2 cutoff value
    - . . . . . U D U
    - value: temperature, in °C, 2°C steps 28...90°C
+   - code default: 90
  - "MODE" - select hold (govern) mode, 4 modes to select
-    - . . - - U U U D
-    - value: the selected mode. See description of each mode in "FLYING.md"
+   - . . - - U U U D
+   - value: the selected mode. See description of each mode in "FLYING.md"
+   - code default: constant throttle
  - "POLES" - set motor poles for correct RPM sensing
    - . . . . D U U D
    - value: number of motor poles (pairs*2), 2 poles steps, 4...34P
+   - code default: 4 (a bad default value for outrunners but will cause the least problems as default value)
  - "V CUT" - voltage cut off
    - . . . . D D U D
    - value: value when motor will be cut, in volts V, 0.1V steps
+   - default: 3.7V
  - "A CUT" - current cut off
    - . . . . U D U D
    - value: amps when motor will be cut, in amps A, 2A steps, 20...50A
+   - default: 30A
  - "LOGS" reserved for viewing saved logs (not yet implemented)
    - D D D D D D D D
    - use push button A and B to switch between logs
