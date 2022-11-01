@@ -24,12 +24,17 @@ bool btnBDisabled();
 ///////////////////////////////////////// SENSORS       /////////////////////////////////////
 // throttle pin
 #define PIN_THROTTLE PIN3
+// will arm with calibrating throttle range too. Pretty standard in ESCs but just in case.
+//  will also save a second, which might (or not) count eg in competition
+// comment define to disable (but run at least once having it enabled, so ESC is calibrated)
+#define ARM_WITH_CALIBRATE
 
 extern Servo throttle;
-void throttleOff();
+void armThrottle();
+#define throttleOff() throttle.writeMicroseconds(THROTTLE_MICROS_MIN)
 void throttlePcnt(unsigned int pcnt);
 
-// micros for 0% throttle eg. delay mode, and for calculations reference
+// micros for 0% throttle off, and for calculations reference
 #define THROTTLE_MICROS_MIN 1050
 // micros for 100% throttle, too high, and ESC might start to cut out. Theoretical max 2000
 #define THROTTLE_MICROS_MAX 1950

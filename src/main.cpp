@@ -31,6 +31,11 @@ void setup() {
 
     drawWelcome();
 
+    // this will leave the ESC initialized but not armed
+//    throttle.writeMicroseconds(0);
+    throttle.attach(PIN_THROTTLE);
+    throttle.writeMicroseconds(0);
+
 }
 
 void loop() {
@@ -126,19 +131,21 @@ void loop() {
             break;
         case MODE_TEST_RUN:
             if (elapsedInMode(200)) {
+                // for testing only
+//                if ((testMode != TESTMODE_SPIN)) {
                 if ((testMode != TESTMODE_SPIN) || !ANY_BUTTON_PUSHED) {
                     setMode(MODE_WELCOME_LOCK);
+                    throttlePcnt(0);
                 }
                 else {
                     readTestConfig();
-                    throttlePcnt(testValue);
                     drawRunScreen();
+                    throttlePcnt(testValue);
                 }
             }
             break;
         case MODE_CONFIG:
             if (elapsedInMode(200)) {
-
                 readConfig();
                 drawScreen(config);
                 confirmation();
@@ -222,13 +229,12 @@ void setMode(int newMode) {
             // interestingly, if I remove the break and the then duplicate clearScreen, it uses more memory
         break;
         case MODE_DELAY_LOCK:
-        case MODE_TEST_RUN:
+        case MODE_TEST:
             clearScreen();
         break;
-        case MODE_TEST:
+        case MODE_TEST_RUN:
         case MODE_DELAY:
-            throttle.attach(PIN_THROTTLE);
-            throttleOff();
+            armThrottle();
             clearScreen();
         break;
         case MODE_TEST_SAVED:

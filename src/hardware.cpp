@@ -1,5 +1,4 @@
 #include "hardware.h"
-#include "config.h"
 
 void ledOn() {
     digitalWrite(LED1, HIGH);
@@ -28,15 +27,32 @@ bool btnBDisabled() {
 }
 
 Servo throttle = Servo();
+bool throttleArmed = false;
 
-void throttleOff() {
-//    throttle.writeMicroseconds((THROTTLE_MICROS_MIN + THROTTLE_MICROS_MAX) / 2);
-    throttle.writeMicroseconds(THROTTLE_MICROS_MIN);
+void armThrottle() {
+#ifdef ARM_WITH_CALIBRATE
+    // this will leave a 1sec delay but also calibrate min/max values
+    if (!throttleArmed) {
+        throttlePcnt(99);
+        delay(1000);
+    }
+    throttleOff();
+#else
+    // might not be compatible with all ESCs
+    throttleOff();
+#endif
+    throttleArmed = true;
 }
 
 void throttlePcnt(unsigned int pcnt) {
-    unsigned int i = THROTTLE_MICROS_MIN + (THROTTLE_MICROS_MAX - THROTTLE_MICROS_MIN) * pcnt / 100;
+    // order matters as overflow could happen during first version computation
+//    unsigned long i = THROTTLE_MICROS_MIN + (THROTTLE_MICROS_MAX - THROTTLE_MICROS_MIN) * pcnt / 100;
+    // @todo just unsigned int?
+    unsigned long i = (THROTTLE_MICROS_MAX - THROTTLE_MICROS_MIN)/100 * pcnt + THROTTLE_MICROS_MIN;
     throttle.writeMicroseconds(i);
+    // test code - might need it someday
+//    sprintf(tmp, "%d %d ", pcnt, i);
+//    u8x8.drawString(0, 2, tmp );
 }
 
 #ifdef CONFIG_DIP8
