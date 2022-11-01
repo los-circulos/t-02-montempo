@@ -30,6 +30,7 @@ extern int currentScreen;
 void initScreen();
 void clearScreen();
 
+void drawArming();
 void drawFlyConfirmation(bool show);
 void drawLogoLock();
 void eraseLogoLock();

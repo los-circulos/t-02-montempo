@@ -7,8 +7,6 @@
 #include <screen.h>
 
 uint8_t currentMode = MODE_WELCOME_LOCK;
-//uint8_t currentMode = MODE_CONFIG;
-//uint8_t currentMode = MODE_DELAY;
 unsigned long currentModeStarted = 0;
 // elapsed incremental cycles since last mode change. !! use only through elapsedInMode().
 unsigned long elapsedInModeCounter = 0;
@@ -58,7 +56,7 @@ void loop() {
             if (ANY_BUTTON_PUSHED) {
                 setMode(MODE_WELCOME_LOCK);
             }
-            else if (elapsedInModeCounter > 6) {
+            else if (elapsedInModeCounter > 8) {
                 if (config.testMode) {
                     setMode(MODE_TEST);
                 }
@@ -83,7 +81,7 @@ void loop() {
             break;
         case MODE_TEST_SAVE:
             if (testMode == TESTMODE_SPIN) {
-                setMode(MODE_TEST_RUN);
+                setMode(MODE_TEST_SPIN);
                 return;
             }
             else if (testMode == TESTMODE_SMART) {
@@ -118,27 +116,25 @@ void loop() {
                     currentModeStarted = currentTime;
                     elapsedInModeCounter = 0;
                 }
-//                else if (elapsedInModeCounter < 12) {
-//                    drawWaitDot(elapsedInModeCounter/2);
-                else if (elapsedInModeCounter < 6) {
-                    drawWaitDot(elapsedInModeCounter);
+                else if (elapsedInModeCounter > 8) {
+                    setMode(MODE_TEST);
+//                    return;
                 }
                 else {
-                    setMode(MODE_TEST);
-                    return;
+                    drawWaitDot(elapsedInModeCounter);
                 }
             }
             break;
-        case MODE_TEST_RUN:
+        case MODE_TEST_SPIN:
             if (elapsedInMode(200)) {
                 // for testing only
 //                if ((testMode != TESTMODE_SPIN)) {
+                readTestConfig();
                 if ((testMode != TESTMODE_SPIN) || !ANY_BUTTON_PUSHED) {
                     setMode(MODE_WELCOME_LOCK);
                     throttlePcnt(0);
                 }
                 else {
-                    readTestConfig();
                     drawRunScreen();
                     throttlePcnt(testValue);
                 }
@@ -232,8 +228,9 @@ void setMode(int newMode) {
         case MODE_TEST:
             clearScreen();
         break;
-        case MODE_TEST_RUN:
+        case MODE_TEST_SPIN:
         case MODE_DELAY:
+            drawArming();
             armThrottle();
             clearScreen();
         break;
@@ -284,7 +281,7 @@ void countDown(char nextMode) {
         setMode(currentMode - 1);
         drawFlyConfirmation(false);
     }
-    else if (elapsedInModeCounter > 6) {
+    else if (elapsedInModeCounter > 11) {
         setMode(nextMode);
     }
     else if (elapsedInMode(DELAY_COUNTDOWN)) {

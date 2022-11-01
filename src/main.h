@@ -17,7 +17,7 @@ extern uint8_t currentMode;
 #define MODE_TEST_COUNTDOWN 11
 #define MODE_TEST_SAVE 12
 #define MODE_TEST_SAVED 14
-#define MODE_TEST_RUN 15
+#define MODE_TEST_SPIN 15
 
 // pre-flight config screen (confirm config)
 #define MODE_CONFIG 20
@@ -40,7 +40,8 @@ extern uint8_t currentMode;
 // blink fast but with extra delay, show in-flight data for recording etc
 #define MODE_AFTER 50
 
-#define DELAY_COUNTDOWN 200
+//#define DELAY_COUNTDOWN 150
+#define DELAY_COUNTDOWN 100
 #define DELAY_COUNTDOWN_FAST 100
 
 #endif //MONTEMPO_MAIN_H

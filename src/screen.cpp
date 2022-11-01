@@ -27,9 +27,9 @@ char buffer[20];
 char floatBuffer[6];
 
 char *testModeLabels[] = {"MOTOR", "SMART", "T1CUT", "T2CUT", "V CUT", "A CUT", "MODE ", "POLES"};
-char *testSetModeLabels[] = {"THRO", "RPM ", "POWR", "SMRT"};
+char *testSetModeLabels[] = {"THRO", "RPM ", "PWR ", "SMRT"};
 char testScreenUnits[] = "%%CCVA P";
-char *spinScreenHint = "SAVE AT 1K RPM";
+//char *spinScreenHint = "SAVE AT 1K RPM";
 
 #define FMT_TEST_VALUE_COMMON " %2d%c"
 #define FMT_TEST_VALUE_COMMON " %2d%c"
@@ -49,6 +49,12 @@ void clearScreen() {
 #endif
 }
 
+void drawArming() {
+#ifdef SCREEN_32X4
+    SET_FONT_XL;
+    u8x8.drawString(0, 0, "ARMING..");
+#endif
+}
 void drawFlyConfirmation(bool show) {
 #ifdef SCREEN_32X4
     SET_FONT_XL;
@@ -111,7 +117,7 @@ void drawSaved() {
 void drawWaitDot(uint8_t x) {
 #ifdef SCREEN_32X4
     SET_FONT_S;
-    u8x8.drawString(x + 4, 3, ".");
+    u8x8.drawString(x + 3, 3, ".");
 #endif
 }
 
@@ -206,7 +212,7 @@ void drawTestScreen() {
     switch (testMode) {
     case TESTMODE_SPIN:
 //        sprintf(floatBuffer, FMT_TEST_4DECIMALS, saved.poles);
-        strcpy(floatBuffer, "");
+        strcpy(floatBuffer, "    ");
         break;
     case TESTMODE_SMART:
         sprintf(floatBuffer, FMT_TEST_4DECIMALS, saved.smartEndThrottle);
@@ -233,29 +239,28 @@ void drawTestScreen() {
 
     SET_FONT_XL;
     u8x8.drawString(6, 0, buffer);
+
     SET_FONT_S;
-    u8x8.drawString(5, 3, "<OLD  ^");
     if (testMode == TESTMODE_SPIN) {
-        u8x8.drawString(12, 3, "SPIN");
+//        u8x8.drawString(0, 2, "    ");
+        u8x8.drawString(4, 3, "PUSH TO SPIN");
     }
     else {
-        u8x8.drawString(12, 3, "SAVE");
+        u8x8.drawString(4, 3, " <OLD  ^SAVE");
     }
 
 #endif
 }
+
 void drawRunScreen() {
 #ifdef SCREEN_32X4
     SET_FONT_L;
-//    u8x8.drawString(0, 0, "              ");
-//    u8x8.drawString(0, 1, "              ");
 //    u8x8.drawString(0, 0, "THR __  V __._");
-    u8x8.drawString(0, 2, "RPM ____ A ___");
-
     sprintf(buffer, "THR %2d  V __._", testValue);
     u8x8.drawString(0, 0, buffer);
+    //    u8x8.drawString(0, 2, "RPM ____ A ___");
 
-//    u8x8.drawString(0, 0, "THR __  V __._");
+//    u8x8.drawString(0, 0, "THR __ PWR ___");
 //    u8x8.drawString(0, 1, "T1__ T2__ P___");
 
 #endif

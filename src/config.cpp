@@ -23,9 +23,9 @@ void initConfig() {
     config.testMode = true;
     for (i=CONFIG_DIP_1; i<=CONFIG_DIP_8; i++) {
         pinMode(i, INPUT_PULLUP);
-//        if (digitalRead(i)) {
-//            config.testMode = false;
-//        }
+        if (digitalRead(i)) {
+            config.testMode = false;
+        }
     }
 
     pinMode(LED1, OUTPUT);
