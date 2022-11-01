@@ -1,4 +1,6 @@
-# t-02 active digital field-programmable electric control line timer with OLED display and optional telemetry
+# t-02 active digital field-programmable electric control line timer with OLED display and optional "telemetry"
+
+## General documentation, 
 
 Program and schematics to build a timer based on Arduino Nano
 
@@ -29,37 +31,20 @@ Program and schematics to build a timer based on Arduino Nano
 
 ## Files provided:
 
+This is a CLion/platformio project. (I'll try to provide easy to use .ino files with functional releases)
 
-## Bill of material:
-### bare minimum:
- - U0 Arduino nano 5V - or any pin compatible similar board. Depending on the ESC used, a 3V board might work as well
- - J1 3pin servo header (or reuse ISP header)
- - R1, R2 100k pullup resistor
-### recommended for basic functionality
- - SW1 8bit DIP switch (typically the white switches-blue housing) RECOMMENDED
- - SW2, SW3 - momentary push switches / microswitches. Push buttons with integrated LEDs are recommended
- - D1, D2 - LEDs (optional)
- - U1 display (currently only one type supported)
-   - 128*32 OLED with 1306 driver and I2C communication
- - J2 2*12 header (mostly not used but the plastic strip holds the used pins well)
-### recommended commodity
- - SW2, SW3 - use push buttons with integrated LEDs (replaces D1, D2)
- - PCB - use optional PCBs (schematics etc included as available)
-### required for voltage sensing
- - R3 xk resistor
- - R4 xk resistor
-### current sensing
- - U2 20A or 30A current sensing module
- - ...
-### RPM sensing
- - ...
+How to set up the compiler and builder for your system is something I cannot help much with (that's why the .ino those
+should be ready to load into Arduino IDE, compile, and burn)
 
-### optional, not recommended
- - R3, R4 100k pulldown resistor to replace SW2, SW3 respectively (none, one, or both)
- - J3 2*8 header with jumpers - to replace SW1 DIP switch. Not recommended.
-
+ - docs - documentation
+ - src - project files to be compiled
+ - test - sadly empty for now
+ - CMakeLists.txt - needed for compilation
+ - CMakeListsPrivate.txt - same
+ - LICENSE - read it
+ - platformio.ini - needed for compilation
+ - README.md - you're reading it
 
 @los.circulos
 github.com/los-circulos
 #controlline #vuelocircular #uコン #opensource
-
