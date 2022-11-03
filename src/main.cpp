@@ -11,6 +11,7 @@ unsigned long currentModeStarted = 0;
 // elapsed incremental cycles since last mode change. !! use only through elapsedInMode().
 unsigned long elapsedInModeCounter = 0;
 
+#define NOT_IMPLEMENTED (saved.holdMode != HOLD_MODE_FLAT_THROTTLE)
 void notImplemented();
 void setMode(int newMode);
 bool elapsedInMode(unsigned int);
@@ -39,6 +40,24 @@ void loop() {
 
     setCurrentTime();
     unsigned int i;
+
+    i = 0;
+    do {
+        if (btnAPushed()) {
+            i++;
+            clearScreen();
+        }
+        else if (btnBPushed()) {
+            i = max(0, i-1);
+            clearScreen();
+        }
+        if (i>10) {
+            i = 0;
+        }
+        drawAfterScreen(i);
+        delay(200);
+    } while (true);
+    return;
 
     switch (currentMode) {
         case MODE_WELCOME_LOCK:
@@ -159,32 +178,42 @@ void loop() {
             }
             break;
         case MODE_DELAY:
-            if (ANY_BUTTON_PUSHED) {
+            if (NOT_IMPLEMENTED) {
+                notImplemented();
+                return;
+            }
+            else if (ANY_BUTTON_PUSHED) {
                 setMode(MODE_PREFLIGHT_PROGRAM);
             }
-            // NOTE this has to be in sync with BLINK_FAST blinking, hence the high rate
-            if (elapsedInMode(100)) {
-                drawRemainingTime(config.timeDelay - (currentTime - currentModeStarted) / 1000);
-            }
             // we increment elapsedInModeCounter twice a sec, so we divide by 2
-            if (elapsedInModeCounter / 10 >= config.timeDelay) {
+            else if (elapsedInModeCounter / 10 >= config.timeDelay) {
                 setMode(MODE_FLY);
+            }
+            // NOTE this has to be in sync with BLINK_FAST blinking, hence the high rate
+            else if (elapsedInMode(100)) {
+                drawRemainingTime(config.timeDelay - (currentTime - currentModeStarted) / 1000);
             }
             break;
         // @todo soft start?
         case MODE_SOFT_START:
             break;
         case MODE_FLY:
-            if (config.holdRPM || config.holdPower || config.smartThrottle) {
+            if (NOT_IMPLEMENTED) {
                 notImplemented();
                 return;
             }
-            // simple throttle
-            else {
-                throttlePcnt(config.throttle);
+            else if (ANY_BUTTON_PUSHED) {
+                setMode(MODE_ERR);
+                return;
             }
+            // this makes a funny fastflash-pause-fastflash-pause pattern
             ledOn();
             if (elapsedInMode(100)) {
+
+                // update throttle - currently only fixed throttle
+                i = config.throttle;
+                throttlePcnt(i);
+
                 // draw remaining / elapsed time
                 i = (currentTime - currentModeStarted) / 1000;
                 // remaining time is flight time minus soft start time (elapsed already) minus elapsed time
@@ -196,20 +225,27 @@ void loop() {
                     i+= 2*config.softStartTime;
                 }
                 drawRemainingTime(i);
-                if (config.runUntilCutoff) {
-                    ledOff();
-                }
             }
             break;
         case MODE_AFTER:
+            if (elapsedInMode(2000)) {
+                drawAfterScreen((elapsedInModeCounter%3) * 2);
+            }
+            break;
+        case MODE_ERR:
+            // some error happened - cut threshold reached or button pressed. Draw error and also after info
+            if (elapsedInMode(2000)) {
+                drawAfterScreen((elapsedInModeCounter%3) * 2 + 1);
+            }
             break;
     }
 
 }
 
+// some crazy flashing
 void notImplemented() {
     throttleOff();
-    if (elapsedInMode(100)) {
+    if (elapsedInMode(50)) {
         drawNotImplemented();
     }
 }
@@ -219,20 +255,21 @@ void setMode(int newMode) {
     currentModeStarted = currentTime;
     elapsedInModeCounter = 0;
     switch (newMode) {
+        case MODE_TEST_SPIN:
+        case MODE_DELAY:
+            if (!NOT_IMPLEMENTED) {
+                drawArming();
+                armThrottle();
+            }
+        // commenting or not the following makes no difference in memory, probably it's optimized during compile
+//            clearScreen();
+//        break;
         case MODE_PREFLIGHT_PROGRAM:
-            clearScreen();
-            // interestingly, if I remove the break and the then duplicate clearScreen, it uses more memory
-        break;
+        case MODE_AFTER:
         case MODE_DELAY_LOCK:
         case MODE_TEST:
             clearScreen();
-        break;
-        case MODE_TEST_SPIN:
-        case MODE_DELAY:
-            drawArming();
-            armThrottle();
-            clearScreen();
-        break;
+            break;
         case MODE_TEST_SAVED:
             drawSaved();
         break;

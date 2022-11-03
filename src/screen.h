@@ -43,5 +43,6 @@ void drawWelcome();
 void drawPreflight(configT config);
 void drawTestScreen();
 void drawRunScreen();
+void drawAfterScreen(unsigned char which);
 
 #endif //MONTEMPO_SCREEN_H

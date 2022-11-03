@@ -82,7 +82,7 @@ void eraseLogoLock() {
 #endif
 }
 void drawNotImplemented() {
-    if (blinkLed(BLINK_FAST)) {
+    if (blinkLed(BLINK_ERR)) {
 #ifdef SCREEN_32X4
         SET_FONT_XL;
         u8x8.drawString(0, 1, "NOT YET");
@@ -93,16 +93,27 @@ void drawNotImplemented() {
     }
 }
 void drawRemainingTime(unsigned int secsRemain) {
-    sprintf(
-            buffer,
-            "%02d%s%02d",
-            secsRemain/60,
-            blinkLed(secsRemain < 5 ? BLINK_FAST : BLINK_NORMAL) ? "." : " ",
-            secsRemain % 60
-    );
+    char c = blinkLed(secsRemain < 5 ? BLINK_FAST : BLINK_NORMAL) ? '.' : ' ';
+    if (secsRemain > 59) {
+        sprintf(
+                buffer,
+                "%2d%c%02d",
+                secsRemain / 60,
+                c,
+                secsRemain % 60
+        );
+    }
+    else {
+        sprintf(
+                buffer,
+                "  %c%2d",
+                c,
+                secsRemain
+        );
+    }
 #ifdef SCREEN_32X4
     SET_FONT_XL;
-    u8x8.drawString(3, 0, buffer);
+    u8x8.drawString(4, 0, buffer);
 #endif
 }
 void drawSaved() {
@@ -230,7 +241,6 @@ void drawTestScreen() {
 
 #endif
 }
-
 void drawRunScreen() {
 #ifdef SCREEN_32X4
     SET_FONT_L;
@@ -242,5 +252,99 @@ void drawRunScreen() {
 //    u8x8.drawString(0, 0, "THR __ PWR ___");
 //    u8x8.drawString(0, 1, "T1__ T2__ P___");
 
+#endif
+}
+void drawAfterScreen(unsigned char which) {
+
+#ifdef SCREEN_32X4
+    SET_FONT_XL;
+    if (which == 0) {
+        u8x8.drawString(0, 0, "WELLDONE");
+    }
+//    else if (which == 1) {
+//        u8x8.drawString(0, 0, " 1800mAh");
+//        SET_FONT_L;
+//        u8x8.drawString(0, 1, "        ");
+//    }
+//    else if (which == 2) {
+//        u8x8.drawString(0, 0, "   23:23");
+//        SET_FONT_L;
+//        u8x8.drawString(0, 1, "        ");
+//    }
+    else if (which == 4) {
+        SET_FONT_S;
+        u8x8.drawString(0, 0, "     MIN AVG MAX");
+        u8x8.drawString(0, 1, "THR   88  90  90");
+        u8x8.drawString(0, 2, "AMP   12  14  20");
+        u8x8.drawString(0, 3, "V   14.8    16.8");
+    }
+    else if (which == 5) {
+        SET_FONT_S;
+        u8x8.drawString(0, 0, "  THR T1 T2 VOLT");
+        u8x8.drawString(0, 1, "HI 90 56 64 16.8");
+        u8x8.drawString(0, 2, "AV    30 32     ");
+        u8x8.drawString(0, 3, "LO 88 25 25 14.8");
+    }
+    else if (which == 6) {
+        SET_FONT_L;
+        u8x8.drawString(0, 0, "V  16.8 - 14.8  ");
+        u8x8.drawString(0, 2, "P  320 300 250  ");
+    }
+    else if (which == 7) {
+        SET_FONT_L;
+//        u8x8.drawString(0, 0, "5:11 1.800AH 11C");
+        u8x8.drawString(0, 0, "14.8 V  1800 MAH");
+        u8x8.drawString(0, 2, "5:11 11C 33C 22C");
+//        SET_FONT_S;
+//        u8x8.drawString(15, 0, "N");
+//        u8x8.drawString(15, 1, "I");
+//        u8x8.drawString(15, 2, "C");
+//        u8x8.drawString(15, 3, "E");
+    }
+    else if (which == 1) {
+        // this is now a "standard" log screen, given that amperes are enabled
+        SET_FONT_XL;
+        u8x8.drawString(5, 0, "2042");
+        SET_FONT_L;
+        u8x8.drawString(0, 0, "# 42");
+        u8x8.drawString(0, 2, "5:11");
+        u8x8.drawString(13, 1, "MAH");
+        SET_FONT_S;
+        u8x8.drawString(13, 0, "!T1");
+//        u8x8.drawString(13, 0, " OK");
+        // formula power: P = 10*t/c
+        u8x8.drawString(4, 3, "T 12.4V 236W");
+    }
+    else if (which == 2) {
+        // this is now a "standard" log screen, given that amperes are enabled
+        SET_FONT_XL;
+        u8x8.drawString(5, 0, "2200");
+        SET_FONT_L;
+        u8x8.drawString(0, 0, "# 43");
+        u8x8.drawString(0, 2, "5:11");
+        u8x8.drawString(13, 1, "MAH");
+        SET_FONT_S;
+//        u8x8.drawString(13, 0, "!T1");
+        u8x8.drawString(13, 0, " OK");
+        // formula power: P = 10*t/c
+        u8x8.drawString(5, 3, " 12.4V 325W");
+    }
+    else if (which == 3) {
+        // this is now a "standard" log screen, without amperes
+        SET_FONT_XL;
+        u8x8.drawString(5, 0, "5X11");
+        SET_FONT_L;
+        u8x8.drawString(0, 0, "# 44");
+        u8x8.drawString(0, 2, "5:11");
+        u8x8.drawString(13, 1, "MAH");
+        SET_FONT_S;
+        u8x8.drawString(13, 0, " OK");
+//        u8x8.drawString(13, 0, " OK");
+        // formula power: P = 10*t/c
+        u8x8.drawString(5, 3, " 12.4V 236W");
+    }
+    else {
+        u8x8.drawString(0, 0, " !OOPS! ");
+    }
 #endif
 }
