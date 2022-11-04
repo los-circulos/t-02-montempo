@@ -1,4 +1,4 @@
-# t-02 active digital field-programmable electric control line timer with OLED display and optional "telemetry"
+# t-02 active digital field-programmable electric control line timer with OLED display and optional metrics
 
 ## Hardware Build from Scratch -  
 

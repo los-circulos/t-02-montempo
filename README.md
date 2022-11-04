@@ -1,4 +1,4 @@
-# t-02 active digital field-programmable electric control line timer with OLED display and optional "telemetry"
+# t-02 active digital field-programmable electric control line timer with OLED display and optional metrics
 
 ## General documentation, 
 
@@ -9,13 +9,13 @@ Program and schematics to build a timer based on Arduino Nano
  - field programmable: easily change configuration before each flight with a simple DIP switch
    - DIP switch is optional, but then timer will work only in default mode: 98% constant throttle, 3:00 flight time, 
        And cutoffs, is sensors connected: 90C, ...V, ...A
- - OLED display: shows time, configuration, telemetry information. 
+ - OLED display: shows time, configuration, metrics information. 
    - Depending on display size and line length, flight time might be seen during flight
    - various info screens to chose from or to rotate them
    - very easy way to record discharge and voltage drop during flight
    - easy to write "plugins" for different screens 
-   - OLED display is optional. Saves a few grams, but no telemetry info, and configuration is difficult.
- - telemetry: simple sensor boards ad voltage dividers can provide live data
+   - OLED display is optional. Saves a few grams, but no metrics info, and configuration is difficult.
+ - metrics: simple sensor boards ad voltage dividers can provide live data
    - voltage: requires a simple voltage divider. Required for voltage cut-off and constant power.
    - RPM: requires a simple voltage divider and calibration. Required for constant RPM.
    - current: requires current sensing board. Required for discharge metering and constant power.
@@ -27,7 +27,7 @@ Program and schematics to build a timer based on Arduino Nano
    - used to initialize flight and for configuration
    - both work as kill switch during countdown and flight
    - both can be disabled with an extra resistor (if no buttons are present, flight is initiated automatically, but some functions might be disabled, eg. rpm calibration)
- - test mode: adjust throttle and see realtime telemetry info on screen
+ - test mode: adjust throttle and see realtime metrics info on screen
 
 ## Files provided:
 

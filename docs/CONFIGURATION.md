@@ -1,4 +1,4 @@
-# t-02 active digital field-programmable electric control line timer with OLED display and optional "telemetry"
+# t-02 active digital field-programmable electric control line timer with OLED display and optional metrics
 
 Note: this document describes saved configuration and not pre-flicht programming. For latter, check FLYING.md
 
@@ -6,9 +6,9 @@ Saved configuration includes items which rarely change, eg. setting voltage cut-
 The configuration utility allows setting precise (digital) values for each setting and save them. Settings are
 preserved, no battery needed.
 
-The configuration utility also contains a test spin mode. While test spinning, available telemetry data is displayed.
+The configuration utility also contains a test spin mode. While test spinning, available metrics data is displayed.
 The throttle can be adjusted even while the engine is spinning so finding the correct throttle setting is easy.
-This tool can also be used to verify the telemetry data, especially RPMs which are based on saved motor pole count.
+This tool can also be used to verify the metrics data, especially RPMs which are based on saved motor pole count.
 
 Pre-flight programming, on the other hand, lets fine tune throttle, RPM or power and also fly time before each flight.
 
