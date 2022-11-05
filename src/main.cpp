@@ -34,29 +34,105 @@ void setup() {
     throttle.attach(PIN_THROTTLE);
     throttle.writeMicroseconds(0);
 
+    delay(2000);
+    armThrottle();
+    delay(2000);
+
+    setMode(MODE_WELCOME_LOCK);
+
 }
 
+//#define AFTER_SCREEN_DEBUG
+#ifdef AFTER_SCREEN_DEBUG
+
+unsigned int j = 0;
+
+void loop() {
+
+    if (btnAPushed()) {
+        j++;
+        clearScreen();
+    }
+    else if (btnBPushed()) {
+        j = max(0, j-1);
+        clearScreen();
+    }
+    if (j>10) {
+        j = 0;
+    }
+
+    drawAfterScreen(j);
+
+    delay(200);
+
+}
+
+#else
+char buffe[20];
+float ji = 0;
+unsigned long almaja = 0;
 void loop() {
 
     setCurrentTime();
     unsigned int i;
 
-    i = 0;
-    do {
-        if (btnAPushed()) {
-            i++;
-            clearScreen();
+    throttlePcnt(20);
+//    throttlePcnt(50);
+
+#define  BASEV 5.0
+
+//    if (elapsedInMode(100)) {
+    if (elapsedInMode(20)) {
+//    if (elapsedInMode(10)) {
+
+        i = analogRead(PIN_CURRENT);
+        almaja+= i;
+
+//        float jj = (BASEV * i / 512 - BASEV) / 0.132;
+//        float jj = (BASEV * i / 1024 - BASEV/2) / 0.066;
+//        float jj = (BASEV * i / 1024 - BASEV/2) * 15.152;
+        float jj = (BASEV * i / 512 - BASEV) * 7.576;
+        if (jj < 0) {
+            jj = -jj;
         }
-        else if (btnBPushed()) {
-            i = max(0, i-1);
-            clearScreen();
+
+        ji+= jj;
+
+//        if (elapsedInModeCounter % 10 == 0) {
+        if (elapsedInModeCounter % 50 == 0) {
+//        if (elapsedInModeCounter % 100 == 0) {
+            u8x8.setFont(FONT_L);
+//            sprintf(buffe, "%3d %10d ", i, ji);
+            sprintf(buffe, "%3d %10lu", i, almaja);
+            u8x8.drawString(0, 0, buffe);
+//            sprintf(buffe, "%3d %10d", (int)(ji/10), (int)jj);
+            sprintf(buffe, "%6d %6d", (int)(almaja/50), (int)(ji/50));
+//            sprintf(buffe, "%6d %6d", (int)(almaja/100), (int)(ji/100));
+            u8x8.drawString(0, 2, buffe);
+            ji = 0;
+            almaja = 0;
         }
-        if (i>10) {
-            i = 0;
-        }
-        drawAfterScreen(i);
-        delay(200);
-    } while (true);
+
+    }
+
+    return;
+
+    i = analogRead(PIN_VOLT) / INPUT_DIV_VOLT;
+    sprintf(buffe, " %3d    ", i);
+    u8x8.setFont(FONT_L);
+    u8x8.drawString(0, 0, buffe);
+
+    float jj = (BASEV * analogRead(PIN_CURRENT) / 512 - BASEV) / 0.132;
+    if (jj < 0) {
+        jj = -jj;
+    }
+
+//    sprintf(buffe, "  %6d  %6d", ii, jj);
+//    sprintf(buffe, "%4d %4d %4d", (int)(ii*100), (int)(jj*100), analogRead(PIN_CURRENT));
+    sprintf(buffe, "%4d %4d %4d", (int)(jj*100), (int)(jj*100), analogRead(PIN_CURRENT));
+    u8x8.drawString(0, 2, buffe);
+
+    delay(100);
     return;
 
     switch (currentMode) {
@@ -153,6 +229,7 @@ void loop() {
                     throttlePcnt(0);
                 }
                 else {
+//                    readTele();
                     drawRunScreen();
                     throttlePcnt(testValue);
                 }
@@ -227,20 +304,37 @@ void loop() {
                 drawRemainingTime(i);
             }
             break;
+        // draw after info
         case MODE_AFTER:
-            if (elapsedInMode(2000)) {
-                drawAfterScreen((elapsedInModeCounter%3) * 2);
-            }
-            break;
+        // some error happened - cut threshold reached or button pressed. Draw error and also after info
         case MODE_ERR:
-            // some error happened - cut threshold reached or button pressed. Draw error and also after info
-            if (elapsedInMode(2000)) {
-                drawAfterScreen((elapsedInModeCounter%3) * 2 + 1);
+            if (elapsedInMode(200)) {
+                bool drawScreen = true;
+                if (btnAPushed()) {
+                    currentScreen+= 4;
+                }
+                else if (btnBPushed()) {
+                    currentScreen++;
+                }
+                else if (elapsedInModeCounter % 10 == 0) {
+                    currentScreen++;
+                }
+                else {
+                    drawScreen = false;
+                }
+                if (currentScreen > 4) {
+                    currentScreen-= 5;
+                }
+                if (drawScreen) {
+                    drawAfterScreen(currentScreen + (currentMode == MODE_AFTER ? 1 : 0));
+                }
             }
             break;
     }
 
 }
+
+#endif
 
 // some crazy flashing
 void notImplemented() {
@@ -265,13 +359,18 @@ void setMode(int newMode) {
 //            clearScreen();
 //        break;
         case MODE_PREFLIGHT_PROGRAM:
-        case MODE_AFTER:
         case MODE_DELAY_LOCK:
         case MODE_TEST:
             clearScreen();
             break;
         case MODE_TEST_SAVED:
             drawSaved();
+        break;
+        case MODE_AFTER:
+            drawAfterScreen(0);
+        break;
+        case MODE_ERR:
+            drawAfterScreen(0);
         break;
     }
     ledOff();
