@@ -1,4 +1,55 @@
 #include "hardware.h"
+#include "config.h"
+
+//volatile unsigned int rpmCnt = 0;
+//unsigned long rpmConvertLast = 0;
+//// don't convert if last conversion happened more than 6 seconds ago. A 20pole motor would take over 15k rpm to get
+////  the rpm buffer overflow (given there's no base freq value to subtract)
+//#define MAX_CONVERT_MILLIS 5000
+//void rpmISR() {
+//    rpmCnt++;
+//}
+
+void initHardware() {
+
+    pinMode(LED1, OUTPUT);
+
+    // NOTE on the nano these won't work with default pins A6, A7 and these two pins need a pullup resistor
+    if (btnADisabled()) {
+        config.btnAEnabled = false;
+    }
+    else {
+        pinMode(BTN_A, INPUT_PULLUP);
+    }
+    // @todo? - the config value is not even used properly...
+//    if (btnBDisabled() || btnBPushed()) {
+    if (btnBDisabled()) {
+        config.btnBEnabled = false;
+    }
+    else {
+        pinMode(BTN_B, INPUT_PULLUP);
+    }
+
+#ifdef PIN_THROTTLE
+    // this will leave the ESC initialized but not armed
+    throttle.attach(PIN_THROTTLE, THROTTLE_MICROS_MIN, THROTTLE_MICROS_MAX);
+    throttle.writeMicroseconds(0);
+#endif
+
+//#ifdef PIN_VOLT
+//    pinMode(PIN_VOLT, INPUT);
+//#endif
+
+//#ifdef PIN_CURRENT
+//    pinMode(PIN_CURRENT, INPUT);
+//#endif
+
+#ifdef PIN_RPM
+//    pinMode(PIN_RPM, INPUT);
+//    attachInterrupt(digitalPinToInterrupt(PIN_RPM), rpmISR, RISING);
+#endif
+
+}
 
 void ledOn() {
     digitalWrite(LED1, HIGH);
@@ -53,6 +104,9 @@ void throttlePcnt(unsigned int pcnt) {
     // test code - might need it someday
 //    sprintf(tmp, "%d %d ", pcnt, i);
 //    u8x8.drawString(0, 2, tmp );
+}
+void convertRpm() {
+
 }
 
 #ifdef CONFIG_DIP8

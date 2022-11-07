@@ -4,6 +4,10 @@
 #include <Arduino.h>
 #include "Servo.h"
 
+#define  BASEV 5.0
+
+void initHardware();
+
 ///////////////////////////////////////// LEDS          /////////////////////////////////////
 #define LED1 LED_BUILTIN
 
@@ -34,19 +38,29 @@ void armThrottle();
 #define throttleOff() throttle.writeMicroseconds(THROTTLE_MICROS_MIN)
 void throttlePcnt(unsigned int pcnt);
 
-// micros for 0% throttle off, and for calculations reference
+// good min/max values but we'll calibrate the throttle anyway
 #define THROTTLE_MICROS_MIN 1050
-// micros for 100% throttle, too high, and ESC might start to cut out. Theoretical max 2000
 #define THROTTLE_MICROS_MAX 1950
 
 // enable voltage sensing
-//#define PIN_VOLTAGE A0
+#define PIN_VOLT A0
+// @todo maybe make this configurable?
+//#define INPUT_DIV_VOLT 2.623
+// 18.5V * 4.8 = 88.8 this leaves ~15% margin for high voltage (potmeter set too high) detection
+//#define INPUT_DIV_VOLT 35
+//#define INPUT_DIV_VOLT 3.5
+//#define INPUT_DIV_VOLT 4.5
+#define INPUT_DIV_VOLT 4.8
+// volts * 10 over which potmeter is set too low and pin voltage gets near 5V
+#define METRICS_V_MAX 185
 
 // enable current sensing
-//#define PIN_CURRENT A1
+#define PIN_CURRENT A1
 
 // enable RPM sensing
-//#define PIN_RPM A2
+#define PIN_RPM PIN2
+// @todo make this a meaningful threshold and set rpm 0 if under
+#define RPM_MIN 1
 
 // enable temperature sensing
 //#define PIN_TEMP PIN_A3

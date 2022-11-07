@@ -28,24 +28,6 @@ void initConfig() {
         }
     }
 
-    pinMode(LED1, OUTPUT);
-
-    // NOTE on the nano these won't work with default pins A6, A7 and these two pins need a pullup resistor
-    if (btnADisabled()) {
-        config.btnAEnabled = false;
-    }
-    else {
-        pinMode(BTN_A, INPUT_PULLUP);
-    }
-    // @todo? - the config value is not even used properly...
-//    if (btnBDisabled() || btnBPushed()) {
-    if (btnBDisabled()) {
-        config.btnBEnabled = false;
-    }
-    else {
-        pinMode(BTN_B, INPUT_PULLUP);
-    }
-
 #endif
 
 }

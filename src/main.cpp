@@ -4,12 +4,24 @@
 #include "main.h"
 #include "mytime.h"
 #include "saved.h"
+#include "metrics.h"
 #include <screen.h>
+
+//#define AFTER_SCREEN_DEBUG
+//#define RPM_DEBUG
 
 uint8_t currentMode = MODE_WELCOME_LOCK;
 unsigned long currentModeStarted = 0;
 // elapsed incremental cycles since last mode change. !! use only through elapsedInMode().
 unsigned long elapsedInModeCounter = 0;
+
+#ifdef RPM_DEBUG
+int xPcnt = 5;
+volatile unsigned int rpmCnt = 0;
+void rpmISR() {
+    rpmCnt++;
+}
+#endif
 
 #define NOT_IMPLEMENTED (saved.holdMode != HOLD_MODE_FLAT_THROTTLE)
 void notImplemented();
@@ -24,27 +36,28 @@ void setup() {
 
     initSaved();
     initConfig();
+    initHardware();
     initScreen();
 
     readConfig();
 
     drawWelcome();
 
-    // this will leave the ESC initialized but not armed
-    throttle.attach(PIN_THROTTLE);
-    throttle.writeMicroseconds(0);
-
+#ifdef RPM_DEBUG
     delay(2000);
     armThrottle();
     delay(2000);
+    throttlePcnt(xPcnt);
+    attachInterrupt(digitalPinToInterrupt(PIN_RPM), rpmISR, RISING);
+#endif
 
     setMode(MODE_WELCOME_LOCK);
 
+    u8x8.setFont(FONT_L);
+
 }
 
-//#define AFTER_SCREEN_DEBUG
 #ifdef AFTER_SCREEN_DEBUG
-
 unsigned int j = 0;
 
 void loop() {
@@ -66,74 +79,39 @@ void loop() {
     delay(200);
 
 }
-
 #else
-char buffe[20];
-float ji = 0;
-unsigned long almaja = 0;
+#ifdef RPM_DEBUG
+char bufe[20];
+void loop() {
+
+    setCurrentTime();
+//    unsigned int i;
+
+    if (elapsedInMode(1000)) {
+        if (btnAPushed()) {
+            xPcnt++;
+        }
+        else if (btnBPushed()) {
+            xPcnt--;
+        }
+        sprintf(bufe, "%15u", rpmCnt);
+        u8x8.drawString(0, 0, bufe);
+//        sprintf(bufe, "%15d", ((int)(cc / 30)));
+        sprintf(bufe, "%15d ", xPcnt);
+        u8x8.drawString(0, 2, bufe);
+        throttlePcnt(xPcnt);
+//        cc = 0;
+        rpmCnt = 0;
+    }
+    return;
+
+}
+#else
+
 void loop() {
 
     setCurrentTime();
     unsigned int i;
-
-    throttlePcnt(20);
-//    throttlePcnt(50);
-
-#define  BASEV 5.0
-
-//    if (elapsedInMode(100)) {
-    if (elapsedInMode(20)) {
-//    if (elapsedInMode(10)) {
-
-        i = analogRead(PIN_CURRENT);
-        almaja+= i;
-
-//        float jj = (BASEV * i / 512 - BASEV) / 0.132;
-//        float jj = (BASEV * i / 1024 - BASEV/2) / 0.066;
-//        float jj = (BASEV * i / 1024 - BASEV/2) * 15.152;
-        float jj = (BASEV * i / 512 - BASEV) * 7.576;
-        if (jj < 0) {
-            jj = -jj;
-        }
-
-        ji+= jj;
-
-//        if (elapsedInModeCounter % 10 == 0) {
-        if (elapsedInModeCounter % 50 == 0) {
-//        if (elapsedInModeCounter % 100 == 0) {
-            u8x8.setFont(FONT_L);
-//            sprintf(buffe, "%3d %10d ", i, ji);
-            sprintf(buffe, "%3d %10lu", i, almaja);
-            u8x8.drawString(0, 0, buffe);
-//            sprintf(buffe, "%3d %10d", (int)(ji/10), (int)jj);
-            sprintf(buffe, "%6d %6d", (int)(almaja/50), (int)(ji/50));
-//            sprintf(buffe, "%6d %6d", (int)(almaja/100), (int)(ji/100));
-            u8x8.drawString(0, 2, buffe);
-            ji = 0;
-            almaja = 0;
-        }
-
-    }
-
-    return;
-
-    i = analogRead(PIN_VOLT) / INPUT_DIV_VOLT;
-    sprintf(buffe, " %3d    ", i);
-    u8x8.setFont(FONT_L);
-    u8x8.drawString(0, 0, buffe);
-
-    float jj = (BASEV * analogRead(PIN_CURRENT) / 512 - BASEV) / 0.132;
-    if (jj < 0) {
-        jj = -jj;
-    }
-
-//    sprintf(buffe, "  %6d  %6d", ii, jj);
-//    sprintf(buffe, "%4d %4d %4d", (int)(ii*100), (int)(jj*100), analogRead(PIN_CURRENT));
-    sprintf(buffe, "%4d %4d %4d", (int)(jj*100), (int)(jj*100), analogRead(PIN_CURRENT));
-    u8x8.drawString(0, 2, buffe);
-
-    delay(100);
-    return;
 
     switch (currentMode) {
         case MODE_WELCOME_LOCK:
@@ -224,6 +202,7 @@ void loop() {
                 // for testing only
 //                if ((testMode != TESTMODE_SPIN)) {
                 readTestConfig();
+                readMetrics();
                 if ((testMode != TESTMODE_SPIN) || !ANY_BUTTON_PUSHED) {
                     setMode(MODE_WELCOME_LOCK);
                     throttlePcnt(0);
@@ -238,6 +217,7 @@ void loop() {
         case MODE_PREFLIGHT_PROGRAM:
             if (elapsedInMode(200)) {
                 readConfig();
+                readMetrics();
                 drawPreflight(config);
                 confirmation();
             }
@@ -334,6 +314,7 @@ void loop() {
 
 }
 
+#endif
 #endif
 
 // some crazy flashing

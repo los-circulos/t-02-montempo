@@ -3,6 +3,7 @@
 #include "screen.h"
 #include "mytime.h"
 #include "saved.h"
+#include "metrics.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // screen hardware specific START
@@ -20,7 +21,7 @@ U8X8_SSD1306_128X32_UNIVISION_HW_I2C u8x8(/* reset=*/ U8X8_PIN_NONE);   // Adafr
 // screen hardware specific END
 ////////////////////////////////////////////////////////////////////////////////
 
-int currentScreen = SCREEN_PRE;
+unsigned char currentScreen = SCREEN_PRE;
 
 // should never be more than 17, but let's play safe
 char buffer[20];
@@ -166,9 +167,12 @@ void drawPreflight(configT config) {
         u8x8.drawString(0, 2, buffer);
     }
 
-    float u = 12.456;
-    dtostrf(u, 2, 2, floatBuffer);
-    sprintf(buffer, "V  %s", floatBuffer);
+    if (metrics.volts > METRICS_V_MAX) {
+        sprintf(buffer, "V OVER!");
+    }
+    else {
+        sprintf(buffer, "V  %4d", metrics.volts);
+    }
     u8x8.drawString(0,0, buffer);
 
     sprintf(buffer, "%2d:%02d", config.timeFly / 60, config.timeFly % 60);
@@ -245,9 +249,12 @@ void drawRunScreen() {
 #ifdef SCREEN_32X4
     SET_FONT_L;
 //    u8x8.drawString(0, 0, "THR __  V __._");
-    sprintf(buffer, "THR %2d  V __._", testValue);
+    sprintf(buffer, "THR %2d  V %2d.%1d", testValue, metrics.volts/10, metrics.volts%10);
     u8x8.drawString(0, 0, buffer);
-    //    u8x8.drawString(0, 2, "RPM ____ A ___");
+//    sprintf(buffer,  "RPM ____ A %2d.%1d", metrics.amps/10, metrics.amps%10);
+//    sprintf(buffer,  "RPM ____ A %4d", metrics.amps);
+    sprintf(buffer,  "RPM %4d A %4d", metrics.rpm, metrics.amps);
+    u8x8.drawString(0, 2, buffer);
 
 //    u8x8.drawString(0, 0, "THR __ PWR ___");
 //    u8x8.drawString(0, 1, "T1__ T2__ P___");
@@ -256,95 +263,70 @@ void drawRunScreen() {
 }
 void drawAfterScreen(unsigned char which) {
 
+    clearScreen();
+
 #ifdef SCREEN_32X4
-    SET_FONT_XL;
+    SET_FONT_L;
     if (which == 0) {
-        u8x8.drawString(0, 0, "WELLDONE");
-    }
-//    else if (which == 1) {
-//        u8x8.drawString(0, 0, " 1800mAh");
-//        SET_FONT_L;
-//        u8x8.drawString(0, 1, "        ");
-//    }
-//    else if (which == 2) {
-//        u8x8.drawString(0, 0, "   23:23");
-//        SET_FONT_L;
-//        u8x8.drawString(0, 1, "        ");
-//    }
-    else if (which == 4) {
+        u8x8.drawString(0, 0, "# 41");
+        SET_FONT_XL;
+        u8x8.drawString(4, 0, "!OOPS!");
         SET_FONT_S;
-        u8x8.drawString(0, 0, "     MIN AVG MAX");
-        u8x8.drawString(0, 1, "THR   88  90  90");
-        u8x8.drawString(0, 2, "AMP   12  14  20");
-        u8x8.drawString(0, 3, "V   14.8    16.8");
-    }
-    else if (which == 5) {
-        SET_FONT_S;
-        u8x8.drawString(0, 0, "  THR T1 T2 VOLT");
-        u8x8.drawString(0, 1, "HI 90 56 64 16.8");
-        u8x8.drawString(0, 2, "AV    30 32     ");
-        u8x8.drawString(0, 3, "LO 88 25 25 14.8");
-    }
-    else if (which == 6) {
-        SET_FONT_L;
-        u8x8.drawString(0, 0, "V  16.8 - 14.8  ");
-        u8x8.drawString(0, 2, "P  320 300 250  ");
-    }
-    else if (which == 7) {
-        SET_FONT_L;
-//        u8x8.drawString(0, 0, "5:11 1.800AH 11C");
-        u8x8.drawString(0, 0, "14.8 V  1800 MAH");
-        u8x8.drawString(0, 2, "5:11 11C 33C 22C");
-//        SET_FONT_S;
-//        u8x8.drawString(15, 0, "N");
-//        u8x8.drawString(15, 1, "I");
-//        u8x8.drawString(15, 2, "C");
-//        u8x8.drawString(15, 3, "E");
+        u8x8.drawString(0, 3, "2:32  T1CUT  62C");
     }
     else if (which == 1) {
-        // this is now a "standard" log screen, given that amperes are enabled
+//        SET_FONT_L;
+        u8x8.drawString(0, 0, "# 43");
+        u8x8.drawString(0, 2, "5:11");
+        u8x8.drawString(13, 1, "MAH");
         SET_FONT_XL;
-        u8x8.drawString(5, 0, "2042");
-        SET_FONT_L;
+        u8x8.drawString(5, 0, "2200");
+        SET_FONT_S;
+//        u8x8.drawString(13, 0, "!T1");
+        u8x8.drawString(13, 0, " OK");
+        // formula power: P = 10*t/c
+        u8x8.drawString(4, 3, "S 12.4V 325W");
+    }
+    else if (which == 2) {
+//        SET_FONT_L;
+        u8x8.drawString(0, 0, "V  14.8 ... 16.8");
+        u8x8.drawString(0, 2, "A   20   25   50");
+    }
+    else if (which == 3) {
+//        SET_FONT_L;
+        u8x8.drawString(0, 0, "P  250  300  320");
+        u8x8.drawString(0, 2, "R 11.1 12.5 13.1");
+    }
+    else if (which == 4) {
+//        SET_FONT_L;
+        u8x8.drawString(0, 0, "T1  16   32   34");
+        u8x8.drawString(0, 2, "T2  16   32   34");
+    }
+    /*
+    else if (which == 5) {
+//        SET_FONT_L;
+        u8x8.drawString(0, 0, "14.8 V  1800 MAH");
+        u8x8.drawString(0, 2, "5:11 11C 33C 22C");
+    }
+    else if (which == 6) {
+//        SET_FONT_L;
         u8x8.drawString(0, 0, "# 42");
         u8x8.drawString(0, 2, "5:11");
         u8x8.drawString(13, 1, "MAH");
+        SET_FONT_XL;
+        u8x8.drawString(5, 0, "2042");
         SET_FONT_S;
         u8x8.drawString(13, 0, "!T1");
 //        u8x8.drawString(13, 0, " OK");
         // formula power: P = 10*t/c
         u8x8.drawString(4, 3, "T 12.4V 236W");
     }
-    else if (which == 2) {
-        // this is now a "standard" log screen, given that amperes are enabled
-        SET_FONT_XL;
-        u8x8.drawString(5, 0, "2200");
-        SET_FONT_L;
-        u8x8.drawString(0, 0, "# 43");
-        u8x8.drawString(0, 2, "5:11");
-        u8x8.drawString(13, 1, "MAH");
-        SET_FONT_S;
-//        u8x8.drawString(13, 0, "!T1");
-        u8x8.drawString(13, 0, " OK");
-        // formula power: P = 10*t/c
-        u8x8.drawString(5, 3, " 12.4V 325W");
-    }
-    else if (which == 3) {
-        // this is now a "standard" log screen, without amperes
-        SET_FONT_XL;
-        u8x8.drawString(5, 0, "5X11");
-        SET_FONT_L;
-        u8x8.drawString(0, 0, "# 44");
-        u8x8.drawString(0, 2, "5:11");
-        u8x8.drawString(13, 1, "MAH");
-        SET_FONT_S;
-        u8x8.drawString(13, 0, " OK");
-//        u8x8.drawString(13, 0, " OK");
-        // formula power: P = 10*t/c
-        u8x8.drawString(5, 3, " 12.4V 236W");
-    }
+     */
     else {
-        u8x8.drawString(0, 0, " !OOPS! ");
+        SET_FONT_XL;
+        u8x8.drawString(0, 0, "WELLDONE");
+        SET_FONT_S;
+        u8x8.drawString(0, 3, "   @LOS.CIRCULOS");
     }
 #endif
 }
