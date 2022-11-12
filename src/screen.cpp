@@ -12,6 +12,7 @@
 
 U8X8_SSD1306_128X32_UNIVISION_HW_I2C u8x8(/* reset=*/ U8X8_PIN_NONE);   // Adafruit ESP8266/32u4/ARM Boards + FeatherWing OLED
 
+#define SET_FONT_XXL u8x8.setFont(FONT_XXL)
 #define SET_FONT_XL u8x8.setFont(FONT_XL)
 #define SET_FONT_L u8x8.setFont(FONT_L)
 #define SET_FONT_S u8x8.setFont(FONT_S)
@@ -94,7 +95,7 @@ void drawNotImplemented() {
     }
 }
 void drawRemainingTime(unsigned int secsRemain) {
-    char c = blinkLed(secsRemain < 5 ? BLINK_FAST : BLINK_NORMAL) ? '.' : ' ';
+    char c = blinkLed(secsRemain < 5 ? BLINK_FAST : BLINK_NORMAL) ? ' ' : '.';
     if (secsRemain > 59) {
         sprintf(
                 buffer,
@@ -115,6 +116,8 @@ void drawRemainingTime(unsigned int secsRemain) {
 #ifdef SCREEN_32X4
     SET_FONT_XL;
     u8x8.drawString(4, 0, buffer);
+//    SET_FONT_XXL;
+//    u8x8.drawString(0, 0, buffer);
 #endif
 }
 void drawSaved() {

@@ -12,10 +12,13 @@
 //extern U8X8_SSD1306_128X32_UNIVISION_HW_I2C u8x8(/* reset=*/ U8X8_PIN_NONE);   // Adafruit ESP8266/32u4/ARM Boards + FeatherWing OLED
 extern U8X8_SSD1306_128X32_UNIVISION_HW_I2C u8x8;
 
+#define FONT_XXL u8x8_font_courB24_3x4_n
+//#define FONT_XXL u8x8_font_inr21_2x4_n
+//#define FONT_XXL u8x8_font_inb21_2x4_n
+#define FONT_XL u8x8_font_profont29_2x3_r
+#define FONT_L u8x8_font_8x13B_1x2_f
 #define FONT_S u8x8_font_amstrad_cpc_extended_u
 //#define FONT_S u8x8_font_amstrad_cpc_extended_r
-#define FONT_L u8x8_font_8x13B_1x2_f
-#define FONT_XL u8x8_font_profont29_2x3_r
 
 #endif
 ////////////////////////////////////////////////////////////////////////////////

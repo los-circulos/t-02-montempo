@@ -48,6 +48,9 @@ void setup() {
     armThrottle();
     delay(2000);
     throttlePcnt(xPcnt);
+#endif
+
+#ifdef PIN_RPM
     attachInterrupt(digitalPinToInterrupt(PIN_RPM), rpmISR, RISING);
 #endif
 
@@ -115,7 +118,6 @@ void loop() {
 
     switch (currentMode) {
         case MODE_WELCOME_LOCK:
-            // @todo during welcome lock I should show previous flight values
             if (!ANY_BUTTON_PUSHED) {
                 setMode(MODE_WELCOME_COUNTDOWN);
                 eraseLogoLock();
@@ -199,16 +201,14 @@ void loop() {
             break;
         case MODE_TEST_SPIN:
             if (elapsedInMode(200)) {
-                // for testing only
-//                if ((testMode != TESTMODE_SPIN)) {
                 readTestConfig();
                 readMetrics();
+                sumMetrics();
                 if ((testMode != TESTMODE_SPIN) || !ANY_BUTTON_PUSHED) {
                     setMode(MODE_WELCOME_LOCK);
                     throttlePcnt(0);
                 }
                 else {
-//                    readTele();
                     drawRunScreen();
                     throttlePcnt(testValue);
                 }
@@ -331,6 +331,7 @@ void setMode(int newMode) {
     elapsedInModeCounter = 0;
     switch (newMode) {
         case MODE_TEST_SPIN:
+            resetMetrics();
         case MODE_DELAY:
             if (!NOT_IMPLEMENTED) {
                 drawArming();

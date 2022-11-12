@@ -1,25 +1,66 @@
 #include "metrics.h"
 #include "hardware.h"
+#include "mytime.h"
+#include "saved.h"
 
 metricsT metrics;
 metricsSumT metricsSum;
 
+#ifdef PIN_RPM
+volatile unsigned int rpmCnt = 0;
+void rpmISR() {
+    rpmCnt++;
+}
+#endif
+
 void readMetrics() {
+    int i;
 #ifdef PIN_VOLT
     metrics.volts = analogRead(PIN_VOLT) / INPUT_DIV_VOLT;
 #endif
 #ifdef PIN_CURRENT
-    int i;
     i = analogRead(PIN_CURRENT);
-////    (BASEV * analogRead(PIN_CURRENT) / 1024 - BASEV/2) / 0.066;
-    metrics.amps = (BASEV * i / 512 - BASEV) * 75.76;
+////    (BASEV * analogRead(PIN_CURRENT) / 1024 - BASEV/2) / 0.066 * 5;
+    metrics.amps = (BASEV * i / 512 - BASEV) * 37.888;
 #endif
-//    metrics.amps = analogRead(PIN_CURRENT);
+#ifdef PIN_RPM
+    i = rpmCnt;
+    rpmCnt = 0;
+//    metrics.rpm = i * 60 / saved.poles *1000 / (currentTime - metrics.lastTime);
+    metrics.rpm = i * 60000 / saved.poles / (currentTime - metrics.lastTime);
+#ifdef RPM_MIN
+    if (metrics.rpm < RPM_MIN) {
+        metrics.rpm = 0;
+    }
+#endif
+#endif
+    metrics.lastTime = currentTime;
 }
 
-void readAmps() {
-//    int i = analogRead(PIN_CURRENT);
-//    float jj = (BASEV * analogRead(PIN_CURRENT) / 1024 - BASEV/2) / 0.066;
-//    float jj = (BASEV * analogRead(PIN_CURRENT) / 512 - BASEV) / 0.132;
-//    float jj = (BASEV * i / 512 - BASEV) * 7.576;
+// call this only from the loop as it needs currentTime (set in each loop but not in setup)
+void resetMetrics() {
+    // this yields 60bytes less compiled atm than setting each field
+    memset(&metricsSum, 0, sizeof metricsSum);
+    // this yields much because the added initial values in .h
+//    metricsSum = {};
+    metricsSum.startMillis= currentTime;
+}
+
+void sumMetrics() {
+#ifdef PIN_VOLT
+    metricsSum.voltsMin = min(metricsSum.voltsMin, metrics.volts);
+    metricsSum.voltsMax = max(metricsSum.voltsMax, metrics.volts);
+    metricsSum.voltsSum+= metrics.volts;
+#endif
+#ifdef PIN_CURRENT
+    metricsSum.ampsMin = min(metricsSum.ampsMin, metrics.amps);
+    metricsSum.ampsMax = max(metricsSum.ampsMax, metrics.amps);
+    metricsSum.ampsSum+= metrics.amps;
+    metricsSum.lastMillis = currentTime;
+    metricsSum.summedSamples++;
+#endif
+#ifdef PIN_RPM
+    metricsSum.rpmMin = min(metricsSum.rpmMin, metrics.rpm);
+    metricsSum.rpmMax = max(metricsSum.rpmMax, metrics.rpm);
+#endif
 }

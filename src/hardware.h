@@ -43,13 +43,8 @@ void throttlePcnt(unsigned int pcnt);
 #define THROTTLE_MICROS_MAX 1950
 
 // enable voltage sensing
-#define PIN_VOLT A0
-// @todo maybe make this configurable?
-//#define INPUT_DIV_VOLT 2.623
+//#define PIN_VOLT A0
 // 18.5V * 4.8 = 88.8 this leaves ~15% margin for high voltage (potmeter set too high) detection
-//#define INPUT_DIV_VOLT 35
-//#define INPUT_DIV_VOLT 3.5
-//#define INPUT_DIV_VOLT 4.5
 #define INPUT_DIV_VOLT 4.8
 // volts * 10 over which potmeter is set too low and pin voltage gets near 5V
 #define METRICS_V_MAX 185
