@@ -26,7 +26,6 @@ struct configT {
     bool holdRPM = false;
     unsigned int power = 300;
     bool holdPower = false;
-    bool runUntilCutoff = false;
 #ifdef DEVMODE
 //    unsigned int timeDelay = 10;
     unsigned int timeDelay = 3;

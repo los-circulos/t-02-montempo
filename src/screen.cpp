@@ -96,10 +96,8 @@ void drawNotImplemented() {
     }
 }
 void drawRemainingTime(unsigned int secsRemain) {
-//    char c = blinkLed(secsRemain < 5 ? BLINK_FAST : BLINK_NORMAL) ? ' ' : '.';
 //    blinkLed(secsRemain < 5 ? BLINK_FAST : BLINK_SLOW);
 #ifdef SCREEN_32X4
-//    // @todo this shouldn't be here but in calling method?
     if (secsRemain > 59) {
         sprintf(
                 buffer,
@@ -120,10 +118,6 @@ void drawRemainingTime(unsigned int secsRemain) {
 //    u8x8.drawString(1, 0, buffer);
     SET_FONT_XL;
     u8x8.drawString(3, 0, buffer);
-//    sprintf(buffer, "%c", c);
-//    sprintf(buffer, "%c", (secsRemain % 2 > 0 ? ' ' : '.'));
-//    u8x8.drawString(11, 0, buffer);
-//    u8x8.drawString(11, 1, buffer);
 #endif
 
 }
@@ -278,13 +272,15 @@ void drawRunScreen(int secsRemain) {
     // flash current value with inverse when not rotating screens. Not sure if it's of any use.
     // indeed only useful when there is no visible in-flight led but the screen is visible
 //    if (!config.rotateScreens) {
-//        if (secsRemain % 2 == 0) {
-//            u8x8.inverse();
-//        }
-//        else {
-//            u8x8.noInverse();
-//        }
+    // plan B: flash value when flying until battery time
+//    if ((config.timeFly == 0) && (secsRemain % 2 == 0)) {
+//        u8x8.inverse();
 //    }
+//    else {
+//        u8x8.noInverse();
+//    }
+    // for now, no inverse play
+    u8x8.noInverse();
 
     drawRemainingTime(secsRemain);
 
@@ -318,7 +314,6 @@ void drawRunScreen(int secsRemain) {
 
     }
 
-    u8x8.noInverse();
 #endif
 
 #ifdef SCREEN_32X4_OLD

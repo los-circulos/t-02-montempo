@@ -45,8 +45,6 @@ void readConfig() {
     i = (readDips(7) - readDips(4)) / 16;
     config.timeFly = flyTimeValues[i];
 
-    config.runUntilCutoff = config.timeFly == 0;
-
     // @todo screen rotate delay should be read from eprom (?)
     // @todo default screen should be read from eprom
 

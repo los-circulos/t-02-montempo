@@ -273,6 +273,7 @@ void loop() {
                 return;
             }
 
+            // loop every 0.1sec
             if (elapsedInMode(100)) {
 
                 readMetrics();
@@ -284,7 +285,7 @@ void loop() {
                 // draw remaining / elapsed time
                 i = (currentTime - currentModeStarted) / 1000;
                 // remaining time is flight time minus soft start time (elapsed already) minus elapsed time
-                if (!config.runUntilCutoff) {
+                if (config.timeFly > 0) {
                     i = config.timeFly - config.softStartTime - i;
                 }
                 // when using soft start and incremental time, add it to elapsed time (twice to increment previous deduction)
@@ -299,8 +300,8 @@ void loop() {
                     ledOff();
                 }
 
+                // update screen every 0.5sec
                 if ((elapsedInModeCounter % 5) == 0) {
-//                    drawRemainingTime(i);
                     drawRunScreen(i);
                 }
             }
