@@ -27,6 +27,7 @@ unsigned char currentScreen = SCREEN_PRE;
 // should never be more than 17, but let's play safe
 char buffer[20];
 char floatBuffer[6];
+char progressBarChars[4] = {'>','#','#',' '};
 
 char *testModeLabels[] = {"MOTOR", "SMART", "T1CUT", "T2CUT", "V CUT", "A CUT", "MODE ", "POLES"};
 char testModeUnits[] = "%%CCVA P";
@@ -99,12 +100,6 @@ void drawRemainingTime(unsigned int secsRemain) {
 //    blinkLed(secsRemain < 5 ? BLINK_FAST : BLINK_SLOW);
 #ifdef SCREEN_32X4
 //    // @todo this shouldn't be here but in calling method?
-//    if (secsRemain % 2 == 0) {
-//        u8x8.inverse();
-//    }
-//    else {
-//        u8x8.noInverse();
-//    }
     if (secsRemain > 59) {
         sprintf(
                 buffer,
@@ -121,8 +116,10 @@ void drawRemainingTime(unsigned int secsRemain) {
         );
     }
 
+//    SET_FONT_XXL;
+//    u8x8.drawString(1, 0, buffer);
     SET_FONT_XL;
-    u8x8.drawString(6, 0, buffer);
+    u8x8.drawString(3, 0, buffer);
 //    sprintf(buffer, "%c", c);
 //    sprintf(buffer, "%c", (secsRemain % 2 > 0 ? ' ' : '.'));
 //    u8x8.drawString(11, 0, buffer);
@@ -276,10 +273,55 @@ void drawTestRunScreen() {
 }
 void drawRunScreen(int secsRemain) {
 
-    drawRemainingTime(secsRemain);
-
 #ifdef SCREEN_32X4
 
+    // flash current value with inverse when not rotating screens. Not sure if it's of any use.
+    // indeed only useful when there is no visible in-flight led but the screen is visible
+//    if (!config.rotateScreens) {
+//        if (secsRemain % 2 == 0) {
+//            u8x8.inverse();
+//        }
+//        else {
+//            u8x8.noInverse();
+//        }
+//    }
+
+    drawRemainingTime(secsRemain);
+
+    // draw progress
+    if (config.timeFly > 0) {
+        // timeFly/16 = (16-secsRemain)/x
+        // x = 64 - secsRemain*64/timeFly -1 (-1 so printing won't overflow on secsRemain=0)
+        secsRemain = 63 - secsRemain*64/config.timeFly;
+
+        int i = secsRemain % 4;
+
+        buffer[0] = progressBarChars[i];
+        buffer[1] = 0;
+
+        if (i > 1) {
+            u8x8.inverse();
+        }
+        else {
+            u8x8.noInverse();
+        }
+
+        i = secsRemain / 4;
+
+        SET_FONT_S;
+        u8x8.drawString(i, 3, buffer);
+
+        u8x8.inverse();
+        for (i--; i>0; i--) {
+            u8x8.drawString(i, 3, " ");
+        }
+
+    }
+
+    u8x8.noInverse();
+#endif
+
+#ifdef SCREEN_32X4_OLD
 //    SET_FONT_S;
 
     if (metrics.volts > 0) {
@@ -297,16 +339,26 @@ void drawRunScreen(int secsRemain) {
     u8x8.drawString(2, 1, &buffer[10]);
 
     if (metrics.amps > 0) {
-        sprintf(buffer, "%2d.%1dA", metrics.amps/10, metrics.amps%10);
+        sprintf(buffer, "%2d %1d", metrics.amps/10, metrics.amps%10);
+        sprintf(&buffer[10], "A");
     }
     else {
         sprintf(buffer, "     ");
+        sprintf(&buffer[10], " ");
     }
     SET_FONT_L;
     u8x8.drawString(0, 2, buffer);
 
-    // @todo temps
+//    u8x8.drawString(5, 0, "10 8");
+//    u8x8.drawString(5, 0, "350");
+//    u8x8.drawString(5, 2, "78%");
 
+    SET_FONT_S;
+    u8x8.drawString(2, 3, &buffer[10]);
+//    u8x8.drawString(5, 1, "K");
+
+
+    // @todo temps
 #endif
 
 }

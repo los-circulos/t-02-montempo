@@ -130,7 +130,11 @@ void loop() {
             if (ANY_BUTTON_PUSHED) {
                 setMode(MODE_WELCOME_LOCK);
             }
+#ifdef DEVMODE
+            else if (elapsedInModeCounter > 2) {
+#else
             else if (elapsedInModeCounter > 8) {
+#endif
                 if (config.testMode) {
                     setMode(MODE_TEST);
                 }
@@ -415,7 +419,11 @@ void countDown(char nextMode) {
         setMode(currentMode - 1);
         drawFlyConfirmation(false);
     }
+#ifdef DEVMODE
+    else if (elapsedInModeCounter > 3) {
+#else
     else if (elapsedInModeCounter > 11) {
+#endif
         setMode(nextMode);
     }
     else if (elapsedInMode(DELAY_COUNTDOWN)) {
