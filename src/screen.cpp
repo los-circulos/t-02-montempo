@@ -96,32 +96,38 @@ void drawNotImplemented() {
 }
 void drawRemainingTime(unsigned int secsRemain) {
 //    char c = blinkLed(secsRemain < 5 ? BLINK_FAST : BLINK_NORMAL) ? ' ' : '.';
-    char c = blinkLed(secsRemain < 5 ? BLINK_FAST : BLINK_SLOW) ? ' ' : '.';
+//    blinkLed(secsRemain < 5 ? BLINK_FAST : BLINK_SLOW);
 #ifdef SCREEN_32X4
-    SET_FONT_XL;
+//    // @todo this shouldn't be here but in calling method?
+//    if (secsRemain % 2 == 0) {
+//        u8x8.inverse();
+//    }
+//    else {
+//        u8x8.noInverse();
+//    }
     if (secsRemain > 59) {
-        sprintf(buffer, "%2d", secsRemain / 60);
-        u8x8.drawString(7, 0, buffer);
-    }
-    else if (secsRemain == 59) {
-        u8x8.drawString(7, 0, "  ");
-    }
-
-    if (secsRemain > 59) {
-        sprintf(buffer, "%02d", secsRemain % 60);
+        sprintf(
+                buffer,
+                "%2d.%02d",
+                secsRemain / 60,
+                secsRemain % 60
+        );
     }
     else {
-        sprintf(buffer, "%2d", secsRemain % 60);
+        sprintf(
+                buffer,
+                "  .%2d",
+                secsRemain % 60
+        );
     }
-    u8x8.drawString(12, 0, buffer);
 
-//    SET_FONT_XXL;
-//    u8x8.drawString(0, 0, buffer);
+    SET_FONT_XL;
+    u8x8.drawString(6, 0, buffer);
     SET_FONT_S;
 //    sprintf(buffer, "%c", c);
-    sprintf(buffer, "%c", (secsRemain % 2 > 0 ? ' ' : '.'));
-    u8x8.drawString(11, 0, buffer);
-    u8x8.drawString(11, 1, buffer);
+//    sprintf(buffer, "%c", (secsRemain % 2 > 0 ? ' ' : '.'));
+//    u8x8.drawString(11, 0, buffer);
+//    u8x8.drawString(11, 1, buffer);
 #endif
 
 }

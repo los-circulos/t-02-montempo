@@ -235,20 +235,25 @@ void loop() {
             }
             break;
         case MODE_DELAY:
+            i = config.timeDelay - (currentTime - currentModeStarted) / 1000;
             if (NOT_IMPLEMENTED) {
                 notImplemented();
                 return;
             }
             else if (ANY_BUTTON_PUSHED) {
                 setMode(MODE_PREFLIGHT_PROGRAM);
+                return;
             }
-            // we increment elapsedInModeCounter twice a sec, so we divide by 2
-            else if (elapsedInModeCounter / 10 >= config.timeDelay) {
+            if (i == 0) {
+                drawRemainingTime(i);
+                ledOn();
+                delay(1000);
                 setMode(MODE_FLY);
             }
-            // NOTE this has to be in sync with BLINK_FAST blinking, hence the high rate
+            // NOTE this has to be in sync with BLINK_FAST blinking, hence the otherwise unnecessarily high rate
             else if (elapsedInMode(100)) {
-                drawRemainingTime(config.timeDelay - (currentTime - currentModeStarted) / 1000);
+                drawRemainingTime(i);
+                blinkLed(i < 5 ? BLINK_FAST : BLINK_SLOW);
             }
             break;
         // @todo soft start?
@@ -263,9 +268,10 @@ void loop() {
                 setMode(MODE_ERR);
                 return;
             }
-            // this makes a funny fastflash-pause-fastflash-pause pattern
-            ledOn();
+
             if (elapsedInMode(100)) {
+
+                readMetrics();
 
                 // update throttle - currently only fixed throttle
                 i = config.throttle;
@@ -281,7 +287,17 @@ void loop() {
                 else {
                     i+= 2*config.softStartTime;
                 }
-                drawRemainingTime(i);
+
+                if ((i < 5) || ((elapsedInModeCounter % 10) < 5)) {
+                    blinkLed(BLINK_FAST);
+                }
+                else {
+                    ledOff();
+                }
+
+                if ((elapsedInModeCounter % 5) == 0) {
+                    drawRemainingTime(i);
+                }
             }
             break;
         // draw after info
