@@ -124,33 +124,6 @@ void drawRemainingTime(unsigned int secsRemain) {
     u8x8.drawString(11, 1, buffer);
 #endif
 
-    int i;
-//    memset(&buffer, 0, 20);
-//    for (i=0; i<secsRemain/4; i++) {
-//        buffer[i] = '#';
-//    }
-//    buffer[i] = 0;
-//    i = secsRemain%4;
-    secsRemain = 64 - secsRemain%64;
-    i = secsRemain % 4;
-    if ((i == 0) || (i == 3)) {
-        buffer[0] = ' ';
-    }
-    else {
-        buffer[0] = '#';
-    }
-    buffer[1] = 0;
-    if (i > 1) {
-        u8x8.inverse();
-    }
-    else {
-        u8x8.noInverse();
-    }
-    i = secsRemain / 4;
-    if (i<16) {
-        u8x8.drawString(i, 3, buffer);
-    }
-    u8x8.noInverse();
 }
 void drawSaved() {
     clearScreen();
