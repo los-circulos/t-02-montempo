@@ -26,12 +26,15 @@ unsigned char currentScreen = SCREEN_PRE;
 
 // should never be more than 17, but let's play safe
 char buffer[20];
-char floatBuffer[6];
+char floatBuffer[8];
 char progressBarChars[4] = {'>','#','#',' '};
 
 char *testModeLabels[] = {"MOTOR", "SMART", "T1CUT", "T2CUT", "V CUT", "A CUT", "MODE ", "POLES"};
 char testModeUnits[] = "%%CCVA P";
 char *holdModeLabels[] = {"THRO", "RPM ", "PWR ", "SMRT"};
+// @todo more modes - simulate glow with stunt tank, with uniflow tank, and erratic run with hole on tank
+//char *holdModeLabels[] = {"THRO", "RPM ", "PWR ", "SMRT", "GLOW", "UNIF", "ERRA"};
+char *resultLabels[] = {"OKTIME", "OKVCUT", "BTN", "V ???", "VHIGH", "A ???", "AHIGH", "R??", "RHIGH", "T1???", "T2???"};
 
 #define FMT_TEST_VALUE_COMMON " %2d%c"
 #define FMT_TEST_VALUE_COMMON " %2d%c"
@@ -49,6 +52,20 @@ void clearScreen() {
 #ifdef SCREEN_32X4
     u8x8.clear();
 #endif
+}
+
+void sprintFixedTime() {
+    sprintf(buffer, "%01d:%02d", metricsSum.flightTime/60, metricsSum.flightTime%60);
+// leaving these coupled for now, saves only 4byte per call eliminated but increases coupling ( = separate it if
+//  this coupling causes too much problems)
+//}
+//void sprintResult() {
+    if (metricsSum.result < REULTS_ERRORS_CUTS_FROM) {
+        sprintf(floatBuffer, "%s", resultLabels[metricsSum.result]);
+    }
+    else {
+        sprintf(floatBuffer, "%6s", testModeLabels[metricsSum.result - REULTS_ERRORS_CUTS_FROM + 2]);
+    }
 }
 
 void drawArming() {
@@ -265,7 +282,7 @@ void drawTestRunScreen() {
 
 #endif
 }
-void drawRunScreen(int secsRemain) {
+void drawRunScreen(unsigned int secsRemain) {
 
 #ifdef SCREEN_32X4
 
@@ -280,7 +297,7 @@ void drawRunScreen(int secsRemain) {
 //        u8x8.noInverse();
 //    }
     // for now, no inverse play
-    u8x8.noInverse();
+//    u8x8.noInverse();
 
     drawRemainingTime(secsRemain);
 
@@ -313,6 +330,27 @@ void drawRunScreen(int secsRemain) {
         }
 
     }
+
+    u8x8.noInverse();
+#ifdef DEVMODE
+    SET_FONT_S;
+    sprintf(buffer, "%4d", metrics.amps*2);
+    u8x8.drawString(0, 0, buffer);
+    sprintf(buffer, "%4d", metricsSum.ampsMin*2);
+    u8x8.drawString(0, 1, buffer);
+    sprintf(buffer, "%4d", (int)METRICS_AVG_AMPS*2);
+    u8x8.drawString(0, 2, buffer);
+    sprintf(buffer, "%4d", metricsSum.ampsMax*2);
+    u8x8.drawString(0, 3, buffer);
+//    sprintf(buffer, "%4d", metrics.volts);
+//    u8x8.drawString(0, 0, buffer);
+//    sprintf(buffer, "%4d", metricsSum.voltsMin);
+//    u8x8.drawString(0, 1, buffer);
+////    sprintf(buffer, "%4d", (int)METRICS_AVG_AMPS*2);
+////    u8x8.drawString(0, 2, buffer);
+//    sprintf(buffer, "%4d", metricsSum.voltsMax);
+//    u8x8.drawString(0, 3, buffer);
+#endif
 
 #endif
 
@@ -359,70 +397,115 @@ void drawRunScreen(int secsRemain) {
 }
 void drawAfterScreen(unsigned char which) {
 
+    int i;
+
     clearScreen();
 
 #ifdef SCREEN_32X4
     SET_FONT_L;
-    if (which == 0) {
-        u8x8.drawString(0, 0, "# 41");
-        SET_FONT_XL;
-        u8x8.drawString(4, 0, "!OOPS!");
-        SET_FONT_S;
-        u8x8.drawString(0, 3, "2:32  T1CUT  62C");
-    }
-    else if (which == 1) {
+    // main sum page
+    if (which == 1) {
+
+        // flight #
+        u8x8.drawString(0, 0, "# ??");
+
+        // flight time and result
+        sprintFixedTime();
+        u8x8.drawString(0, 2, buffer);
+
+        // pre-print "MAH" since we have font L here (we save a SET_FONT_L later)
 //        SET_FONT_L;
-        u8x8.drawString(0, 0, "# 43");
-        u8x8.drawString(0, 2, "5:11");
         u8x8.drawString(13, 1, "MAH");
-        SET_FONT_XL;
-        u8x8.drawString(5, 0, "2200");
+
         SET_FONT_S;
-//        u8x8.drawString(13, 0, "!T1");
-        u8x8.drawString(13, 0, " OK");
-        // formula power: P = 10*t/c
-        u8x8.drawString(4, 3, "S 12.4V 325W");
+//        sprintResult();
+        floatBuffer[3] = 0;
+        u8x8.drawString(13, 0, floatBuffer);
+
+        if (metricsSum.holdMode == HOLD_MODE_FLAT_THROTTLE) {
+            sprintf(floatBuffer, " %2d %%", metricsSum.holdValue);
+        }
+        else if (false && (metricsSum.holdMode == HOLD_MODE_POWER)) {
+            // power, formula: P = 10*t/c
+            sprintf(floatBuffer, "  %3dW", 0);
+        }
+        else {
+            sprintf(floatBuffer, "NOTIMPL");
+        }
+        sprintf(buffer, " %s %s", holdModeLabels[metricsSum.holdMode], floatBuffer);
+        u8x8.drawString(4, 3, buffer);
+
+        // consumption mah
+        SET_FONT_XL;
+        // 1mAh = 3.6As
+        // AVG_AMPS[A] * FLYTIME[s] / 3.6 = mAh
+        i = METRICS_FLIGHT_MILLIS / 100;
+        // test with max time 10m. 10m with max 50A (30 is max) is still just 8333MAH so fits
+//        i = 6000;
+        i = ((long)i) * METRICS_AVG_AMPS / 180;
+        sprintf(floatBuffer, "%4d", min(9999, i));
+        u8x8.drawString(5, 0, floatBuffer);
+
     }
+    // volts and amps screen
     else if (which == 2) {
 //        SET_FONT_L;
-        u8x8.drawString(0, 0, "V  14.8 ... 16.8");
-        u8x8.drawString(0, 2, "A   20   25   50");
+//        u8x8.drawString(0, 0, "V 14.8 .... 16.8");
+        i = METRICS_AVG_VOLTS;
+        sprintf(buffer, "V %2d.%d %2d.%d %2d.%d",
+            metricsSum.voltsMin/10, metricsSum.voltsMin%10,
+            i/10, i%10,
+            metricsSum.voltsMax/10, metricsSum.voltsMax%10
+        );
+        u8x8.drawString(0, 0, buffer);
+
+        i = METRICS_AVG_AMPS;
+        sprintf(buffer, "A %2d.%1d %2d.%1d %2d.%1d",
+            metricsSum.ampsMin/5, (metricsSum.ampsMin*2)%10,
+            i/5, (i*2)%10,
+            metricsSum.ampsMax/5, (metricsSum.ampsMax*2)%10
+        );
+        u8x8.drawString(0, 2, buffer);
     }
+    // power / rpm view
     else if (which == 3) {
 //        SET_FONT_L;
         u8x8.drawString(0, 0, "P  250  300  320");
         u8x8.drawString(0, 2, "R 11.1 12.5 13.1");
     }
+    // T1 / T2 view
     else if (which == 4) {
 //        SET_FONT_L;
         u8x8.drawString(0, 0, "T1  16   32   34");
         u8x8.drawString(0, 2, "T2  16   32   34");
     }
-    /*
-    else if (which == 5) {
-//        SET_FONT_L;
-        u8x8.drawString(0, 0, "14.8 V  1800 MAH");
-        u8x8.drawString(0, 2, "5:11 11C 33C 22C");
-    }
-    else if (which == 6) {
-//        SET_FONT_L;
-        u8x8.drawString(0, 0, "# 42");
-        u8x8.drawString(0, 2, "5:11");
-        u8x8.drawString(13, 1, "MAH");
-        SET_FONT_XL;
-        u8x8.drawString(5, 0, "2042");
-        SET_FONT_S;
-        u8x8.drawString(13, 0, "!T1");
-//        u8x8.drawString(13, 0, " OK");
-        // formula power: P = 10*t/c
-        u8x8.drawString(4, 3, "T 12.4V 236W");
-    }
-     */
-    else {
+    // WELLDONE screen OK
+    else if (metricsSum.result < RESULT_ERRORS_FROM) {
         SET_FONT_XL;
         u8x8.drawString(0, 0, "WELLDONE");
         SET_FONT_S;
         u8x8.drawString(0, 3, "   @LOS.CIRCULOS");
     }
+    // OOPS screen
+    else {
+
+        SET_FONT_XL;
+        u8x8.drawString(4, 0, "!OOPS!");
+
+        SET_FONT_L;
+
+        // @todo write flight number, obtained after saving after-flight metrics
+        u8x8.drawString(0, 0, "# ??");
+
+        // flight time and result
+        sprintFixedTime();
+        u8x8.drawString(0, 2, buffer);
+        SET_FONT_S;
+        u8x8.drawString(6, 3, floatBuffer);
+
+        // @todo I could put cut data on bottom right but it needs coding and memory soooo
+
+    }
+
 #endif
 }

@@ -9,6 +9,7 @@
 
 //#define AFTER_SCREEN_DEBUG
 //#define RPM_DEBUG
+//#define AMP_DEBUG
 
 uint8_t currentMode = MODE_WELCOME_LOCK;
 unsigned long currentModeStarted = 0;
@@ -110,7 +111,22 @@ void loop() {
 
 }
 #else
+#ifdef AMP_DEBUG
+char buf[20];
+void loop() {
+//    if (elapsedInMode(200)) {
 
+        readMetrics();
+        sumMetrics();
+
+        sprintf(buf, "%6d", analogRead(PIN_CURRENT));
+        u8x8.drawString(0, 0, buf);
+        sprintf(buf, "%5d %8d", metrics.amps/5, METRICS_AVG_AMPS);
+        u8x8.drawString(0, 2, buf);
+//    }
+    delay(200);
+}
+#else
 void loop() {
 
     setCurrentTime();
@@ -269,7 +285,8 @@ void loop() {
                 return;
             }
             else if (ANY_BUTTON_PUSHED) {
-                setMode(MODE_ERR);
+                metricsSum.result = RESULT_ERR_BTN;
+                setMode(MODE_AFTER);
                 return;
             }
 
@@ -277,22 +294,35 @@ void loop() {
             if (elapsedInMode(100)) {
 
                 readMetrics();
+                sumMetrics();
 
                 // update throttle - currently only fixed throttle
                 i = config.throttle;
                 throttlePcnt(i);
 
-                // draw remaining / elapsed time
+                // elapsed time
                 i = (currentTime - currentModeStarted) / 1000;
-                // remaining time is flight time minus soft start time (elapsed already) minus elapsed time
+
+                // timed flight
                 if (config.timeFly > 0) {
+                    if (i >= config.timeFly) {
+                        // @todo time's up!
+                        metricsSum.result = RESULT_OK_TIME;
+                        setMode(MODE_AFTER);
+                        return;
+                    }
+                    // remaining time is flight time minus soft start time (elapsed already) minus elapsed time
                     i = config.timeFly - config.softStartTime - i;
                 }
-                // when using soft start and incremental time, add it to elapsed time (twice to increment previous deduction)
+                // until cut flight
                 else {
+                    // @todo limit flight to 9:59
+                    // @todo check here if voltage reading is meaningful and error if not
+                    // when using soft start and incremental time, add it to elapsed time (twice to increment previous deduction)
                     i+= 2*config.softStartTime;
                 }
 
+                // blink led fast if less than 5 seconds remain AND in every first half of a second
                 if ((i < 5) || ((elapsedInModeCounter % 10) < 5)) {
                     blinkLed(BLINK_FAST);
                 }
@@ -308,8 +338,6 @@ void loop() {
             break;
         // draw after info
         case MODE_AFTER:
-        // some error happened - cut threshold reached or button pressed. Draw error and also after info
-        case MODE_ERR:
             if (elapsedInMode(200)) {
                 bool drawScreen = true;
                 if (btnAPushed()) {
@@ -318,7 +346,7 @@ void loop() {
                 else if (btnBPushed()) {
                     currentScreen++;
                 }
-                else if (elapsedInModeCounter % 10 == 0) {
+                else if (config.rotateScreens && (elapsedInModeCounter % 25 == 0)) {
                     currentScreen++;
                 }
                 else {
@@ -328,7 +356,9 @@ void loop() {
                     currentScreen-= 5;
                 }
                 if (drawScreen) {
-                    drawAfterScreen(currentScreen + (currentMode == MODE_AFTER ? 1 : 0));
+                    drawAfterScreen(currentScreen);
+                    // delay a bit, helps if button is still pressed
+                    delay(500);
                 }
             }
             break;
@@ -336,6 +366,7 @@ void loop() {
 
 }
 
+#endif
 #endif
 #endif
 
@@ -370,11 +401,19 @@ void setMode(int newMode) {
         case MODE_TEST_SAVED:
             drawSaved();
         break;
-        case MODE_AFTER:
-            drawAfterScreen(0);
+        case MODE_FLY:
+            resetMetrics();
         break;
+        case MODE_AFTER:
         case MODE_ERR:
+            throttleOff();
+            // display "WELLDONE" or "OOPS" as long as initial delay, then...
             drawAfterScreen(0);
+            // @TODO save flight metrics here (should set flight number!)
+            delay(config.timeDelay*1000);
+            currentScreen = 1;
+            // ... then draw main after screen
+            drawAfterScreen(currentScreen);
         break;
     }
     ledOff();

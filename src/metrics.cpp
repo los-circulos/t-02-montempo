@@ -2,6 +2,7 @@
 #include "hardware.h"
 #include "mytime.h"
 #include "saved.h"
+#include "config.h"
 
 metricsT metrics;
 metricsSumT metricsSum;
@@ -21,7 +22,9 @@ void readMetrics() {
 #ifdef PIN_CURRENT
     i = analogRead(PIN_CURRENT);
 ////    (BASEV * analogRead(PIN_CURRENT) / 1024 - BASEV/2) / 0.066 * 5;
-    metrics.amps = (BASEV * i / 512 - BASEV) * 37.888;
+//    metrics.amps = (BASEV * i / 512 - BASEV) * 37.888;
+    i = (BASEV * i / 512 - BASEV) * 37.888;
+    metrics.amps = i < 0 ? -i : i;
 #endif
 #ifdef PIN_RPM
     i = rpmCnt;
@@ -43,7 +46,12 @@ void resetMetrics() {
     memset(&metricsSum, 0, sizeof metricsSum);
     // this yields much because the added initial values in .h
 //    metricsSum = {};
-    metricsSum.startMillis= currentTime;
+    metricsSum.voltsMin = 255;
+    metricsSum.ampsMin = 255;
+    metricsSum.rpmMin = 255;
+    metricsSum.startMillis = currentTime;
+    metricsSum.holdMode = saved.holdMode;
+    metricsSum.holdValue = testValue;
 }
 
 void sumMetrics() {
@@ -56,11 +64,14 @@ void sumMetrics() {
     metricsSum.ampsMin = min(metricsSum.ampsMin, metrics.amps);
     metricsSum.ampsMax = max(metricsSum.ampsMax, metrics.amps);
     metricsSum.ampsSum+= metrics.amps;
-    metricsSum.lastMillis = currentTime;
-    metricsSum.summedSamples++;
 #endif
 #ifdef PIN_RPM
     metricsSum.rpmMin = min(metricsSum.rpmMin, metrics.rpm);
     metricsSum.rpmMax = max(metricsSum.rpmMax, metrics.rpm);
 #endif
+
+    metricsSum.lastMillis = currentTime;
+    metricsSum.summedSamples++;
+    metricsSum.flightTime = (currentTime - metricsSum.startMillis) / 1000;
+
 }

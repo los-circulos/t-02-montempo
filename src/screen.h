@@ -27,6 +27,8 @@ extern U8X8_SSD1306_128X32_UNIVISION_HW_I2C u8x8;
 
 #define SCREEN_PRE 1
 #define SCREEN_TEST 100
+// see drawAfterScreen()
+#define AFTER_SCREENS_COUNT 4
 
 extern unsigned char currentScreen;
 
@@ -46,7 +48,7 @@ void drawWelcome();
 void drawPreflight(configT config);
 void drawTestScreen();
 void drawTestRunScreen();
-void drawRunScreen(int secsRemain);
+void drawRunScreen(unsigned int secsRemain);
 void drawAfterScreen(unsigned char which);
 
 #endif //MONTEMPO_SCREEN_H
