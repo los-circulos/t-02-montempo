@@ -95,30 +95,62 @@ void drawNotImplemented() {
     }
 }
 void drawRemainingTime(unsigned int secsRemain) {
-    char c = blinkLed(secsRemain < 5 ? BLINK_FAST : BLINK_NORMAL) ? ' ' : '.';
-    if (secsRemain > 59) {
-        sprintf(
-                buffer,
-                "%2d%c%02d",
-                secsRemain / 60,
-                c,
-                secsRemain % 60
-        );
-    }
-    else {
-        sprintf(
-                buffer,
-                "  %c%2d",
-                c,
-                secsRemain
-        );
-    }
+//    char c = blinkLed(secsRemain < 5 ? BLINK_FAST : BLINK_NORMAL) ? ' ' : '.';
+    char c = blinkLed(secsRemain < 5 ? BLINK_FAST : BLINK_SLOW) ? ' ' : '.';
 #ifdef SCREEN_32X4
     SET_FONT_XL;
-    u8x8.drawString(4, 0, buffer);
+    if (secsRemain > 59) {
+        sprintf(buffer, "%2d", secsRemain / 60);
+        u8x8.drawString(7, 0, buffer);
+    }
+    else if (secsRemain == 59) {
+        u8x8.drawString(7, 0, "  ");
+    }
+
+    if (secsRemain > 59) {
+        sprintf(buffer, "%02d", secsRemain % 60);
+    }
+    else {
+        sprintf(buffer, "%2d", secsRemain % 60);
+    }
+    u8x8.drawString(12, 0, buffer);
+
 //    SET_FONT_XXL;
 //    u8x8.drawString(0, 0, buffer);
+    SET_FONT_S;
+//    sprintf(buffer, "%c", c);
+    sprintf(buffer, "%c", (secsRemain % 2 > 0 ? ' ' : '.'));
+    u8x8.drawString(11, 0, buffer);
+    u8x8.drawString(11, 1, buffer);
 #endif
+
+    int i;
+//    memset(&buffer, 0, 20);
+//    for (i=0; i<secsRemain/4; i++) {
+//        buffer[i] = '#';
+//    }
+//    buffer[i] = 0;
+//    i = secsRemain%4;
+    secsRemain = 64 - secsRemain%64;
+    i = secsRemain % 4;
+    if ((i == 0) || (i == 3)) {
+        buffer[0] = ' ';
+    }
+    else {
+        buffer[0] = '#';
+    }
+    buffer[1] = 0;
+    if (i > 1) {
+        u8x8.inverse();
+    }
+    else {
+        u8x8.noInverse();
+    }
+    i = secsRemain / 4;
+    if (i<16) {
+        u8x8.drawString(i, 3, buffer);
+    }
+    u8x8.noInverse();
 }
 void drawSaved() {
     clearScreen();
