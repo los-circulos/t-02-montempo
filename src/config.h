@@ -1,6 +1,8 @@
 #ifndef MONTEMPO_CONFIG_H
 #define MONTEMPO_CONFIG_H
 
+#define DEVMODE
+
 #define TESTMODE_SPIN 0
 #define TESTMODE_SMART 1
 #define TESTMODE_T1_CUT 2
@@ -25,9 +27,12 @@ struct configT {
     unsigned int power = 300;
     bool holdPower = false;
     bool runUntilCutoff = false;
-//    unsigned int timeDelay = 25;
+#ifdef DEVMODE
 //    unsigned int timeDelay = 10;
-    unsigned int timeDelay = 10;
+    unsigned int timeDelay = 3;
+#else
+    unsigned int timeDelay = 25;
+#endif
 
 //    unsigned int softStartTime = 5;
     unsigned int softStartTime = 0;

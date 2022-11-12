@@ -123,7 +123,6 @@ void drawRemainingTime(unsigned int secsRemain) {
 
     SET_FONT_XL;
     u8x8.drawString(6, 0, buffer);
-    SET_FONT_S;
 //    sprintf(buffer, "%c", c);
 //    sprintf(buffer, "%c", (secsRemain % 2 > 0 ? ' ' : '.'));
 //    u8x8.drawString(11, 0, buffer);
@@ -259,7 +258,7 @@ void drawTestScreen() {
 
 #endif
 }
-void drawRunScreen() {
+void drawTestRunScreen() {
 #ifdef SCREEN_32X4
     SET_FONT_L;
 //    u8x8.drawString(0, 0, "THR __  V __._");
@@ -274,6 +273,42 @@ void drawRunScreen() {
 //    u8x8.drawString(0, 1, "T1__ T2__ P___");
 
 #endif
+}
+void drawRunScreen(int secsRemain) {
+
+    drawRemainingTime(secsRemain);
+
+#ifdef SCREEN_32X4
+
+//    SET_FONT_S;
+
+    if (metrics.volts > 0) {
+//        sprintf(buffer, "%2d.%1d V", metrics.volts/10, metrics.volts%10);
+        sprintf(buffer, "%2d %1d", metrics.volts/10, metrics.volts%10);
+        sprintf(&buffer[10], "V");
+    }
+    else {
+        sprintf(buffer, "     ");
+        sprintf(&buffer[10], " ");
+    }
+    SET_FONT_L;
+    u8x8.drawString(0, 0, buffer);
+    SET_FONT_S;
+    u8x8.drawString(2, 1, &buffer[10]);
+
+    if (metrics.amps > 0) {
+        sprintf(buffer, "%2d.%1dA", metrics.amps/10, metrics.amps%10);
+    }
+    else {
+        sprintf(buffer, "     ");
+    }
+    SET_FONT_L;
+    u8x8.drawString(0, 2, buffer);
+
+    // @todo temps
+
+#endif
+
 }
 void drawAfterScreen(unsigned char which) {
 

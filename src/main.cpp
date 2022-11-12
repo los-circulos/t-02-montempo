@@ -209,7 +209,7 @@ void loop() {
                     throttlePcnt(0);
                 }
                 else {
-                    drawRunScreen();
+                    drawTestRunScreen();
                     throttlePcnt(testValue);
                 }
             }
@@ -296,7 +296,8 @@ void loop() {
                 }
 
                 if ((elapsedInModeCounter % 5) == 0) {
-                    drawRemainingTime(i);
+//                    drawRemainingTime(i);
+                    drawRunScreen(i);
                 }
             }
             break;

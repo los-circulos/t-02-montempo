@@ -45,7 +45,8 @@ void drawWaitDot(uint8_t x);
 void drawWelcome();
 void drawPreflight(configT config);
 void drawTestScreen();
-void drawRunScreen();
+void drawTestRunScreen();
+void drawRunScreen(int secsRemain);
 void drawAfterScreen(unsigned char which);
 
 #endif //MONTEMPO_SCREEN_H
