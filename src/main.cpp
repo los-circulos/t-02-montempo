@@ -223,7 +223,6 @@ void loop() {
         case MODE_TEST_SPIN:
             if (elapsedInMode(200)) {
                 readSavedInput();
-                readMetrics();
                 readAndSumMetrics();
                 if ((savedInputHoldMode != SAVED_INPUT_MODE_SPIN) || !ANY_BUTTON_PUSHED) {
                     setMode(MODE_WELCOME_LOCK);
@@ -291,7 +290,6 @@ void loop() {
             // loop every 0.1sec
             if (elapsedInMode(100)) {
 
-                readMetrics();
                 readAndSumMetrics();
 
                 // elapsed time
@@ -314,6 +312,8 @@ void loop() {
                     i+= 2*config.softStartTime;
                 }
 
+                // update throttle
+//                if (metricsSum.holdMode)
                 // update holdThrottle - currently only fixed holdThrottle
                 throttlePcnt(config.holdThrottle);
 
