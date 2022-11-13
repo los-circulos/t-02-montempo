@@ -189,10 +189,27 @@ void drawPreflight(configT config) {
     }
 
     if (metrics.volts > METRICS_V_MAX) {
-        sprintf(buffer, "V OVER!");
+        sprintf(buffer, "V HIGH!!");
     }
     else {
-        sprintf(buffer, "V  %4d", metrics.volts);
+        unsigned int i;
+        for (i = 0; (i*42 < metrics.volts); i++);
+//        sprintf(buffer, "V  %2d.%1d", metrics.volts/10, metrics.volts%10);
+        // VCUT ERR is when it is not obvious the number of cells eg. 16V can be 4S or 5S
+        // eg we use a 5S battery and it gets drained to 16V (Vcut = 3.2). If we power up again,
+        //  it will probably be well over 16V and we recognize it as 5S. However, if we
+        //  power up on eg. 16.2V then it's not sure if that's 4S or 5S
+        // it is a VCUT error as raising VCUT helps.
+        // @TODO maybe cell selection could be fixed from saved config. Especially if later we'd allow 6S
+        if ((i < 5) && (i+1) * (30+saved.voltCut) <= metrics.volts) {
+            sprintf(buffer, "VCUT ERR");
+        }
+        else if (i * (30+saved.voltCut) > metrics.volts) {
+            sprintf(buffer, "V LOW !!");
+        }
+        else {
+            sprintf(buffer, "%2d.%1dV %1dS", metrics.volts/10, metrics.volts%10, i);
+        }
     }
     u8x8.drawString(0,0, buffer);
 

@@ -43,8 +43,10 @@ struct metricsT {
 
 struct metricsSumT {
     // volts *10
-    unsigned int voltsMin;
-    unsigned int voltsMax;
+//    unsigned int voltsMin;
+//    unsigned int voltsMax;
+    unsigned char voltsMin;
+    unsigned char voltsMax;
     unsigned long voltsSum;
     // amps *5
     unsigned int ampsMin;
