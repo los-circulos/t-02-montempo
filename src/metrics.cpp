@@ -75,6 +75,16 @@ void sumMetrics() {
     metricsSum.ampsMax = max(metricsSum.ampsMax, metrics.amps);
     metricsSumCnt.ampsSum+= metrics.amps;
     metricsSum.ampsAvg = metricsSumCnt.ampsSum / metricsSumCnt.summedSamples;
+
+    #ifdef PIN_VOLT
+    // volts/10 * amps/5 / (2 to fit in char?)
+    int i = (long)metrics.volts * metrics.amps / 100;
+    metricsSum.pMin = min(metricsSum.pMin, i);
+    metricsSum.pMax = max(metricsSum.pMax, i);
+    metricsSumCnt.pSum+= i;
+    metricsSum.pAvg = metricsSumCnt.pSum = metricsSumCnt.summedSamples;
+    #endif
+
 #endif
 #ifdef PIN_RPM
     metricsSum.rpmMin = min(metricsSum.rpmMin, metrics.rpm);

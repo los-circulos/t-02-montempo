@@ -50,13 +50,19 @@ struct metricsSumT {
     unsigned char ampsMin;
     unsigned char ampsMax;
     unsigned char ampsAvg;
+    // rpms raw
     unsigned int rpmMin;
     unsigned int rpmMax;
     unsigned int rpmAvg;
+    // watts / 2
+    unsigned char pMin;
+    unsigned char pMax;
+    unsigned char pAvg;
 //    unsigned int t1Min;
 //    unsigned int t1Max;
 //    unsigned int t2Min;
 //    unsigned int t2Max;
+    // secs
     unsigned int flightTime;
     unsigned int holdValue;
     unsigned char holdMode;
@@ -66,6 +72,7 @@ struct metricsSumCntT {
     unsigned long voltsSum;
     unsigned long ampsSum;
     unsigned long rpmSum;
+    unsigned long pSum;
     unsigned long summedSamples;
     unsigned long startMillis;
     unsigned long lastMillis;

@@ -54,7 +54,7 @@ void clearScreen() {
 #endif
 }
 
-void sprintFixedTime() {
+void sprintFixedTimeAndResult() {
     sprintf(buffer, "%01d:%02d", metricsSum.flightTime/60, metricsSum.flightTime%60);
 // leaving these coupled for now, saves only 4byte per call eliminated but increases coupling ( = separate it if
 //  this coupling causes too much problems)
@@ -431,7 +431,7 @@ void drawAfterScreen(unsigned char which) {
         u8x8.drawString(0, 0, "# ??");
 
         // flight time and result
-        sprintFixedTime();
+        sprintFixedTimeAndResult();
         u8x8.drawString(0, 2, buffer);
 
         // pre-print "MAH" since we have font L here (we save a SET_FONT_L later)
@@ -456,16 +456,14 @@ void drawAfterScreen(unsigned char which) {
         sprintf(buffer, " %s %s", holdModeLabels[metricsSum.holdMode], floatBuffer);
         u8x8.drawString(4, 3, buffer);
 
-        // consumption mah
+        // consumption mAh
         SET_FONT_XL;
         // 1mAh = 3.6As
-        // AVG_AMPS[A] * FLYTIME[s] / 3.6 = mAh
+        // AVG_AMPS[A] * FLYTIME[s] / 3.6 = ... mAh
         // test with max time 10m. 10m with max 50A (30 is max) is still just 8333MAH so fits
 //        i = 6000;
         i = metricsSum.flightTime;
         i = ((long)i) * METRICS_AVG_AMPS / 18;
-//        i = METRICS_FLIGHT_MILLIS / 100;
-//        i = ((long)i) * METRICS_AVG_AMPS / 180;
         sprintf(floatBuffer, "%4d", min(9999, i));
         u8x8.drawString(5, 0, floatBuffer);
 
@@ -473,19 +471,16 @@ void drawAfterScreen(unsigned char which) {
     // volts and amps screen
     else if (which == 2) {
 //        SET_FONT_L;
-//        u8x8.drawString(0, 0, "V 14.8 .... 16.8");
-        i = METRICS_AVG_VOLTS;
         sprintf(buffer, "V %2d.%d %2d.%d %2d.%d",
             metricsSum.voltsMin/10, metricsSum.voltsMin%10,
-            i/10, i%10,
+            METRICS_AVG_VOLTS/10, METRICS_AVG_VOLTS%10,
             metricsSum.voltsMax/10, metricsSum.voltsMax%10
         );
         u8x8.drawString(0, 0, buffer);
 
-        i = METRICS_AVG_AMPS;
         sprintf(buffer, "A %2d.%1d %2d.%1d %2d.%1d",
             metricsSum.ampsMin/5, (metricsSum.ampsMin*2)%10,
-            i/5, (i*2)%10,
+            METRICS_AVG_AMPS/5, (METRICS_AVG_AMPS*2)%10,
             metricsSum.ampsMax/5, (metricsSum.ampsMax*2)%10
         );
         u8x8.drawString(0, 2, buffer);
@@ -493,14 +488,25 @@ void drawAfterScreen(unsigned char which) {
     // power / rpm view
     else if (which == 3) {
 //        SET_FONT_L;
-        u8x8.drawString(0, 0, "P  250  300  320");
-        u8x8.drawString(0, 2, "R 11.1 12.5 13.1");
+        sprintf(buffer, "R %2d.%1d %2d.%1d %2d.%1d",
+            metricsSum.rpmMin/10, metricsSum.rpmMin%10,
+            metricsSum.rpmAvg/10, metricsSum.rpmAvg%10,
+            metricsSum.rpmMax/10, metricsSum.rpmMax%10
+        );
+        u8x8.drawString(0, 0, buffer);
+
+        sprintf(buffer, "R %2d.%1d %2d.%1d %2d.%1d",
+            metricsSum.rpmMin/10, metricsSum.rpmMin%10,
+            metricsSum.rpmAvg/10, metricsSum.rpmAvg%10,
+            metricsSum.rpmMax/10, metricsSum.rpmMax%10
+        );
+        u8x8.drawString(0, 2, buffer);
     }
     // T1 / T2 view
     else if (which == 4) {
 //        SET_FONT_L;
-        u8x8.drawString(0, 0, "T1  16   32   34");
-        u8x8.drawString(0, 2, "T2  16   32   34");
+        u8x8.drawString(0, 0, "T1   COMING SOON");
+        u8x8.drawString(0, 2, "T2   COMING SOON");
     }
     // WELLDONE screen OK
     else if (metricsSum.result < RESULT_ERRORS_FROM) {
@@ -521,7 +527,7 @@ void drawAfterScreen(unsigned char which) {
         u8x8.drawString(0, 0, "# ??");
 
         // flight time and result
-        sprintFixedTime();
+        sprintFixedTimeAndResult();
         u8x8.drawString(0, 2, buffer);
         SET_FONT_S;
         u8x8.drawString(6, 3, floatBuffer);
