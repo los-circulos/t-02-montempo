@@ -24,7 +24,7 @@ void rpmISR() {
 }
 #endif
 
-#define MODE_NOT_IMPLEMENTED (saved.holdMode != HOLD_MODE_FLAT_THROTTLE)
+#define MODE_NOT_IMPLEMENTED (saved.holdMode != HOLD_MODE_HOLD_THROTTLE)
 void notImplemented();
 void setMode(unsigned char newMode);
 void endMode(unsigned char result);
@@ -292,6 +292,12 @@ void loop() {
 
                 readAndSumMetrics();
 
+                // UPDATE THROTTLE
+                // update holdThrottle - currently only fixed holdThrottle
+                if (metricsSum.holdMode == HOLD_MODE_HOLD_THROTTLE) {
+                    throttlePcnt(config.holdThrottle);
+                }
+
                 // elapsed time
                 i = (currentTime - currentModeStarted) / 1000;
 
@@ -312,13 +318,10 @@ void loop() {
                     i+= 2*config.softStartTime;
                 }
 
-                // update throttle
-//                if (metricsSum.holdMode)
-                // update holdThrottle - currently only fixed holdThrottle
-                throttlePcnt(config.holdThrottle);
-
-                // blink led fast if less than 5 seconds remain AND in every first half of a second
-                if ((i < 5) || ((elapsedInModeCounter % 10) < 5)) {
+                // blink led fast if less than 5 seconds remain AND ALSO in every first half of a second
+                #define LESS_THAN_5_SECONDS_REMAIN ((i < 5) && config.timeFly > 0)
+                // @todo would be nice to blink fast too before a cutdown happens
+                if (LESS_THAN_5_SECONDS_REMAIN || ((elapsedInModeCounter % 10) < 5)) {
                     blinkLed(BLINK_FAST);
                 }
                 else {

@@ -441,7 +441,7 @@ void drawAfterScreen(unsigned char which) {
         floatBuffer[3] = 0;
         u8x8.drawString(13, 0, floatBuffer);
 
-        if (metricsSum.holdMode == HOLD_MODE_FLAT_THROTTLE) {
+        if (metricsSum.holdMode == HOLD_MODE_HOLD_THROTTLE) {
             sprintf(floatBuffer, " %2d %%", metricsSum.holdValueRaw);
         }
         else if (false && (metricsSum.holdMode == HOLD_MODE_POWER)) {
