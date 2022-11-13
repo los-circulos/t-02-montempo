@@ -15,6 +15,8 @@ unsigned char currentMode = MODE_WELCOME_LOCK;
 unsigned long currentModeStarted = 0;
 // elapsed incremental cycles since last mode change. !! use only through elapsedInMode().
 unsigned long elapsedInModeCounter = 0;
+unsigned char alarm = 0;
+unsigned long alarmStarted = 0;
 
 #ifdef RPM_DEBUG
 int xPcnt = 5;
@@ -291,6 +293,8 @@ void loop() {
             if (elapsedInMode(100)) {
 
                 readAndSumMetrics();
+
+
 
                 // UPDATE THROTTLE
                 // update holdThrottle - currently only fixed holdThrottle

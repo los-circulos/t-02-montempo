@@ -3,6 +3,9 @@
 
 #define DEVMODE
 
+#define CONFIG_CELL_ERR_VCUT 6
+#define CONFIG_CELL_ERR_VLOW 7
+
 // @todo this is a runtime setup, not config
 struct configT {
     bool savedInputMode = false;
@@ -14,7 +17,6 @@ struct configT {
     unsigned int holdPower = 300;
     unsigned char holdValueRaw = 0;
 #ifdef DEVMODE
-//    unsigned int timeDelay = 10;
     unsigned int timeDelay = 3;
 #else
     unsigned int timeDelay = 25;
@@ -29,6 +31,7 @@ struct configT {
     int defaultScreen = 0;
     bool rotateScreens = true;
     int screenRotateTime = 2;
+    unsigned char cellCount = 0;
 };
 
 extern configT config;
