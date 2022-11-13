@@ -351,22 +351,26 @@ void drawRunScreen(unsigned int secsRemain) {
     u8x8.noInverse();
 #ifdef DEVMODE
     SET_FONT_S;
-//    sprintf(buffer, "%4d", metrics.amps*2);
-//    u8x8.drawString(0, 0, buffer);
-//    sprintf(buffer, "%4d", metricsSum.ampsMin*2);
-//    u8x8.drawString(0, 1, buffer);
-//    sprintf(buffer, "%4d", (int)METRICS_AVG_AMPS*2);
-//    u8x8.drawString(0, 2, buffer);
-//    sprintf(buffer, "%4d", metricsSum.ampsMax*2);
-//    u8x8.drawString(0, 3, buffer);
-    sprintf(buffer, "%4d", metrics.volts);
+
+//    sprintf(buffer, "%4d", sizeof(metricsSumCntT));
+//    u8x8.drawString(6, 3, buffer);
+
+    sprintf(buffer, "%4d", metrics.amps*2);
     u8x8.drawString(0, 0, buffer);
-    sprintf(buffer, "%4d", metricsSum.voltsMin);
+    sprintf(buffer, "%4d", metricsSum.ampsMin*2);
     u8x8.drawString(0, 1, buffer);
-//    sprintf(buffer, "%4d", (int)METRICS_AVG_AMPS*2);
-//    u8x8.drawString(0, 2, buffer);
-    sprintf(buffer, "%4d", metricsSum.voltsMax);
+    sprintf(buffer, "%4d", (int)METRICS_AVG_AMPS*2);
+    u8x8.drawString(0, 2, buffer);
+    sprintf(buffer, "%4d", metricsSum.ampsMax*2);
     u8x8.drawString(0, 3, buffer);
+//    sprintf(buffer, "%4d", metrics.volts);
+//    u8x8.drawString(0, 0, buffer);
+//    sprintf(buffer, "%4d", metricsSum.voltsMin);
+//    u8x8.drawString(0, 1, buffer);
+////    sprintf(buffer, "%4d", (int)METRICS_AVG_AMPS*2);
+////    u8x8.drawString(0, 2, buffer);
+//    sprintf(buffer, "%4d", metricsSum.voltsMax);
+//    u8x8.drawString(0, 3, buffer);
 #endif
 
 #endif
@@ -456,10 +460,12 @@ void drawAfterScreen(unsigned char which) {
         SET_FONT_XL;
         // 1mAh = 3.6As
         // AVG_AMPS[A] * FLYTIME[s] / 3.6 = mAh
-        i = METRICS_FLIGHT_MILLIS / 100;
         // test with max time 10m. 10m with max 50A (30 is max) is still just 8333MAH so fits
 //        i = 6000;
-        i = ((long)i) * METRICS_AVG_AMPS / 180;
+        i = metricsSum.flightTime;
+        i = ((long)i) * METRICS_AVG_AMPS / 18;
+//        i = METRICS_FLIGHT_MILLIS / 100;
+//        i = ((long)i) * METRICS_AVG_AMPS / 180;
         sprintf(floatBuffer, "%4d", min(9999, i));
         u8x8.drawString(5, 0, floatBuffer);
 

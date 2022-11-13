@@ -43,35 +43,32 @@ struct metricsT {
 
 struct metricsSumT {
     // volts *10
-//    unsigned int voltsMin;
-//    unsigned int voltsMax;
     unsigned char voltsMin;
     unsigned char voltsMax;
-//    unsigned long voltsSum;
     unsigned char voltsAvg;
     // amps *5
     unsigned char ampsMin;
     unsigned char ampsMax;
-//    unsigned long ampsSum;
     unsigned char ampsAvg;
     unsigned int rpmMin;
     unsigned int rpmMax;
+    unsigned int rpmAvg;
 //    unsigned int t1Min;
 //    unsigned int t1Max;
 //    unsigned int t2Min;
 //    unsigned int t2Max;
-    unsigned long startMillis;
-    unsigned long lastMillis;
-    unsigned long summedSamples;
-    int flightTime;
+    unsigned int flightTime;
+    unsigned int holdValue;
     unsigned char holdMode;
-    int holdValue;
     unsigned char result;
 };
 struct metricsSumCntT {
     unsigned long voltsSum;
     unsigned long ampsSum;
+    unsigned long rpmSum;
     unsigned long summedSamples;
+    unsigned long startMillis;
+    unsigned long lastMillis;
 };
 
 extern metricsT metrics;
@@ -82,7 +79,7 @@ extern metricsSumT metricsSum;
 //#define METRICS_FLIGHT_MILLIS (metricsSum.lastMillis - metricsSum.startMillis)
 #define METRICS_AVG_VOLTS metricsSum.voltsAvg
 #define METRICS_AVG_AMPS metricsSum.ampsAvg
-#define METRICS_FLIGHT_MILLIS (metricsSum.lastMillis - metricsSum.startMillis)
+#define METRICS_FLIGHT_MILLIS (metricsSumCntT.lastMillis - metricsSumCntT.startMillis)
 
 void rpmISR();
 //void initMetrics();

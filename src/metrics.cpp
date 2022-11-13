@@ -50,20 +50,19 @@ void resetMetrics() {
     metricsSum.voltsMin = 255;
     metricsSum.ampsMin = 255;
     metricsSum.rpmMin = 255;
-    metricsSum.startMillis = currentTime;
     metricsSum.holdMode = saved.holdMode;
     metricsSum.holdValue = testValue;
 
     memset(&metricsSumCnt, 0, sizeof metricsSumCnt);
+    metricsSumCnt.startMillis = currentTime;
 
 }
 
 void sumMetrics() {
 
-    metricsSum.lastMillis = currentTime;
-//    metricsSum.summedSamples++;
+    metricsSumCnt.lastMillis = currentTime;
     metricsSumCnt.summedSamples++;
-    metricsSum.flightTime = (currentTime - metricsSum.startMillis) / 1000;
+    metricsSum.flightTime = (currentTime - metricsSumCnt.startMillis) / 1000;
 
 #ifdef PIN_VOLT
     metricsSum.voltsMin = min(metricsSum.voltsMin, metrics.volts);
@@ -80,6 +79,8 @@ void sumMetrics() {
 #ifdef PIN_RPM
     metricsSum.rpmMin = min(metricsSum.rpmMin, metrics.rpm);
     metricsSum.rpmMax = max(metricsSum.rpmMax, metrics.rpm);
+    metricsSumCnt.rpmSum+= metrics.rpm;
+    metricsSum.rpmAvg = metricsSumCnt.rpmSum / metricsSumCnt.summedSamples;
 #endif
 
 }
