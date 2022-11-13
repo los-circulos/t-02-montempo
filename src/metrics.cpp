@@ -6,6 +6,7 @@
 
 metricsT metrics;
 metricsSumT metricsSum;
+metricsSumCntT metricsSumCnt;
 
 #ifdef PIN_RPM
 volatile unsigned int rpmCnt = 0;
@@ -52,26 +53,33 @@ void resetMetrics() {
     metricsSum.startMillis = currentTime;
     metricsSum.holdMode = saved.holdMode;
     metricsSum.holdValue = testValue;
+
+    memset(&metricsSumCnt, 0, sizeof metricsSumCnt);
+
 }
 
 void sumMetrics() {
+
+    metricsSum.lastMillis = currentTime;
+//    metricsSum.summedSamples++;
+    metricsSumCnt.summedSamples++;
+    metricsSum.flightTime = (currentTime - metricsSum.startMillis) / 1000;
+
 #ifdef PIN_VOLT
     metricsSum.voltsMin = min(metricsSum.voltsMin, metrics.volts);
     metricsSum.voltsMax = max(metricsSum.voltsMax, metrics.volts);
-    metricsSum.voltsSum+= metrics.volts;
+    metricsSumCnt.voltsSum+= metrics.volts;
+    metricsSum.voltsAvg = metricsSumCnt.voltsSum / metricsSumCnt.summedSamples;
 #endif
 #ifdef PIN_CURRENT
     metricsSum.ampsMin = min(metricsSum.ampsMin, metrics.amps);
     metricsSum.ampsMax = max(metricsSum.ampsMax, metrics.amps);
-    metricsSum.ampsSum+= metrics.amps;
+    metricsSumCnt.ampsSum+= metrics.amps;
+    metricsSum.ampsAvg = metricsSumCnt.ampsSum / metricsSumCnt.summedSamples;
 #endif
 #ifdef PIN_RPM
     metricsSum.rpmMin = min(metricsSum.rpmMin, metrics.rpm);
     metricsSum.rpmMax = max(metricsSum.rpmMax, metrics.rpm);
 #endif
-
-    metricsSum.lastMillis = currentTime;
-    metricsSum.summedSamples++;
-    metricsSum.flightTime = (currentTime - metricsSum.startMillis) / 1000;
 
 }

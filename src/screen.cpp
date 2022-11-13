@@ -351,22 +351,22 @@ void drawRunScreen(unsigned int secsRemain) {
     u8x8.noInverse();
 #ifdef DEVMODE
     SET_FONT_S;
-    sprintf(buffer, "%4d", metrics.amps*2);
-    u8x8.drawString(0, 0, buffer);
-    sprintf(buffer, "%4d", metricsSum.ampsMin*2);
-    u8x8.drawString(0, 1, buffer);
-    sprintf(buffer, "%4d", (int)METRICS_AVG_AMPS*2);
-    u8x8.drawString(0, 2, buffer);
-    sprintf(buffer, "%4d", metricsSum.ampsMax*2);
-    u8x8.drawString(0, 3, buffer);
-//    sprintf(buffer, "%4d", metrics.volts);
+//    sprintf(buffer, "%4d", metrics.amps*2);
 //    u8x8.drawString(0, 0, buffer);
-//    sprintf(buffer, "%4d", metricsSum.voltsMin);
+//    sprintf(buffer, "%4d", metricsSum.ampsMin*2);
 //    u8x8.drawString(0, 1, buffer);
-////    sprintf(buffer, "%4d", (int)METRICS_AVG_AMPS*2);
-////    u8x8.drawString(0, 2, buffer);
-//    sprintf(buffer, "%4d", metricsSum.voltsMax);
+//    sprintf(buffer, "%4d", (int)METRICS_AVG_AMPS*2);
+//    u8x8.drawString(0, 2, buffer);
+//    sprintf(buffer, "%4d", metricsSum.ampsMax*2);
 //    u8x8.drawString(0, 3, buffer);
+    sprintf(buffer, "%4d", metrics.volts);
+    u8x8.drawString(0, 0, buffer);
+    sprintf(buffer, "%4d", metricsSum.voltsMin);
+    u8x8.drawString(0, 1, buffer);
+//    sprintf(buffer, "%4d", (int)METRICS_AVG_AMPS*2);
+//    u8x8.drawString(0, 2, buffer);
+    sprintf(buffer, "%4d", metricsSum.voltsMax);
+    u8x8.drawString(0, 3, buffer);
 #endif
 
 #endif
