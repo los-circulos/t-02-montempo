@@ -39,7 +39,6 @@ extern uint8_t currentMode;
 #define MODE_FLY 42
 // blink fast but with extra delay, show in-flight data for recording etc
 #define MODE_AFTER 50
-#define MODE_ERR 99
 
 //#define DELAY_COUNTDOWN 150
 #define DELAY_COUNTDOWN 100

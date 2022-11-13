@@ -405,7 +405,6 @@ void setMode(int newMode) {
             resetMetrics();
         break;
         case MODE_AFTER:
-        case MODE_ERR:
             throttleOff();
             // display "WELLDONE" or "OOPS" as long as initial delay, then...
             drawAfterScreen(0);
