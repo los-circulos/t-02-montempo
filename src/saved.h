@@ -35,7 +35,7 @@ struct savedT {
 };
 
 extern savedT saved;
-extern unsigned char savedInputMode;
+extern unsigned char savedInputHoldMode;
 extern int savedInputValue;
 
 void initSaved();

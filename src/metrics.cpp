@@ -61,8 +61,8 @@ void resetMetrics() {
 
 }
 
-void sumMetrics() {
-
+void readAndSumMetrics() {
+//    readMetrics();
     metricsSumCnt.lastMillis = currentTime;
     metricsSumCnt.summedSamples++;
     metricsSum.flightTime = (currentTime - metricsSumCnt.startMillis) / 1000;

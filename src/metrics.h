@@ -92,6 +92,6 @@ void rpmISR();
 //void initMetrics();
 void readMetrics();
 void resetMetrics();
-void sumMetrics();
+void readAndSumMetrics();
 
 #endif //MONTEMPO_METRICS_H

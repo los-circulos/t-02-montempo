@@ -5,7 +5,7 @@
 
 #endif
 
-extern uint8_t currentMode;
+extern unsigned char currentMode;
 // lock on welcome screen if any button is pressed
 // (blink fast)
 #define MODE_WELCOME_LOCK 1

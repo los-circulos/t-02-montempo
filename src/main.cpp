@@ -11,7 +11,7 @@
 //#define RPM_DEBUG
 //#define AMP_DEBUG
 
-uint8_t currentMode = MODE_WELCOME_LOCK;
+unsigned char currentMode = MODE_WELCOME_LOCK;
 unsigned long currentModeStarted = 0;
 // elapsed incremental cycles since last mode change. !! use only through elapsedInMode().
 unsigned long elapsedInModeCounter = 0;
@@ -26,7 +26,8 @@ void rpmISR() {
 
 #define MODE_NOT_IMPLEMENTED (saved.holdMode != HOLD_MODE_FLAT_THROTTLE)
 void notImplemented();
-void setMode(int newMode);
+void setMode(unsigned char newMode);
+void endMode(unsigned char result);
 bool elapsedInMode(unsigned int);
 void confirmation();
 void countDown(char nextMode);
@@ -141,7 +142,7 @@ void loop() {
             else {
                 drawLogoLock();
             }
-            break;
+        break;
         case MODE_WELCOME_COUNTDOWN:
             if (ANY_BUTTON_PUSHED) {
                 setMode(MODE_WELCOME_LOCK);
@@ -161,7 +162,7 @@ void loop() {
             else if (elapsedInMode(DELAY_COUNTDOWN)) {
                 drawWaitDot(elapsedInModeCounter);
             }
-            break;
+        break;
         case MODE_SAVED_INPUT:
             // @todo deny test/setup if both buttons are disabled
             if (elapsedInMode(200)) {
@@ -169,39 +170,39 @@ void loop() {
                 drawSavedInputScreen();
                 confirmation();
             }
-            break;
+        break;
         case MODE_SAVED_INPUT_COUNTDOWN:
             countDown(MODE_SAVED_INPUT_SAVE);
-            break;
+        break;
         case MODE_SAVED_INPUT_SAVE:
-            if (savedInputMode == SAVED_INPUT_MODE_SPIN) {
+            if (savedInputHoldMode == SAVED_INPUT_MODE_SPIN) {
                 setMode(MODE_TEST_SPIN);
                 return;
             }
-            else if (savedInputMode == SAVED_INPUT_MODE_SMART) {
+            else if (savedInputHoldMode == SAVED_INPUT_MODE_SMART) {
                 saved.smartEndThrottle = savedInputValue;
             }
-            else if (savedInputMode == SAVED_INPUT_MODE_T1_CUT) {
+            else if (savedInputHoldMode == SAVED_INPUT_MODE_T1_CUT) {
                 saved.t1Cut = savedInputValue;
             }
-            else if (savedInputMode == SAVED_INPUT_MODE_T2_CUT) {
+            else if (savedInputHoldMode == SAVED_INPUT_MODE_T2_CUT) {
                 saved.t2Cut = savedInputValue;
             }
-            else if (savedInputMode == SAVED_INPUT_MODE_VOLT_CUT) {
+            else if (savedInputHoldMode == SAVED_INPUT_MODE_VOLT_CUT) {
                 saved.voltCut = savedInputValue;
             }
-            else if (savedInputMode == SAVED_INPUT_MODE_CURRENT_CUT) {
+            else if (savedInputHoldMode == SAVED_INPUT_MODE_CURRENT_CUT) {
                 saved.currentCut = savedInputValue;
             }
-            else if (savedInputMode == SAVED_INPUT_MODE_MODE) {
+            else if (savedInputHoldMode == SAVED_INPUT_MODE_MODE) {
                 saved.holdMode = savedInputValue;
             }
-            else if (savedInputMode == SAVED_INPUT_MODE_POLES) {
+            else if (savedInputHoldMode == SAVED_INPUT_MODE_POLES) {
                 saved.poles = savedInputValue;
             }
             saveSaved();
             setMode(MODE_SAVED_INPUT_SAVED);
-            break;
+        break;
         case MODE_SAVED_INPUT_SAVED:
             if (elapsedInMode(100)) {
                 if (ANY_BUTTON_PUSHED) {
@@ -218,13 +219,13 @@ void loop() {
                     drawWaitDot(elapsedInModeCounter);
                 }
             }
-            break;
+        break;
         case MODE_TEST_SPIN:
             if (elapsedInMode(200)) {
                 readSavedInput();
                 readMetrics();
-                sumMetrics();
-                if ((savedInputMode != SAVED_INPUT_MODE_SPIN) || !ANY_BUTTON_PUSHED) {
+                readAndSumMetrics();
+                if ((savedInputHoldMode != SAVED_INPUT_MODE_SPIN) || !ANY_BUTTON_PUSHED) {
                     setMode(MODE_WELCOME_LOCK);
                     throttlePcnt(0);
                 }
@@ -233,7 +234,7 @@ void loop() {
                     throttlePcnt(savedInputValue);
                 }
             }
-            break;
+        break;
         case MODE_PREFLIGHT_PROGRAM:
             if (elapsedInMode(200)) {
                 readConfigInput();
@@ -241,10 +242,10 @@ void loop() {
                 drawPreflight(config);
                 confirmation();
             }
-            break;
+        break;
         case MODE_PREFLIGHT_PROGRAM_COUNTDOWN:
             countDown(MODE_DELAY_LOCK);
-            break;
+        break;
         case MODE_DELAY_LOCK:
             if (!ANY_BUTTON_PUSHED) {
                 setMode(MODE_DELAY);
@@ -253,18 +254,16 @@ void loop() {
             else if (elapsedInMode(100)) {
                 drawLogoLock();
             }
-            break;
+        break;
         case MODE_DELAY:
             i = config.timeDelay - (currentTime - currentModeStarted) / 1000;
             if (MODE_NOT_IMPLEMENTED) {
                 notImplemented();
-                return;
             }
             else if (ANY_BUTTON_PUSHED) {
                 setMode(MODE_PREFLIGHT_PROGRAM);
-                return;
             }
-            if (i == 0) {
+            else if (i == 0) {
                 drawRemainingTime(i);
                 ledOn();
                 delay(1000);
@@ -275,7 +274,7 @@ void loop() {
                 drawRemainingTime(i);
                 blinkLed(i < 5 ? BLINK_FAST : BLINK_SLOW);
             }
-            break;
+        break;
         // @todo soft start?
         case MODE_SOFT_START:
             break;
@@ -285,8 +284,7 @@ void loop() {
                 return;
             }
             else if (ANY_BUTTON_PUSHED) {
-                metricsSum.result = RESULT_ERR_BTN;
-                setMode(MODE_AFTER);
+                endMode(RESULT_ERR_BTN);
                 return;
             }
 
@@ -294,21 +292,15 @@ void loop() {
             if (elapsedInMode(100)) {
 
                 readMetrics();
-                sumMetrics();
-
-                // update holdThrottle - currently only fixed holdThrottle
-                i = config.holdThrottle;
-                throttlePcnt(i);
+                readAndSumMetrics();
 
                 // elapsed time
                 i = (currentTime - currentModeStarted) / 1000;
 
-                // timed flight
+                // timed flight OR
                 if (config.timeFly > 0) {
                     if (i >= config.timeFly) {
-                        // @todo time's up!
-                        metricsSum.result = RESULT_OK_TIME;
-                        setMode(MODE_AFTER);
+                        endMode(RESULT_OK_TIME);
                         return;
                     }
                     // remaining time is flight time minus soft start time (elapsed already) minus elapsed time
@@ -321,6 +313,9 @@ void loop() {
                     // when using soft start and incremental time, add it to elapsed time (twice to increment previous deduction)
                     i+= 2*config.softStartTime;
                 }
+
+                // update holdThrottle - currently only fixed holdThrottle
+                throttlePcnt(config.holdThrottle);
 
                 // blink led fast if less than 5 seconds remain AND in every first half of a second
                 if ((i < 5) || ((elapsedInModeCounter % 10) < 5)) {
@@ -378,7 +373,7 @@ void notImplemented() {
     }
 }
 
-void setMode(int newMode) {
+void setMode(unsigned char newMode) {
     currentMode = newMode;
     currentModeStarted = currentTime;
     elapsedInModeCounter = 0;
@@ -392,30 +387,33 @@ void setMode(int newMode) {
             }
         // commenting or not the following makes no difference in memory, probably it's optimized during compile
 //            clearScreen();
-//        break;
+//            break;
         case MODE_PREFLIGHT_PROGRAM:
         case MODE_DELAY_LOCK:
         case MODE_SAVED_INPUT:
             clearScreen();
-            break;
+        break;
         case MODE_SAVED_INPUT_SAVED:
             drawSaved();
         break;
         case MODE_FLY:
             resetMetrics();
         break;
-        case MODE_AFTER:
-            throttleOff();
-            // display "WELLDONE" or "OOPS" as long as initial delay, then...
-            drawAfterScreen(0);
-            // @TODO save flight metrics here (should set flight number!)
-            delay(config.timeDelay*1000);
-            currentScreen = 1;
-            // ... then draw main after screen
-            drawAfterScreen(currentScreen);
-        break;
     }
     ledOff();
+}
+
+void endMode(unsigned char result) {
+    metricsSum.result = result;
+    throttleOff();
+    // display "WELLDONE" or "OOPS" as long as initial delay, then...
+    drawAfterScreen(0);
+    // @TODO save flight metrics here (should set flight number!)
+    delay(config.timeDelay*1000);
+    currentScreen = 1;
+    // ... then draw main after screen
+    drawAfterScreen(currentScreen);
+    setMode(MODE_AFTER);
 }
 
 /**

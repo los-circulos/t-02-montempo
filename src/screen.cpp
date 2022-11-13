@@ -218,14 +218,14 @@ void drawPreflight(configT config) {
 }
 void drawSavedInputScreen() {
 
-    switch (savedInputMode) {
+    switch (savedInputHoldMode) {
     case SAVED_INPUT_MODE_SPIN:
     case SAVED_INPUT_MODE_SMART:
     case SAVED_INPUT_MODE_T1_CUT:
     case SAVED_INPUT_MODE_T2_CUT:
     case SAVED_INPUT_MODE_CURRENT_CUT:
     case SAVED_INPUT_MODE_POLES:
-        sprintf(buffer, FMT_TEST_VALUE_COMMON, savedInputValue, savedInputModeUnits[savedInputMode]);
+        sprintf(buffer, FMT_TEST_VALUE_COMMON, savedInputValue, savedInputModeUnits[savedInputHoldMode]);
         break;
     case SAVED_INPUT_MODE_VOLT_CUT:
         sprintf(buffer, FMT_TEST_VALUE_VOLTS, savedInputValue);
@@ -234,13 +234,13 @@ void drawSavedInputScreen() {
     case SAVED_INPUT_MODE_MODE:
         strcpy(buffer, holdModeLabels[savedInputValue]);
         strcpy(floatBuffer, holdModeLabels[saved.holdMode]);
-    // omitting this saves 30 bytes but savedInputMode rather be valid then lol
+    // omitting this saves 30 bytes but savedInputHoldMode rather be valid then lol
 //        break;
 //    default:
 //        sprintf(buffer, "USED");
 //        sprintf(floatBuffer, "----");
     }
-    switch (savedInputMode) {
+    switch (savedInputHoldMode) {
     case SAVED_INPUT_MODE_SPIN:
         strcpy(floatBuffer, "    ");
         break;
@@ -248,13 +248,13 @@ void drawSavedInputScreen() {
         sprintf(floatBuffer, FMT_TEST_4DECIMALS, saved.smartEndThrottle);
         break;
     case SAVED_INPUT_MODE_T1_CUT:
-        sprintf(floatBuffer, FMT_TEST_VALUE_COMMON, saved.t1Cut, savedInputModeUnits[savedInputMode]);
+        sprintf(floatBuffer, FMT_TEST_VALUE_COMMON, saved.t1Cut, savedInputModeUnits[savedInputHoldMode]);
         break;
     case SAVED_INPUT_MODE_T2_CUT:
-        sprintf(floatBuffer, FMT_TEST_VALUE_COMMON, saved.t2Cut, savedInputModeUnits[savedInputMode]);
+        sprintf(floatBuffer, FMT_TEST_VALUE_COMMON, saved.t2Cut, savedInputModeUnits[savedInputHoldMode]);
         break;
     case SAVED_INPUT_MODE_CURRENT_CUT:
-        sprintf(floatBuffer, FMT_TEST_VALUE_COMMON, saved.currentCut, savedInputModeUnits[savedInputMode]);
+        sprintf(floatBuffer, FMT_TEST_VALUE_COMMON, saved.currentCut, savedInputModeUnits[savedInputHoldMode]);
         break;
     case SAVED_INPUT_MODE_POLES:
         sprintf(floatBuffer, FMT_TEST_4DECIMALS, saved.poles);
@@ -264,14 +264,14 @@ void drawSavedInputScreen() {
 #ifdef SCREEN_32X4
 
     SET_FONT_L;
-    u8x8.drawString(0, 0, savedInputModeLabels[savedInputMode]);
+    u8x8.drawString(0, 0, savedInputModeLabels[savedInputHoldMode]);
     u8x8.drawString(0, 2, floatBuffer);
 
     SET_FONT_XL;
     u8x8.drawString(6, 0, buffer);
 
     SET_FONT_S;
-    if (savedInputMode == SAVED_INPUT_MODE_SPIN) {
+    if (savedInputHoldMode == SAVED_INPUT_MODE_SPIN) {
 //        u8x8.drawString(0, 2, "    ");
         u8x8.drawString(4, 3, "PUSH TO SPIN");
     }
