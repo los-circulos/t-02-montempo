@@ -11,6 +11,17 @@
 #define HOLD_MODE_POWER 2
 #define HOLD_MODE_SMART_THROTTLE 3
 
+#define SAVED_INPUT_MODE_SPIN 0
+#define SAVED_INPUT_MODE_SMART 1
+#define SAVED_INPUT_MODE_T1_CUT 2
+#define SAVED_INPUT_MODE_T2_CUT 3
+#define SAVED_INPUT_MODE_VOLT_CUT 4
+#define SAVED_INPUT_MODE_CURRENT_CUT 5
+#define SAVED_INPUT_MODE_MODE 6
+#define SAVED_INPUT_MODE_POLES 7
+// todo write logs, and write log browser with this mode
+#define SAVED_INPUT_MODE_LOGS 7
+
 struct savedT {
     unsigned char smartEndThrottle = 90;
     unsigned char t1Cut = 90;
@@ -24,8 +35,12 @@ struct savedT {
 };
 
 extern savedT saved;
+extern unsigned char savedInputMode;
+extern int savedInputValue;
 
 void initSaved();
 void saveSaved();
+
+void readSavedInput();
 
 #endif //MONTEMPO_SAVED_H

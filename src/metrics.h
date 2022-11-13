@@ -64,8 +64,8 @@ struct metricsSumT {
 //    unsigned int t2Max;
     // secs
     unsigned int flightTime;
-    unsigned int holdValue;
     unsigned char holdMode;
+    unsigned char holdValueRaw;
     unsigned char result;
 };
 struct metricsSumCntT {

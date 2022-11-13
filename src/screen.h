@@ -46,8 +46,8 @@ void drawWaitDot(uint8_t x);
 
 void drawWelcome();
 void drawPreflight(configT config);
-void drawTestScreen();
-void drawTestRunScreen();
+void drawSavedInputScreen();
+void drawTestSpinScreen();
 void drawRunScreen(unsigned int secsRemain);
 void drawAfterScreen(unsigned char which);
 

@@ -51,7 +51,10 @@ void resetMetrics() {
     metricsSum.ampsMin = 255;
     metricsSum.rpmMin = 255;
     metricsSum.holdMode = saved.holdMode;
-    metricsSum.holdValue = testValue;
+    metricsSum.holdValueRaw = savedInputValue;
+
+    metricsSum.holdMode = saved.holdMode;
+    metricsSum.holdValueRaw = config.holdValueRaw;
 
     memset(&metricsSumCnt, 0, sizeof metricsSumCnt);
     metricsSumCnt.startMillis = currentTime;
@@ -76,13 +79,14 @@ void sumMetrics() {
     metricsSumCnt.ampsSum+= metrics.amps;
     metricsSum.ampsAvg = metricsSumCnt.ampsSum / metricsSumCnt.summedSamples;
 
+    // power
     #ifdef PIN_VOLT
-    // volts/10 * amps/5 / (2 to fit in char?)
+    // volts/10 * amps/5 / (2 to fit in char)
     int i = (long)metrics.volts * metrics.amps / 100;
     metricsSum.pMin = min(metricsSum.pMin, i);
     metricsSum.pMax = max(metricsSum.pMax, i);
     metricsSumCnt.pSum+= i;
-    metricsSum.pAvg = metricsSumCnt.pSum = metricsSumCnt.summedSamples;
+    metricsSum.pAvg = metricsSumCnt.pSum / metricsSumCnt.summedSamples;
     #endif
 
 #endif

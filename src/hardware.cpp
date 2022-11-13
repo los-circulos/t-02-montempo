@@ -109,12 +109,12 @@ void convertRpm() {
 
 }
 
-#ifdef CONFIG_DIP8
+#ifdef INPUT_DIP8
 unsigned char readDips(unsigned char cnt) {
     unsigned char i, v = 1;
     unsigned char ret = 0;
     for (i=0; i<cnt; i++) {
-        ret += !digitalRead(CONFIG_DIP_1+i) * v;
+        ret += !digitalRead(INPUT_DIP_1 + i) * v;
         v *= 2;
     }
     return ret;

@@ -90,17 +90,17 @@ void throttlePcnt(unsigned int pcnt);
  *      will be shown by default at next power up. Leave turned on to keep cycling in-flight values. This switch works
  *      in delay ("countdown") and test modes as well, and will reset countdown timer.
  */
-#define CONFIG_DIP8
+#define INPUT_DIP8
 
-#ifdef CONFIG_DIP8
-#define CONFIG_DIP_1 5
-#define CONFIG_DIP_2 6
-#define CONFIG_DIP_3 7
-#define CONFIG_DIP_4 8
-#define CONFIG_DIP_5 9
-#define CONFIG_DIP_6 10
-#define CONFIG_DIP_7 11
-#define CONFIG_DIP_8 12
+#ifdef INPUT_DIP8
+#define INPUT_DIP_1 5
+#define INPUT_DIP_2 6
+#define INPUT_DIP_3 7
+#define INPUT_DIP_4 8
+#define INPUT_DIP_5 9
+#define INPUT_DIP_6 10
+#define INPUT_DIP_7 11
+#define INPUT_DIP_8 12
 unsigned char readDips(unsigned char cnt);
 #endif
 // read config from SD card

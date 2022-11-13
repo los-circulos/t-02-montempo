@@ -1,7 +1,7 @@
 #ifndef MONTEMPO_MAIN_H
 #define MONTEMPO_MAIN_H
 
-#ifdef CONFIG_DIP_8
+#ifdef INPUT_DIP_8
 
 #endif
 
@@ -12,11 +12,11 @@ extern uint8_t currentMode;
 // if no button pressed, show home screen and wait 3 secs
 #define MODE_WELCOME_COUNTDOWN 2
 
-// test config screen
-#define MODE_TEST 10
-#define MODE_TEST_COUNTDOWN 11
-#define MODE_TEST_SAVE 12
-#define MODE_TEST_SAVED 14
+// saved config input screen
+#define MODE_SAVED_INPUT 10
+#define MODE_SAVED_INPUT_COUNTDOWN 11
+#define MODE_SAVED_INPUT_SAVE 12
+#define MODE_SAVED_INPUT_SAVED 14
 #define MODE_TEST_SPIN 15
 
 // pre-flight config screen (confirm config)

@@ -24,7 +24,7 @@ void rpmISR() {
 }
 #endif
 
-#define NOT_IMPLEMENTED (saved.holdMode != HOLD_MODE_FLAT_THROTTLE)
+#define MODE_NOT_IMPLEMENTED (saved.holdMode != HOLD_MODE_FLAT_THROTTLE)
 void notImplemented();
 void setMode(int newMode);
 bool elapsedInMode(unsigned int);
@@ -40,7 +40,7 @@ void setup() {
     initHardware();
     initScreen();
 
-    readConfig();
+    readConfigInput();
 
     drawWelcome();
 
@@ -151,8 +151,8 @@ void loop() {
 #else
             else if (elapsedInModeCounter > 8) {
 #endif
-                if (config.testMode) {
-                    setMode(MODE_TEST);
+                if (config.savedInputMode) {
+                    setMode(MODE_SAVED_INPUT);
                 }
                 else {
                     setMode(MODE_PREFLIGHT_PROGRAM);
@@ -162,47 +162,47 @@ void loop() {
                 drawWaitDot(elapsedInModeCounter);
             }
             break;
-        case MODE_TEST:
+        case MODE_SAVED_INPUT:
             // @todo deny test/setup if both buttons are disabled
             if (elapsedInMode(200)) {
-                readTestConfig();
-                drawTestScreen();
+                readSavedInput();
+                drawSavedInputScreen();
                 confirmation();
             }
             break;
-        case MODE_TEST_COUNTDOWN:
-            countDown(MODE_TEST_SAVE);
+        case MODE_SAVED_INPUT_COUNTDOWN:
+            countDown(MODE_SAVED_INPUT_SAVE);
             break;
-        case MODE_TEST_SAVE:
-            if (testMode == TESTMODE_SPIN) {
+        case MODE_SAVED_INPUT_SAVE:
+            if (savedInputMode == SAVED_INPUT_MODE_SPIN) {
                 setMode(MODE_TEST_SPIN);
                 return;
             }
-            else if (testMode == TESTMODE_SMART) {
-                saved.smartEndThrottle = testValue;
+            else if (savedInputMode == SAVED_INPUT_MODE_SMART) {
+                saved.smartEndThrottle = savedInputValue;
             }
-            else if (testMode == TESTMODE_T1_CUT) {
-                saved.t1Cut = testValue;
+            else if (savedInputMode == SAVED_INPUT_MODE_T1_CUT) {
+                saved.t1Cut = savedInputValue;
             }
-            else if (testMode == TESTMODE_T2_CUT) {
-                saved.t2Cut = testValue;
+            else if (savedInputMode == SAVED_INPUT_MODE_T2_CUT) {
+                saved.t2Cut = savedInputValue;
             }
-            else if (testMode == TESTMODE_VOLT_CUT) {
-                saved.voltCut = testValue;
+            else if (savedInputMode == SAVED_INPUT_MODE_VOLT_CUT) {
+                saved.voltCut = savedInputValue;
             }
-            else if (testMode == TESTMODE_CURRENT_CUT) {
-                saved.currentCut = testValue;
+            else if (savedInputMode == SAVED_INPUT_MODE_CURRENT_CUT) {
+                saved.currentCut = savedInputValue;
             }
-            else if (testMode == TESTMODE_MODE) {
-                saved.holdMode = testValue;
+            else if (savedInputMode == SAVED_INPUT_MODE_MODE) {
+                saved.holdMode = savedInputValue;
             }
-            else if (testMode == TESTMODE_POLES) {
-                saved.poles = testValue;
+            else if (savedInputMode == SAVED_INPUT_MODE_POLES) {
+                saved.poles = savedInputValue;
             }
             saveSaved();
-            setMode(MODE_TEST_SAVED);
+            setMode(MODE_SAVED_INPUT_SAVED);
             break;
-        case MODE_TEST_SAVED:
+        case MODE_SAVED_INPUT_SAVED:
             if (elapsedInMode(100)) {
                 if (ANY_BUTTON_PUSHED) {
                     drawLogoLock();
@@ -211,7 +211,7 @@ void loop() {
                     elapsedInModeCounter = 0;
                 }
                 else if (elapsedInModeCounter > 8) {
-                    setMode(MODE_TEST);
+                    setMode(MODE_SAVED_INPUT);
 //                    return;
                 }
                 else {
@@ -221,22 +221,22 @@ void loop() {
             break;
         case MODE_TEST_SPIN:
             if (elapsedInMode(200)) {
-                readTestConfig();
+                readSavedInput();
                 readMetrics();
                 sumMetrics();
-                if ((testMode != TESTMODE_SPIN) || !ANY_BUTTON_PUSHED) {
+                if ((savedInputMode != SAVED_INPUT_MODE_SPIN) || !ANY_BUTTON_PUSHED) {
                     setMode(MODE_WELCOME_LOCK);
                     throttlePcnt(0);
                 }
                 else {
-                    drawTestRunScreen();
-                    throttlePcnt(testValue);
+                    drawTestSpinScreen();
+                    throttlePcnt(savedInputValue);
                 }
             }
             break;
         case MODE_PREFLIGHT_PROGRAM:
             if (elapsedInMode(200)) {
-                readConfig();
+                readConfigInput();
                 readMetrics();
                 drawPreflight(config);
                 confirmation();
@@ -256,7 +256,7 @@ void loop() {
             break;
         case MODE_DELAY:
             i = config.timeDelay - (currentTime - currentModeStarted) / 1000;
-            if (NOT_IMPLEMENTED) {
+            if (MODE_NOT_IMPLEMENTED) {
                 notImplemented();
                 return;
             }
@@ -280,7 +280,7 @@ void loop() {
         case MODE_SOFT_START:
             break;
         case MODE_FLY:
-            if (NOT_IMPLEMENTED) {
+            if (MODE_NOT_IMPLEMENTED) {
                 notImplemented();
                 return;
             }
@@ -296,8 +296,8 @@ void loop() {
                 readMetrics();
                 sumMetrics();
 
-                // update throttle - currently only fixed throttle
-                i = config.throttle;
+                // update holdThrottle - currently only fixed holdThrottle
+                i = config.holdThrottle;
                 throttlePcnt(i);
 
                 // elapsed time
@@ -386,7 +386,7 @@ void setMode(int newMode) {
         case MODE_TEST_SPIN:
             resetMetrics();
         case MODE_DELAY:
-            if (!NOT_IMPLEMENTED) {
+            if (!MODE_NOT_IMPLEMENTED) {
                 drawArming();
                 armThrottle();
             }
@@ -395,10 +395,10 @@ void setMode(int newMode) {
 //        break;
         case MODE_PREFLIGHT_PROGRAM:
         case MODE_DELAY_LOCK:
-        case MODE_TEST:
+        case MODE_SAVED_INPUT:
             clearScreen();
             break;
-        case MODE_TEST_SAVED:
+        case MODE_SAVED_INPUT_SAVED:
             drawSaved();
         break;
         case MODE_FLY:
