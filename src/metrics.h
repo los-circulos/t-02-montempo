@@ -80,11 +80,6 @@ struct metricsSumCntT {
 extern metricsT metrics;
 extern metricsSumT metricsSum;
 
-//#define METRICS_AVG_VOLTS (metricsSum.voltsSum / metricsSum.summedSamples)
-//#define METRICS_AVG_AMPS (metricsSum.ampsSum / metricsSum.summedSamples)
-//#define METRICS_FLIGHT_MILLIS (metricsSum.lastMillis - metricsSum.startMillis)
-#define METRICS_AVG_VOLTS metricsSum.voltsAvg
-#define METRICS_AVG_AMPS metricsSum.ampsAvg
 #define METRICS_FLIGHT_MILLIS (metricsSumCntT.lastMillis - metricsSumCntT.startMillis)
 
 void rpmISR();

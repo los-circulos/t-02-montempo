@@ -295,16 +295,14 @@ void loop() {
 
                 readAndSumMetrics();
 
+                // SET ALARMS
                 setAlarm(
                     RESULT_ERR_VCUT,
                     (metrics.volts > 0) && (config.cellCount > 0) && (config.cellCount * (30+saved.voltCut) > metrics.volts)
                 );
-
 //                // @todo we might not need this???
                 setAlarm(RESULT_ERR_V_OVER, metrics.volts > config.cellCount * 42);
-
-                setAlarm(RESULT_ERR_ACUT, saved.currentCut);
-
+                setAlarm(RESULT_ERR_ACUT, metrics.amps / 5 > saved.currentCut);
                 setAlarm(RESULT_ERR_RPM_OVER, metrics.rpm > RPM_MAX);
 
                 // 606
@@ -424,8 +422,9 @@ void setMode(unsigned char newMode) {
 }
 
 void endMode(unsigned char result) {
-    metricsSum.result = result;
     throttleOff();
+    // masq ERR_VCUT for flights without time limit
+    metricsSum.result = ((result == RESULT_ERR_VCUT) && (config.timeFly == 0)) ? RESULT_OK_V : result;
     // display "WELLDONE" or "OOPS" as long as initial delay, then...
     drawAfterScreen(0);
     // @TODO save flight metrics here (should set flight number!)

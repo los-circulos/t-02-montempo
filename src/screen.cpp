@@ -350,7 +350,7 @@ void drawRunScreen(unsigned int secsRemain) {
     u8x8.drawString(0, 0, buffer);
     sprintf(buffer, "%4d", metricsSum.ampsMin*2);
     u8x8.drawString(0, 1, buffer);
-    sprintf(buffer, "%4d", (int)METRICS_AVG_AMPS*2);
+    sprintf(buffer, "%4d", (int)metricsSum.ampsAvg*2);
     u8x8.drawString(0, 2, buffer);
     sprintf(buffer, "%4d", metricsSum.ampsMax*2);
     u8x8.drawString(0, 3, buffer);
@@ -454,7 +454,7 @@ void drawAfterScreen(unsigned char which) {
         // test with max time 10m. 10m with max 50A (30 is max) is still just 8333MAH so fits
 //        i = 6000;
         i = metricsSum.flightTime;
-        i = ((long)i) * METRICS_AVG_AMPS / 18;
+        i = ((long)i) * metricsSum.ampsAvg / 18;
         sprintf(floatBuffer, "%4d", min(9999, i));
         u8x8.drawString(5, 0, floatBuffer);
 
@@ -464,14 +464,14 @@ void drawAfterScreen(unsigned char which) {
 //        SET_FONT_L;
         sprintf(buffer, "V %2d.%d %2d.%d %2d.%d",
             metricsSum.voltsMin/10, metricsSum.voltsMin%10,
-            METRICS_AVG_VOLTS/10, METRICS_AVG_VOLTS%10,
+            metricsSum.voltsAvg/10, metricsSum.voltsAvg%10,
             metricsSum.voltsMax/10, metricsSum.voltsMax%10
         );
         u8x8.drawString(0, 0, buffer);
 
         sprintf(buffer, "A %2d.%1d %2d.%1d %2d.%1d",
             metricsSum.ampsMin/5, (metricsSum.ampsMin*2)%10,
-            METRICS_AVG_AMPS/5, (METRICS_AVG_AMPS*2)%10,
+            metricsSum.ampsAvg/5, (metricsSum.ampsAvg*2)%10,
             metricsSum.ampsMax/5, (metricsSum.ampsMax*2)%10
         );
         u8x8.drawString(0, 2, buffer);
@@ -487,9 +487,9 @@ void drawAfterScreen(unsigned char which) {
         u8x8.drawString(0, 0, buffer);
 
         sprintf(buffer, "R %2d.%1d %2d.%1d %2d.%1d",
-            metricsSum.rpmMin/10, metricsSum.rpmMin%10,
-            metricsSum.rpmAvg/10, metricsSum.rpmAvg%10,
-            metricsSum.rpmMax/10, metricsSum.rpmMax%10
+            metricsSum.pMin/5, (metricsSum.pMin*2)%10,
+            metricsSum.pAvg/5, (metricsSum.pAvg*2)%10,
+            metricsSum.pMax/5, (metricsSum.pMax*2)%10
         );
         u8x8.drawString(0, 2, buffer);
     }
@@ -508,11 +508,7 @@ void drawAfterScreen(unsigned char which) {
     }
     // OOPS screen
     else {
-
-        SET_FONT_XL;
-        u8x8.drawString(4, 0, "!OOPS!");
-
-        SET_FONT_L;
+//        SET_FONT_L;
 
         // @todo write flight number, obtained after saving after-flight metrics
         u8x8.drawString(0, 0, "# ??");
@@ -522,6 +518,9 @@ void drawAfterScreen(unsigned char which) {
         u8x8.drawString(0, 2, buffer);
         SET_FONT_S;
         u8x8.drawString(6, 3, floatBuffer);
+
+        SET_FONT_XL;
+        u8x8.drawString(4, 0, "!OOPS!");
 
         // @todo I could put cut data on bottom right but it needs coding and memory soooo
 
