@@ -31,7 +31,8 @@ void readMetrics() {
     i = rpmCnt;
     rpmCnt = 0;
 //    metrics.rpm = i * 60 / saved.poles *1000 / (currentTime - metrics.lastTime);
-    metrics.rpm = i * 60000 / saved.poles / (currentTime - metrics.lastTime);
+//    metrics.rpm = (unsigned long)i * 60000 / saved.poles / (currentTime - metrics.lastTime);
+    metrics.rpm = (unsigned long)i * 600 / saved.poles * 100 / (currentTime - metrics.lastTime);
 #ifdef RPM_MIN
     if (metrics.rpm < RPM_MIN) {
         metrics.rpm = 0;

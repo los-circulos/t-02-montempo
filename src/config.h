@@ -33,7 +33,7 @@ struct configT {
     bool rotateScreens = true;
     int screenRotateTime = 2;
 
-    unsigned char maxAmpsValue = 150;
+    unsigned int maxRPMs = 15000;
 
     unsigned char cellCount = 0;
 

@@ -18,7 +18,6 @@ unsigned long elapsedInModeCounter = 0;
 unsigned char alarm = 0;
 unsigned long alarmStarted = 0;
 
-
 #ifdef RPM_DEBUG
 int xPcnt = 5;
 volatile unsigned int rpmCnt = 0;
@@ -300,11 +299,15 @@ void loop() {
                     RESULT_ERR_VCUT,
                     (metrics.volts > 0) && (config.cellCount > 0) && (config.cellCount * (30+saved.voltCut) > metrics.volts)
                 );
-                // @todo we might not need this???
-                setAlarm(RESULT_ERR_V_OVER, metrics.volts > config.cellCount * 42);
-                setAlarm(RESULT_ERR_ACUT, metrics.amps > config.maxAmpsValue);
 
-                // 558
+//                // @todo we might not need this???
+                setAlarm(RESULT_ERR_V_OVER, metrics.volts > config.cellCount * 42);
+
+                setAlarm(RESULT_ERR_ACUT, saved.currentCut);
+
+                setAlarm(RESULT_ERR_RPM_OVER, metrics.rpm > RPM_MAX);
+
+                // 606
 
                 // UPDATE THROTTLE
                 // update holdThrottle - currently only fixed holdThrottle

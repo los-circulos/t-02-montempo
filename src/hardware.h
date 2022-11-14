@@ -59,6 +59,7 @@ void throttlePcnt(unsigned int pcnt);
 #define PIN_RPM PIN2
 // @todo make this a meaningful threshold and set rpm 0 if under
 #define RPM_MIN 1
+#define RPM_MAX 15000
 
 // enable temperature sensing
 //#define PIN_TEMP PIN_A3
