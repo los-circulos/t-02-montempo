@@ -26,7 +26,8 @@ void rpmISR() {
 }
 #endif
 
-#define MODE_NOT_IMPLEMENTED (saved.holdMode != HOLD_MODE_HOLD_THROTTLE)
+#define MODE_NOT_IMPLEMENTED (((saved.holdMode != HOLD_MODE_HOLD_THROTTLE) && (saved.holdMode != HOLD_MODE_SMART_THROTTLE)) || \
+    ((saved.holdMode == HOLD_MODE_SMART_THROTTLE) && (config.timeFly == 0)))
 void notImplemented();
 void setMode(unsigned char newMode);
 void endMode(unsigned char result);
@@ -61,8 +62,6 @@ void setup() {
 
     setMode(MODE_WELCOME_LOCK);
 
-    u8x8.setFont(FONT_L);
-
 }
 
 #ifdef AFTER_SCREEN_DEBUG
@@ -96,6 +95,7 @@ void loop() {
 //    unsigned int i;
 
     if (elapsedInMode(1000)) {
+        u8x8.setFont(FONT_L);
         if (btnAPushed()) {
             xPcnt++;
         }
@@ -119,6 +119,8 @@ void loop() {
 char buf[20];
 void loop() {
 //    if (elapsedInMode(200)) {
+
+        u8x8.setFont(FONT_L);
 
         readMetrics();
         sumMetrics();
@@ -304,33 +306,42 @@ void loop() {
                 setAlarm(RESULT_ERR_V_OVER, metrics.volts > config.cellCount * 42);
                 setAlarm(RESULT_ERR_ACUT, metrics.amps / 5 > saved.currentCut);
                 setAlarm(RESULT_ERR_RPM_OVER, metrics.rpm > RPM_MAX);
+                // if an alarm has shut the system down, return - so run screen is not displayed again
+                if (currentMode != MODE_FLY) {
+                    return;
+                }
 
-                // 606
+                // elapsed time
+                unsigned int flyElapsed = (currentTime - currentModeStarted) / 1000;
 
                 // UPDATE THROTTLE
                 // update holdThrottle - currently only fixed holdThrottle
                 if (metricsSum.holdMode == HOLD_MODE_HOLD_THROTTLE) {
                     throttlePcnt(config.holdThrottle);
                 }
-
-                // elapsed time
-                i = (currentTime - currentModeStarted) / 1000;
+                else if (metricsSum.holdMode == HOLD_MODE_SMART_THROTTLE) {
+                    // timeLimit / elapsed = (thr1 - thr0) / (thrX - thr0)
+                    // elapsed / timeLimit = (thrX - thr0) / (thr1 - thr0)
+                    // thrX = thr0 + (thr1 - thr0) * elapsed / timeLimit
+                    i = (unsigned long)(saved.smartEndThrottle - config.holdThrottle) * flyElapsed / config.timeFly + config.holdThrottle;
+                    throttlePcnt(i);
+                }
 
                 // timed flight OR
                 if (config.timeFly > 0) {
-                    if (i >= config.timeFly) {
+                    if (flyElapsed >= config.timeFly) {
                         endMode(RESULT_OK_TIME);
                         return;
                     }
                     // remaining time is flight time minus soft start time (elapsed already) minus elapsed time
-                    i = config.timeFly - config.softStartTime - i;
+                    i = config.timeFly - config.softStartTime - flyElapsed;
                 }
                 // until cut flight
                 else {
                     // @todo limit flight to 9:59
                     // @todo check here if voltage reading is meaningful and error if not
                     // when using soft start and incremental time, add it to elapsed time (twice to increment previous deduction)
-                    i+= 2*config.softStartTime;
+                    i = flyElapsed + 2*config.softStartTime;
                 }
 
                 // blink led fast if less than 5 seconds remain AND ALSO in every first half of a second
@@ -428,8 +439,10 @@ void endMode(unsigned char result) {
     // display "WELLDONE" or "OOPS" as long as initial delay, then...
     drawAfterScreen(0);
     // @TODO save flight metrics here (should set flight number!)
-    delay(config.timeDelay*1000);
+//    delay(config.timeDelay*1000);
+    delay(2000);
     currentScreen = 1;
+//    clearScreen();
     // ... then draw main after screen
     drawAfterScreen(currentScreen);
     setMode(MODE_AFTER);
@@ -490,15 +503,16 @@ void countDown(char nextMode) {
 }
 
 void setAlarm(unsigned char resultCode, bool conditionMet) {
-    bool alarmElapsed = (currentTime - alarmStarted) > 1000;
+    bool alarmElapsed = (currentTime - alarmStarted) > ALARM_TIMEOUT;
     if (conditionMet) {
         if ((alarm == resultCode) && alarmElapsed) {
             endMode(alarm);
         }
         else if (alarm == 0) {
             alarm = resultCode;
-            alarmStarted = 0;
+            alarmStarted = currentTime;
         }
+        return;
     }
     else if (alarm == resultCode) {
         alarm = 0;

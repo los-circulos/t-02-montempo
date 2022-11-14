@@ -36,7 +36,7 @@ bool btnBDisabled();
 extern Servo throttle;
 void armThrottle();
 #define throttleOff() throttle.writeMicroseconds(THROTTLE_MICROS_MIN)
-void throttlePcnt(unsigned int pcnt);
+void throttlePcnt(unsigned char pcnt);
 
 // good min/max values but we'll calibrate the throttle anyway
 #define THROTTLE_MICROS_MIN 1050

@@ -65,7 +65,7 @@ void readConfigInput() {
 
 #ifdef PIN_VOLT
     // guess save cell count 1-5, save error codes over 5
-    for (i = 0; (i*42 < metrics.volts); i++);
+    for (i = 1; (i*42 < metrics.volts); i++);
 
     // VCUT ERR is when it is not obvious the number of cells eg. 16V can be 4S or 5S
     // eg we use a 5S battery and it gets drained to 16V (Vcut = 3.2). If we power up again,

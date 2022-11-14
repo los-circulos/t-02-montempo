@@ -38,6 +38,7 @@ struct metricsT {
 //    unsigned int t1;
 //    unsigned int t2;
     unsigned long lastTime;
+    unsigned char throttlePcnt;
 };
 
 struct metricsSumT {

@@ -1,7 +1,7 @@
 #ifndef MONTEMPO_CONFIG_H
 #define MONTEMPO_CONFIG_H
 
-#define DEVMODE
+//#define DEVMODE
 
 #define CONFIG_CELLS_MAX 5
 #define CONFIG_CELLS_ERR_VCUT 6

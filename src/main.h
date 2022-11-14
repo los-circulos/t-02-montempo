@@ -44,4 +44,6 @@ extern unsigned char currentMode;
 #define DELAY_COUNTDOWN 100
 #define DELAY_COUNTDOWN_FAST 100
 
+#define ALARM_TIMEOUT 1000
+
 #endif //MONTEMPO_MAIN_H

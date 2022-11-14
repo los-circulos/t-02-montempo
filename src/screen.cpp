@@ -26,7 +26,7 @@ unsigned char currentScreen = SCREEN_PRE;
 
 // should never be more than 17, but let's play safe
 char buffer[20];
-char floatBuffer[8];
+char floatBuffer[10];
 char progressBarChars[4] = {'>','#','#',' '};
 
 char *savedInputModeLabels[] = {"MOTOR", "SMART", "T1CUT", "T2CUT", "V CUT", "A CUT", "MODE ", "POLES"};
@@ -203,7 +203,7 @@ void drawPreflight(configT config) {
         if (config.cellCount == CONFIG_CELLS_ERR_VCUT) {
             sprintf(buffer, "VCUT ERR");
         }
-        else if (config.cellCount == CONFIG_CELLS_ERR_VCUT) {
+        else if (config.cellCount == CONFIG_CELLS_ERR_VLOW) {
             sprintf(buffer, "V LOW !!");
         }
         else {
@@ -349,19 +349,21 @@ void drawRunScreen(unsigned int secsRemain) {
 
     u8x8.noInverse();
 #ifdef DEVMODE
+
     SET_FONT_S;
 
 //    sprintf(buffer, "%4d", sizeof(metricsSumCntT));
 //    u8x8.drawString(6, 3, buffer);
 
-    sprintf(buffer, "%4d", metrics.amps*2);
-    u8x8.drawString(0, 0, buffer);
-    sprintf(buffer, "%4d", metricsSum.ampsMin*2);
-    u8x8.drawString(0, 1, buffer);
-    sprintf(buffer, "%4d", (int)metricsSum.ampsAvg*2);
-    u8x8.drawString(0, 2, buffer);
-    sprintf(buffer, "%4d", metricsSum.ampsMax*2);
-    u8x8.drawString(0, 3, buffer);
+//    sprintf(buffer, "%4d", metrics.amps*2);
+//    u8x8.drawString(0, 0, buffer);
+//    sprintf(buffer, "%4d", metricsSum.ampsMin*2);
+//    u8x8.drawString(0, 1, buffer);
+//    sprintf(buffer, "%4d", (int)metricsSum.ampsAvg*2);
+//    u8x8.drawString(0, 2, buffer);
+//    sprintf(buffer, "%4d", metricsSum.ampsMax*2);
+//    u8x8.drawString(0, 3, buffer);
+
 //    sprintf(buffer, "%4d", metrics.volts);
 //    u8x8.drawString(0, 0, buffer);
 //    sprintf(buffer, "%4d", metricsSum.voltsMin);
@@ -370,6 +372,18 @@ void drawRunScreen(unsigned int secsRemain) {
 ////    u8x8.drawString(0, 2, buffer);
 //    sprintf(buffer, "%4d", metricsSum.voltsMax);
 //    u8x8.drawString(0, 3, buffer);
+
+    sprintf(buffer, "%4d%%", metrics.throttlePcnt);
+    u8x8.drawString(0, 0, buffer);
+    sprintf(buffer, "%3d", metrics.volts);
+//    sprintf(buffer, "%3dV", saved.smartEndThrottle);
+    u8x8.drawString(0, 1, buffer);
+    sprintf(buffer, "%2dA", metrics.amps*2);
+//    sprintf(buffer, "%3d", config.holdThrottle);
+    u8x8.drawString(0, 2, buffer);
+    sprintf(buffer, "%5d", metrics.rpm);
+    u8x8.drawString(0, 3, buffer);
+
 #endif
 
 #endif
@@ -445,6 +459,9 @@ void drawAfterScreen(unsigned char which) {
         if (metricsSum.holdMode == HOLD_MODE_HOLD_THROTTLE) {
             sprintf(floatBuffer, " %2d %%", metricsSum.holdValueRaw);
         }
+        else if (metricsSum.holdMode == HOLD_MODE_SMART_THROTTLE) {
+            sprintf(floatBuffer, "%2d-%2d%%", metricsSum.holdValueRaw, saved.smartEndThrottle);
+        }
 //        else if (metricsSum.holdMode == HOLD_MODE_POWER) {
 //            // power, formula: P = 10*t/c
 //            sprintf(floatBuffer, "  %3dW", 0);
@@ -501,6 +518,8 @@ void drawAfterScreen(unsigned char which) {
     // OOPS screen
     else {
 //        SET_FONT_L;
+
+        // as per now, I can save 50+ bytes of memory if I print only "OOPS", and log is not even implemented yet
 
         // @todo write flight number, obtained after saving after-flight metrics
         u8x8.drawString(0, 0, "# ??");
