@@ -151,6 +151,14 @@ void drawWaitDot(uint8_t x) {
     u8x8.drawString(x + 3, 3, ".");
 #endif
 }
+void draw3Decimals(char unit, unsigned int v1, unsigned int v2, unsigned int v3) {
+    sprintf(buffer, "%c %2d.%1d %2d.%1d %2d.%1d",
+            unit,
+            v1 / 10, v1 % 10,
+            v2 / 10, v2 % 10,
+            v3 / 10, v3 % 10
+    );
+}
 
 void drawWelcome() {
     clearScreen();
@@ -437,10 +445,10 @@ void drawAfterScreen(unsigned char which) {
         if (metricsSum.holdMode == HOLD_MODE_HOLD_THROTTLE) {
             sprintf(floatBuffer, " %2d %%", metricsSum.holdValueRaw);
         }
-        else if (false && (metricsSum.holdMode == HOLD_MODE_POWER)) {
-            // power, formula: P = 10*t/c
-            sprintf(floatBuffer, "  %3dW", 0);
-        }
+//        else if (metricsSum.holdMode == HOLD_MODE_POWER) {
+//            // power, formula: P = 10*t/c
+//            sprintf(floatBuffer, "  %3dW", 0);
+//        }
         else {
             sprintf(floatBuffer, "NOTIMPL");
         }
@@ -462,35 +470,19 @@ void drawAfterScreen(unsigned char which) {
     // volts and amps screen
     else if (which == 2) {
 //        SET_FONT_L;
-        sprintf(buffer, "V %2d.%d %2d.%d %2d.%d",
-            metricsSum.voltsMin/10, metricsSum.voltsMin%10,
-            metricsSum.voltsAvg/10, metricsSum.voltsAvg%10,
-            metricsSum.voltsMax/10, metricsSum.voltsMax%10
-        );
+        draw3Decimals('V', metricsSum.voltsMin, metricsSum.voltsAvg, metricsSum.voltsMax);
         u8x8.drawString(0, 0, buffer);
 
-        sprintf(buffer, "A %2d.%1d %2d.%1d %2d.%1d",
-            metricsSum.ampsMin/5, (metricsSum.ampsMin*2)%10,
-            metricsSum.ampsAvg/5, (metricsSum.ampsAvg*2)%10,
-            metricsSum.ampsMax/5, (metricsSum.ampsMax*2)%10
-        );
+        draw3Decimals('A', metricsSum.ampsMin, metricsSum.ampsAvg, metricsSum.ampsMax);
         u8x8.drawString(0, 2, buffer);
     }
     // power / rpm view
     else if (which == 3) {
 //        SET_FONT_L;
-        sprintf(buffer, "R %2d.%1d %2d.%1d %2d.%1d",
-            metricsSum.rpmMin/10, metricsSum.rpmMin%10,
-            metricsSum.rpmAvg/10, metricsSum.rpmAvg%10,
-            metricsSum.rpmMax/10, metricsSum.rpmMax%10
-        );
+        draw3Decimals('R', metricsSum.rpmMin, metricsSum.rpmAvg, metricsSum.rpmMax);
         u8x8.drawString(0, 0, buffer);
 
-        sprintf(buffer, "R %2d.%1d %2d.%1d %2d.%1d",
-            metricsSum.pMin/5, (metricsSum.pMin*2)%10,
-            metricsSum.pAvg/5, (metricsSum.pAvg*2)%10,
-            metricsSum.pMax/5, (metricsSum.pMax*2)%10
-        );
+        draw3Decimals('P', metricsSum.pMin, metricsSum.pAvg, metricsSum.pMax);
         u8x8.drawString(0, 2, buffer);
     }
     // T1 / T2 view
