@@ -178,29 +178,29 @@ void loop() {
             countDown(MODE_SAVED_INPUT_SAVE);
         break;
         case MODE_SAVED_INPUT_SAVE:
-            if (savedInputHoldMode == SAVED_INPUT_MODE_SPIN) {
+            if (savedInputMode == SAVED_INPUT_MODE_SPIN) {
                 setMode(MODE_TEST_SPIN);
                 return;
             }
-            else if (savedInputHoldMode == SAVED_INPUT_MODE_SMART) {
+            else if (savedInputMode == SAVED_INPUT_MODE_SMART) {
                 saved.smartEndThrottle = savedInputValue;
             }
-            else if (savedInputHoldMode == SAVED_INPUT_MODE_T1_CUT) {
+            else if (savedInputMode == SAVED_INPUT_MODE_T1_CUT) {
                 saved.t1Cut = savedInputValue;
             }
-            else if (savedInputHoldMode == SAVED_INPUT_MODE_T2_CUT) {
+            else if (savedInputMode == SAVED_INPUT_MODE_T2_CUT) {
                 saved.t2Cut = savedInputValue;
             }
-            else if (savedInputHoldMode == SAVED_INPUT_MODE_VOLT_CUT) {
+            else if (savedInputMode == SAVED_INPUT_MODE_VOLT_CUT) {
                 saved.voltCut = savedInputValue;
             }
-            else if (savedInputHoldMode == SAVED_INPUT_MODE_CURRENT_CUT) {
+            else if (savedInputMode == SAVED_INPUT_MODE_CURRENT_CUT) {
                 saved.currentCut = savedInputValue;
             }
-            else if (savedInputHoldMode == SAVED_INPUT_MODE_MODE) {
+            else if (savedInputMode == SAVED_INPUT_MODE_MODE) {
                 saved.holdMode = savedInputValue;
             }
-            else if (savedInputHoldMode == SAVED_INPUT_MODE_POLES) {
+            else if (savedInputMode == SAVED_INPUT_MODE_POLES) {
                 saved.poles = savedInputValue;
             }
             saveSaved();
@@ -227,7 +227,7 @@ void loop() {
             if (elapsedInMode(200)) {
                 readSavedInput();
                 readAndSumMetrics();
-                if ((savedInputHoldMode != SAVED_INPUT_MODE_SPIN) || !ANY_BUTTON_PUSHED) {
+                if ((savedInputMode != SAVED_INPUT_MODE_SPIN) || !ANY_BUTTON_PUSHED) {
                     setMode(MODE_WELCOME_LOCK);
                     throttlePcnt(0);
                 }

@@ -4,7 +4,7 @@
 #include "config.h"
 
 savedT saved;
-uint8_t savedInputHoldMode;
+uint8_t savedInputMode;
 int savedInputValue;
 
 void initSaved() {
@@ -38,53 +38,53 @@ void readSavedInput() {
     int i = readDips(8) / 16;
 
     if (i>=12) {
-        savedInputHoldMode = SAVED_INPUT_MODE_SPIN;
+        savedInputMode = SAVED_INPUT_MODE_SPIN;
     }
     else if (i >= 10) {
-        savedInputHoldMode = SAVED_INPUT_MODE_T2_CUT;
+        savedInputMode = SAVED_INPUT_MODE_T2_CUT;
     }
     else if (i >= 8) {
-        savedInputHoldMode = SAVED_INPUT_MODE_T1_CUT;
+        savedInputMode = SAVED_INPUT_MODE_T1_CUT;
     }
     else if (i == 7) {
-        savedInputHoldMode = SAVED_INPUT_MODE_MODE;
+        savedInputMode = SAVED_INPUT_MODE_MODE;
     }
     else if (i == 6) {
-        savedInputHoldMode = SAVED_INPUT_MODE_POLES;
+        savedInputMode = SAVED_INPUT_MODE_POLES;
     }
     else if (i == 4) {
-        savedInputHoldMode = SAVED_INPUT_MODE_VOLT_CUT;
+        savedInputMode = SAVED_INPUT_MODE_VOLT_CUT;
     }
     else if (i < 4) {
-        savedInputHoldMode = SAVED_INPUT_MODE_SMART;
+        savedInputMode = SAVED_INPUT_MODE_SMART;
     }
     else {
-        savedInputHoldMode = SAVED_INPUT_MODE_CURRENT_CUT;
+        savedInputMode = SAVED_INPUT_MODE_CURRENT_CUT;
     }
 
     // a switch would take only 4 bytes less of memory
-    if (savedInputHoldMode <= SAVED_INPUT_MODE_SMART) {
+    if (savedInputMode <= SAVED_INPUT_MODE_SMART) {
         savedInputValue = 98
                           - readDips(4) * 2
                           - !digitalRead(INPUT_DIP_5) * 20
                           - !digitalRead(INPUT_DIP_6) * 48;
     }
         // 28..90C /2
-    else if (savedInputHoldMode <= SAVED_INPUT_MODE_T2_CUT) {
+    else if (savedInputMode <= SAVED_INPUT_MODE_T2_CUT) {
         savedInputValue = 90 - readDips(5) * 2;
     }
         // 3...3.7V / 0.1
-    else if (savedInputHoldMode == SAVED_INPUT_MODE_VOLT_CUT) {
+    else if (savedInputMode == SAVED_INPUT_MODE_VOLT_CUT) {
         savedInputValue = 7 - readDips(3);
     }
         // 20..50/2
-    else if (savedInputHoldMode == SAVED_INPUT_MODE_CURRENT_CUT) {
+    else if (savedInputMode == SAVED_INPUT_MODE_CURRENT_CUT) {
         savedInputValue = 50 - readDips(4) * 2;
     }
-    else if (savedInputHoldMode == SAVED_INPUT_MODE_MODE) {
+    else if (savedInputMode == SAVED_INPUT_MODE_MODE) {
         savedInputValue = readDips(2);
     }
-    else if (savedInputHoldMode == SAVED_INPUT_MODE_POLES){
+    else if (savedInputMode == SAVED_INPUT_MODE_POLES){
         savedInputValue = 34 - readDips(4) * 2;
     }
     else {

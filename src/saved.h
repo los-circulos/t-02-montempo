@@ -31,11 +31,12 @@ struct savedT {
     unsigned char poles = 4;
     // 3.7
     unsigned char voltCut = 7;
+    // not yet configurable ?
     unsigned char currentCut = 30;
 };
 
 extern savedT saved;
-extern unsigned char savedInputHoldMode;
+extern unsigned char savedInputMode;
 extern int savedInputValue;
 
 void initSaved();

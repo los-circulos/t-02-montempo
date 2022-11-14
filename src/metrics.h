@@ -13,11 +13,10 @@
 #define RESULT_ERR_V_READ 3
 #define RESULT_ERR_V_OVER 4
 #define RESULT_ERR_A_READ 5
-#define RESULT_ERR_A_OVER 6
-#define RESULT_ERR_RPM_READ 7
-#define RESULT_ERR_RPM_OVER 8
-#define RESULT_ERR_T1_READ 9
-#define RESULT_ERR_T2_READ 10
+#define RESULT_ERR_RPM_READ 6
+#define RESULT_ERR_RPM_OVER 7
+#define RESULT_ERR_T1_READ 8
+#define RESULT_ERR_T2_READ 9
 
 
 // cut errors, indexed like this, so they map to testModeLables[error-44+2]
