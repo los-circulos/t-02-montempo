@@ -3,8 +3,9 @@
 
 #define DEVMODE
 
-#define CONFIG_CELL_ERR_VCUT 6
-#define CONFIG_CELL_ERR_VLOW 7
+#define CONFIG_CELLS_MAX 5
+#define CONFIG_CELLS_ERR_VCUT 6
+#define CONFIG_CELLS_ERR_VLOW 7
 
 // @todo this is a runtime setup, not config
 struct configT {
@@ -31,7 +32,11 @@ struct configT {
     int defaultScreen = 0;
     bool rotateScreens = true;
     int screenRotateTime = 2;
+
+    unsigned char maxAmpsValue = 150;
+
     unsigned char cellCount = 0;
+
 };
 
 extern configT config;

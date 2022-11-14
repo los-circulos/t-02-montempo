@@ -63,6 +63,7 @@ void readConfigInput() {
     config.rotateScreens = !digitalRead(INPUT_DIP_8);
 #endif
 
+#ifdef PIN_VOLT
     // guess save cell count 1-5, save error codes over 5
     for (i = 0; (i*42 < metrics.volts); i++);
 
@@ -72,13 +73,14 @@ void readConfigInput() {
     //  power up on eg. 16.2V then it's not sure if that's 4S or 5S
     // it is a VCUT error as raising VCUT helps.
     if ((i < 5) && (i+1) * (30+saved.voltCut) <= metrics.volts) {
-        config.cellCount = CONFIG_CELL_ERR_VCUT;
+        config.cellCount = CONFIG_CELLS_ERR_VCUT;
     }
     else if (i * (30+saved.voltCut) > metrics.volts) {
-        config.cellCount = CONFIG_CELL_ERR_VLOW;
+        config.cellCount = CONFIG_CELLS_ERR_VLOW;
     }
     else {
         config.cellCount = i;
     }
+#endif
 
 }

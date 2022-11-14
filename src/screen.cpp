@@ -34,7 +34,8 @@ char savedInputModeUnits[] = "%%CCVA P";
 char *holdModeLabels[] = {"THRO", "RPM ", "PWR ", "SMRT"};
 // @todo more modes - simulate glow with stunt tank, with uniflow tank, and erratic run with hole on tank
 //char *holdModeLabels[] = {"THRO", "RPM ", "PWR ", "SMRT", "GLOW", "UNIF", "ERRA"};
-char *resultLabels[] = {"OKTIME", "OKVCUT", "BTN", "V ???", "VHIGH", "A ???", "AHIGH", "R??", "RHIGH", "T1???", "T2???"};
+//char *resultLabels[] = {"OKTIME", "OKVCUT", "BTN", "V ???", "VHIGH", "A ???", "AHIGH", "R??", "RHIGH", "T1???", "T2???"};
+char *resultLabels[] = {"OK T", "OK V", "BTN", "V?", "VHI", "A?", "AHI", "R?", "RHI", "T1?", "T2?"};
 
 #define FMT_TEST_VALUE_COMMON " %2d%c"
 #define FMT_TEST_VALUE_VOLTS "3.%1dV"
@@ -191,10 +192,10 @@ void drawPreflight(configT config) {
     }
     else {
 //        sprintf(buffer, "V  %2d.%1d", metrics.volts/10, metrics.volts%10);
-        if (config.cellCount == CONFIG_CELL_ERR_VCUT) {
+        if (config.cellCount == CONFIG_CELLS_ERR_VCUT) {
             sprintf(buffer, "VCUT ERR");
         }
-        else if (config.cellCount == CONFIG_CELL_ERR_VCUT) {
+        else if (config.cellCount == CONFIG_CELLS_ERR_VCUT) {
             sprintf(buffer, "V LOW !!");
         }
         else {

@@ -18,6 +18,7 @@ unsigned long elapsedInModeCounter = 0;
 unsigned char alarm = 0;
 unsigned long alarmStarted = 0;
 
+
 #ifdef RPM_DEBUG
 int xPcnt = 5;
 volatile unsigned int rpmCnt = 0;
@@ -33,6 +34,7 @@ void endMode(unsigned char result);
 bool elapsedInMode(unsigned int);
 void confirmation();
 void countDown(char nextMode);
+void setAlarm(unsigned char resultCode, bool conditionMet);
 
 void setup() {
 
@@ -294,7 +296,15 @@ void loop() {
 
                 readAndSumMetrics();
 
+                setAlarm(
+                    RESULT_ERR_VCUT,
+                    (metrics.volts > 0) && (config.cellCount > 0) && (config.cellCount * (30+saved.voltCut) > metrics.volts)
+                );
+                // @todo we might not need this???
+                setAlarm(RESULT_ERR_V_OVER, metrics.volts > config.cellCount * 42);
+                setAlarm(RESULT_ERR_ACUT, metrics.amps > config.maxAmpsValue);
 
+                // 558
 
                 // UPDATE THROTTLE
                 // update holdThrottle - currently only fixed holdThrottle
@@ -475,4 +485,20 @@ void countDown(char nextMode) {
         drawWaitDot(elapsedInModeCounter);
     }
     blinkLed(BLINK_FAST);
+}
+
+void setAlarm(unsigned char resultCode, bool conditionMet) {
+    bool alarmElapsed = (currentTime - alarmStarted) > 1000;
+    if (conditionMet) {
+        if ((alarm == resultCode) && alarmElapsed) {
+            endMode(alarm);
+        }
+        else if (alarm == 0) {
+            alarm = resultCode;
+            alarmStarted = 0;
+        }
+    }
+    else if (alarm == resultCode) {
+        alarm = 0;
+    }
 }
