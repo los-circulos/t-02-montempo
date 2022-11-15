@@ -117,7 +117,8 @@ void drawRemainingTime(unsigned int secsRemain) {
     if (secsRemain > 59) {
         sprintf(
                 buffer,
-                "%2d.%02d",
+//                "%2d.%02d",
+                "%1d.%02d",
                 secsRemain / 60,
                 secsRemain % 60
         );
@@ -125,7 +126,8 @@ void drawRemainingTime(unsigned int secsRemain) {
     else {
         sprintf(
                 buffer,
-                "  .%2d",
+//                "  .%2d",
+                " .%2d",
                 secsRemain % 60
         );
     }
@@ -133,7 +135,8 @@ void drawRemainingTime(unsigned int secsRemain) {
 //    SET_FONT_XXL;
 //    u8x8.drawString(1, 0, buffer);
     SET_FONT_XL;
-    u8x8.drawString(3, 0, buffer);
+//    u8x8.drawString(3, 0, buffer);
+    u8x8.drawString(8, 0, buffer);
 #endif
 
 }
@@ -285,17 +288,11 @@ void drawSavedInputScreen() {
 void drawTestSpinScreen() {
 #ifdef SCREEN_32X4
     SET_FONT_L;
-//    u8x8.drawString(0, 0, "THR __  V __._");
-    sprintf(buffer, "THR %2d  V %2d.%1d", savedInputValue, metrics.volts / 10, metrics.volts % 10);
+    sprintf(buffer, "THR %2d %% %2d.%1d V", savedInputValue, metrics.volts / 10, metrics.volts % 10);
     u8x8.drawString(0, 0, buffer);
-//    sprintf(buffer,  "RPM ____ A %2d.%1d", metrics.amps/10, metrics.amps%10);
-//    sprintf(buffer,  "RPM ____ A %4d", metrics.amps);
-    sprintf(buffer,  "RPM %4d A %4d", metrics.rpm, metrics.amps);
+//    sprintf(buffer,  "RPM %2d.%1d %4d A", metrics.rpm/1000, (metrics.rpm%1000)/100, metrics.amps);
+    sprintf(buffer,  "RPM %4d %4d A", metrics.rpm, metrics.amps);
     u8x8.drawString(0, 2, buffer);
-
-//    u8x8.drawString(0, 0, "THR __ PWR ___");
-//    u8x8.drawString(0, 1, "T1__ T2__ P___");
-
 #endif
 }
 void drawRunScreen(unsigned int secsRemain) {
@@ -321,9 +318,10 @@ void drawRunScreen(unsigned int secsRemain) {
     if (config.timeFly > 0) {
         // timeFly/16 = (16-secsRemain)/x
         // x = 64 - secsRemain*64/timeFly -1 (-1 so printing won't overflow on secsRemain=0)
-        secsRemain = 63 - secsRemain*64/config.timeFly;
+//        secsRemain = 63 - secsRemain*64/config.timeFly;
+        secsRemain = 43 - secsRemain*44/config.timeFly;
 
-        int i = secsRemain % 4;
+        unsigned int i = secsRemain % 4;
 
         buffer[0] = progressBarChars[i];
         buffer[1] = 0;
@@ -335,20 +333,22 @@ void drawRunScreen(unsigned int secsRemain) {
             u8x8.noInverse();
         }
 
-        i = secsRemain / 4;
+//        i = secsRemain / 4;
+        i = secsRemain / 4 + 5;
 
         SET_FONT_S;
         u8x8.drawString(i, 3, buffer);
 
         u8x8.inverse();
-        for (i--; i>0; i--) {
+//        for (i--; i>0; i--) {
+        for (i--; i>5; i--) {
             u8x8.drawString(i, 3, " ");
         }
 
     }
 
     u8x8.noInverse();
-#ifdef DEVMODE
+#ifdef DEVMODE_
 
     SET_FONT_S;
 
@@ -382,6 +382,17 @@ void drawRunScreen(unsigned int secsRemain) {
 //    sprintf(buffer, "%3d", config.holdThrottle);
     u8x8.drawString(0, 2, buffer);
     sprintf(buffer, "%5d", metrics.rpm);
+    u8x8.drawString(0, 3, buffer);
+
+#else
+    SET_FONT_S;
+    sprintf(buffer, " %2d %%", metrics.throttlePcnt);
+    u8x8.drawString(0, 0, buffer);
+    sprintf(buffer, "%2d.%1dV", metrics.volts/10, metrics.volts%10);
+    u8x8.drawString(0, 1, buffer);
+    sprintf(buffer, "%2d.%1dA", metrics.amps/5, (metrics.amps*2)%10);
+    u8x8.drawString(0, 2, buffer);
+    sprintf(buffer, "%2d.%1d ", metrics.amps/5, (metrics.amps*2)%10);
     u8x8.drawString(0, 3, buffer);
 
 #endif

@@ -9,6 +9,8 @@
 #define RESULT_ERRORS_FROM 2
 #define RESULT_ERR_BTN 2
 
+// @todo err max time 9:59
+
 // error pairs - READ when reading is needed for flight but is unavailable, OVER - over max threshold
 #define RESULT_ERR_V_READ 3
 #define RESULT_ERR_V_OVER 4

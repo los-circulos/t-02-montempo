@@ -30,9 +30,28 @@ void readMetrics() {
 #ifdef PIN_RPM
     i = rpmCnt;
     rpmCnt = 0;
+    /*
+    test readings show RPM value not being linear with rpm
+     41 1700    8%  1500
+     46 2000    10% 1700
+     52 2200    12% 1900
+     56 24      14% 2100
+     61 26      16% 2250
+     65 28      18% 2400
+     69 29      20% 2500
+     73 31      22% 2700
+     77 32      24% 2900
+     80 34      26% 3000
+     84 36      28% 3100
+     87 37      30% 3200
+     98 38      32% 3600
+        43      40% 5000
+        52      50% 13000
+     */
 //    metrics.rpm = i * 60 / saved.poles *1000 / (currentTime - metrics.lastTime);
 //    metrics.rpm = (unsigned long)i * 60000 / saved.poles / (currentTime - metrics.lastTime);
     metrics.rpm = (unsigned long)i * 600 / saved.poles * 100 / (currentTime - metrics.lastTime);
+//    metrics.rpm = ((unsigned int)i)*100;
 #ifdef RPM_MIN
     if (metrics.rpm < RPM_MIN) {
         metrics.rpm = 0;
