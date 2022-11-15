@@ -178,9 +178,10 @@ void drawPreflight(configT config) {
 
     SET_FONT_L;
 
+    // @todo check alarms and if alarm, don't let fly (how we trim V then?)
     u8x8.drawString(10, 0, "FLY?");
 
-    // NOTE a switch would eat 4bytes more here
+    // NOTE a switch would eat 4bytes more here than these ifs
     if (saved.holdMode == HOLD_MODE_RPM) {
         sprintf(buffer, "RPM %2d.%d", config.holdRPM / 1000, (config.holdRPM / 100) % 10);
         u8x8.drawString(0, 2, buffer);
@@ -190,7 +191,7 @@ void drawPreflight(configT config) {
         u8x8.drawString(0, 2, buffer);
     }
     else if (saved.holdMode == HOLD_MODE_SMART_THROTTLE) {
-        sprintf(buffer, "SMRT %2d%%", config.holdThrottle);
+        sprintf(buffer, "SMR %2d-%2d", config.holdThrottle, saved.smartEndThrottle);
         u8x8.drawString(0, 2, buffer);
     }
     else {

@@ -34,6 +34,7 @@ void endMode(unsigned char result);
 bool elapsedInMode(unsigned int);
 void confirmation();
 void countDown(char nextMode);
+void setFlightAlarms();
 void setAlarm(unsigned char resultCode, bool conditionMet);
 
 void setup() {
@@ -161,7 +162,7 @@ void loop() {
                     setMode(MODE_SAVED_INPUT);
                 }
                 else {
-                    setMode(MODE_PREFLIGHT_PROGRAM);
+                    setMode(MODE_PREFLIGHT_CONFIG);
                 }
             }
             else if (elapsedInMode(DELAY_COUNTDOWN)) {
@@ -239,7 +240,7 @@ void loop() {
                 }
             }
         break;
-        case MODE_PREFLIGHT_PROGRAM:
+        case MODE_PREFLIGHT_CONFIG:
             if (elapsedInMode(200)) {
                 readConfigInput();
                 readMetrics();
@@ -247,7 +248,7 @@ void loop() {
                 confirmation();
             }
         break;
-        case MODE_PREFLIGHT_PROGRAM_COUNTDOWN:
+        case MODE_PREFLIGHT_CONFIG_COUNTDOWN:
             countDown(MODE_DELAY_LOCK);
         break;
         case MODE_DELAY_LOCK:
@@ -265,7 +266,7 @@ void loop() {
                 notImplemented();
             }
             else if (ANY_BUTTON_PUSHED) {
-                setMode(MODE_PREFLIGHT_PROGRAM);
+                setMode(MODE_PREFLIGHT_CONFIG);
             }
             else if (i == 0) {
                 drawRemainingTime(i);
@@ -297,15 +298,7 @@ void loop() {
 
                 readAndSumMetrics();
 
-                // SET ALARMS
-                setAlarm(
-                    RESULT_ERR_VCUT,
-                    (metrics.volts > 0) && (config.cellCount > 0) && (config.cellCount * (30+saved.voltCut) > metrics.volts)
-                );
-//                // @todo we might not need this???
-                setAlarm(RESULT_ERR_V_OVER, metrics.volts > config.cellCount * 42);
-                setAlarm(RESULT_ERR_ACUT, metrics.amps / 5 > saved.currentCut);
-                setAlarm(RESULT_ERR_RPM_OVER, metrics.rpm > RPM_MAX);
+                setFlightAlarms();
                 // if an alarm has shut the system down, return - so run screen is not displayed again
                 if (currentMode != MODE_FLY) {
                     return;
@@ -417,7 +410,7 @@ void setMode(unsigned char newMode) {
         // commenting or not the following makes no difference in memory, probably it's optimized during compile
 //            clearScreen();
 //            break;
-        case MODE_PREFLIGHT_PROGRAM:
+        case MODE_PREFLIGHT_CONFIG:
         case MODE_DELAY_LOCK:
         case MODE_SAVED_INPUT:
             clearScreen();
@@ -500,6 +493,20 @@ void countDown(char nextMode) {
         drawWaitDot(elapsedInModeCounter);
     }
     blinkLed(BLINK_FAST);
+}
+
+void setFlightAlarms() {
+
+    // SET ALARMS
+    setAlarm(
+        RESULT_ERR_VCUT,
+        (metrics.volts > 0) && (config.cellCount > 0) && (config.cellCount * (30+saved.voltCut) > metrics.volts)
+    );
+//    // @todo we might not need this???
+    setAlarm(RESULT_ERR_V_OVER, metrics.volts > config.cellCount * 42);
+    setAlarm(RESULT_ERR_ACUT, metrics.amps / 5 > saved.currentCut);
+    setAlarm(RESULT_ERR_RPM_OVER, metrics.rpm > RPM_MAX);
+
 }
 
 void setAlarm(unsigned char resultCode, bool conditionMet) {
