@@ -84,6 +84,12 @@ void drawFlyConfirmation(bool show) {
     }
 #endif
 }
+void drawNoFly() {
+#ifdef SCREEN_32X4
+    SET_FONT_XL;
+    u8x8.drawString(0, 0, "NO FLY !");
+#endif
+}
 void drawLogoLock() {
 #ifdef SCREEN_32X4
     SET_FONT_S;
@@ -199,20 +205,19 @@ void drawPreflight(configT config) {
         u8x8.drawString(0, 2, buffer);
     }
 
+    config.preflightError = true;
     if (metrics.volts > METRICS_V_MAX) {
         sprintf(buffer, "V HIGH!!");
     }
+    else if (config.cellCount == CONFIG_CELLS_ERR_VCUT) {
+        sprintf(buffer, "VCUT ERR");
+    }
+    else if (config.cellCount == CONFIG_CELLS_ERR_VLOW) {
+        sprintf(buffer, "V LOW !!");
+    }
     else {
-//        sprintf(buffer, "V  %2d.%1d", metrics.volts/10, metrics.volts%10);
-        if (config.cellCount == CONFIG_CELLS_ERR_VCUT) {
-            sprintf(buffer, "VCUT ERR");
-        }
-        else if (config.cellCount == CONFIG_CELLS_ERR_VLOW) {
-            sprintf(buffer, "V LOW !!");
-        }
-        else {
-            sprintf(buffer, "%2d.%1dV %1dS", metrics.volts/10, metrics.volts%10, config.cellCount);
-        }
+        sprintf(buffer, "%2d.%1dV %1dS", metrics.volts/10, metrics.volts%10, config.cellCount);
+        config.preflightError = false;
     }
     u8x8.drawString(0,0, buffer);
 

@@ -16,20 +16,14 @@ void initHardware() {
     pinMode(LED1, OUTPUT);
 
     // NOTE on the nano these won't work with default pins A6, A7 and these two pins need a pullup resistor
-    if (btnADisabled()) {
-        config.btnAEnabled = false;
-    }
-    else {
+    if (!btnADisabled()) {
         pinMode(BTN_A, INPUT_PULLUP);
     }
-    // @todo? - the config value is not even used properly...
-//    if (btnBDisabled() || btnBPushed()) {
-    if (btnBDisabled()) {
-        config.btnBEnabled = false;
-    }
-    else {
+#ifdef BTN_B
+    if (!btnBDisabled()) {
         pinMode(BTN_B, INPUT_PULLUP);
     }
+#endif
 
 #ifdef PIN_THROTTLE
     // this will leave the ESC initialized but not armed
@@ -71,11 +65,26 @@ bool btnADisabled() {
 }
 
 bool btnBPushed() {
+#ifdef BTN_B
     return analogRead(BTN_B) IS_PUSHED_BTN;
+#else
+    return false;
+#endif
 }
 bool btnBDisabled() {
+#ifdef BTN_B
     int i = analogRead(BTN_B);
     return !(i IS_PUSHED_BTN) && (i IS_DISABLED_BTN);
+#else
+    return true;
+#endif
+}
+
+bool allButtonsPushed() {
+    return btnAPushed() && (btnBDisabled() || btnBPushed());
+}
+bool anyButtonPushed() {
+    return btnAPushed() || (!btnBDisabled() && btnBPushed());
 }
 
 Servo throttle = Servo();

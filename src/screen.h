@@ -37,6 +37,7 @@ void clearScreen();
 
 void drawArming();
 void drawFlyConfirmation(bool show);
+void drawNoFly();
 void drawLogoLock();
 void eraseLogoLock();
 void drawNotImplemented();

@@ -67,9 +67,15 @@ void resetMetrics() {
     memset(&metricsSum, 0, sizeof metricsSum);
     // this yields much because the added initial values in .h
 //    metricsSum = {};
+#ifdef PIN_VOLT
     metricsSum.voltsMin = 255;
+#endif
+#ifdef PIN_CURRENT
     metricsSum.ampsMin = 255;
+#endif
+#ifdef PIN_RPM
     metricsSum.rpmMin = 255;
+#endif
     metricsSum.holdMode = saved.holdMode;
     metricsSum.holdValueRaw = savedInputValue;
 
@@ -110,7 +116,6 @@ void readAndSumMetrics() {
     metricsSumCnt.pSum+= i;
     metricsSum.pAvg = metricsSumCnt.pSum / metricsSumCnt.summedSamples;
     #endif
-
 #endif
 #ifdef PIN_RPM
     metricsSum.rpmMin = min(metricsSum.rpmMin, metrics.rpm);

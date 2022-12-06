@@ -1,7 +1,7 @@
 #ifndef MONTEMPO_CONFIG_H
 #define MONTEMPO_CONFIG_H
 
-//#define DEVMODE
+#define DEVMODE
 
 #define CONFIG_CELLS_MAX 5
 #define CONFIG_CELLS_ERR_VCUT 6
@@ -10,8 +10,6 @@
 // @todo this is a runtime setup, not config
 struct configT {
     bool savedInputMode = false;
-    bool btnAEnabled = true;
-    bool btnBEnabled = true;
 
     unsigned int holdThrottle = 80;
     unsigned int holdRPM = 0;
@@ -36,7 +34,7 @@ struct configT {
     unsigned int maxRPMs = 15000;
 
     unsigned char cellCount = 0;
-
+    bool preflightError = true;
 };
 
 extern configT config;

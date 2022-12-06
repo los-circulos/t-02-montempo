@@ -34,7 +34,7 @@ void endMode(unsigned char result);
 bool elapsedInMode(unsigned int);
 void confirmation();
 void countDown(char nextMode);
-void setFlightAlarms();
+void flightAlarms();
 void setAlarm(unsigned char resultCode, bool conditionMet);
 
 void setup() {
@@ -249,6 +249,12 @@ void loop() {
             }
         break;
         case MODE_PREFLIGHT_CONFIG_COUNTDOWN:
+            if (config.preflightError) {
+                drawNoFly();
+                delay(500);
+                setMode(MODE_PREFLIGHT_CONFIG);
+                return;
+            }
             countDown(MODE_DELAY_LOCK);
         break;
         case MODE_DELAY_LOCK:
@@ -298,7 +304,7 @@ void loop() {
 
                 readAndSumMetrics();
 
-                setFlightAlarms();
+                flightAlarms();
                 // if an alarm has shut the system down, return - so run screen is not displayed again
                 if (currentMode != MODE_FLY) {
                     return;
@@ -360,7 +366,7 @@ void loop() {
                 if (btnAPushed()) {
                     currentScreen+= 4;
                 }
-                else if (btnBPushed()) {
+                else if (ANY_BUTTON_PUSHED) {
                     currentScreen++;
                 }
                 else if (config.rotateScreens && (elapsedInModeCounter % 25 == 0)) {
@@ -457,8 +463,8 @@ bool elapsedInMode(unsigned int elapsedMillis) {
 }
 
 void confirmation() {
-    if (btnBDisabled() || btnBPushed()) {
-        if (btnADisabled() || btnAPushed()) {
+    if (ANY_BUTTON_PUSHED) {
+        if (ALL_BUTTONS_PUSHED) {
             setMode(currentMode + 1);
         }
         if (elapsedInModeCounter % 2 > 0) {
@@ -477,7 +483,7 @@ void confirmation() {
 }
 
 void countDown(char nextMode) {
-    if ((!btnADisabled() && !btnAPushed()) || (!btnBDisabled() && !btnBPushed())) {
+    if (!ALL_BUTTONS_PUSHED) {
         setMode(currentMode - 1);
         drawFlyConfirmation(false);
     }
@@ -495,7 +501,7 @@ void countDown(char nextMode) {
     blinkLed(BLINK_FAST);
 }
 
-void setFlightAlarms() {
+void flightAlarms() {
 
     // SET ALARMS
     setAlarm(
@@ -503,12 +509,20 @@ void setFlightAlarms() {
         (metrics.volts > 0) && (config.cellCount > 0) && (config.cellCount * (30+saved.voltCut) > metrics.volts)
     );
 //    // @todo we might not need this???
-    setAlarm(RESULT_ERR_V_OVER, metrics.volts > config.cellCount * 42);
-    setAlarm(RESULT_ERR_ACUT, metrics.amps / 5 > saved.currentCut);
-    setAlarm(RESULT_ERR_RPM_OVER, metrics.rpm > RPM_MAX);
+    setAlarm(
+        RESULT_ERR_V_OVER,
+        (metrics.volts > 0) && (metrics.volts > config.cellCount * 42)
+    );
+    setAlarm(
+        RESULT_ERR_ACUT,
+        (metrics.amps > 0) && (metrics.amps / 5 > saved.currentCut)
+    );
+    setAlarm(
+        RESULT_ERR_RPM_OVER,
+        (metrics.rpm > 0) && (metrics.rpm > RPM_MAX)
+    );
 
 }
-
 void setAlarm(unsigned char resultCode, bool conditionMet) {
     bool alarmElapsed = (currentTime - alarmStarted) > ALARM_TIMEOUT;
     if (conditionMet) {

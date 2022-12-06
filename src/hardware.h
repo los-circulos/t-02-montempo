@@ -16,14 +16,16 @@ void ledOff();
 
 ///////////////////////////////////////// BUTTONS       /////////////////////////////////////
 #define BTN_A PIN_A7
-#define BTN_B PIN_A6
+//#define BTN_B PIN_A6
 
 bool btnAPushed();
 bool btnADisabled();
 bool btnBPushed();
 bool btnBDisabled();
-//bool btnAnyButtonPressed();
-#define ANY_BUTTON_PUSHED (btnAPushed() || btnBPushed())
+#define ANY_BUTTON_PUSHED anyButtonPushed()
+#define ALL_BUTTONS_PUSHED allButtonsPushed()
+bool anyButtonPushed();
+bool allButtonsPushed();
 
 ///////////////////////////////////////// SENSORS       /////////////////////////////////////
 // throttle pin
@@ -56,7 +58,7 @@ void throttlePcnt(unsigned char pcnt);
 #define PIN_CURRENT A1
 
 // enable RPM sensing
-#define PIN_RPM PIN2
+//#define PIN_RPM PIN2
 // @todo make this a meaningful threshold and set rpm 0 if under
 #define RPM_MIN 1
 #define RPM_MAX 15000
