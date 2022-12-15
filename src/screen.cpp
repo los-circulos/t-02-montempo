@@ -245,7 +245,7 @@ void drawPreflight(configT config) {
 
     if (config.preflightError) {
         u8x8.drawString(10, 0, " NO ");
-        u8x8.drawString(9, 2, " FLY ");
+        u8x8.drawString(9, 2, " FLY!");
     }
     else {
         u8x8.drawString(10, 0, "FLY?");

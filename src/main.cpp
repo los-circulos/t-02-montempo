@@ -245,16 +245,17 @@ void loop() {
                 readConfigInput();
                 readMetrics();
                 drawPreflight(config);
-                confirmation();
+                // for some reason I don't see config.preflightError properly here so this if() never succeeds
+                if (config.preflightError) {
+                    drawNoFly();
+                    delay(500);
+                }
+                else {
+                    confirmation();
+                }
             }
         break;
         case MODE_PREFLIGHT_CONFIG_COUNTDOWN:
-            if (config.preflightError) {
-                drawNoFly();
-                delay(500);
-                setMode(MODE_PREFLIGHT_CONFIG);
-                return;
-            }
             countDown(MODE_DELAY_LOCK);
         break;
         case MODE_DELAY_LOCK:
