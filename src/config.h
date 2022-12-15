@@ -34,7 +34,7 @@ struct configT {
     unsigned int maxRPMs = 15000;
 
     unsigned char cellCount = 0;
-    bool preflightError = true;
+    bool preflightError = false;
 };
 
 extern configT config;

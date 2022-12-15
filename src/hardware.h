@@ -15,8 +15,9 @@ void ledOn();
 void ledOff();
 
 ///////////////////////////////////////// BUTTONS       /////////////////////////////////////
+//#define BTN_A PIN_A6
 #define BTN_A PIN_A7
-//#define BTN_B PIN_A6
+//#define BTN_B PIN_A7
 
 bool btnAPushed();
 bool btnADisabled();
@@ -45,7 +46,7 @@ void throttlePcnt(unsigned char pcnt);
 #define THROTTLE_MICROS_MAX 1950
 
 // enable voltage sensing
-#define PIN_VOLT A0
+//#define PIN_VOLT A0
 //// 18.5V * 4.8 = 88.8 this leaves ~15% margin for high voltage (potmeter set too high) detection
 //#define INPUT_DIV_VOLT 4.8
 // 18.5V * 4.2 = 890 this leaves ~15% margin for too high voltage (potmeter set too high) detection
@@ -55,7 +56,7 @@ void throttlePcnt(unsigned char pcnt);
 #define METRICS_V_MAX 212
 
 // enable current sensing
-#define PIN_CURRENT A1
+//#define PIN_CURRENT A1
 
 // enable RPM sensing
 //#define PIN_RPM PIN2

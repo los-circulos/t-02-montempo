@@ -184,9 +184,6 @@ void drawPreflight(configT config) {
 
     SET_FONT_L;
 
-    // @todo check alarms and if alarm, don't let fly (how we trim V then?)
-    u8x8.drawString(10, 0, "FLY?");
-
     // NOTE a switch would eat 4bytes more here than these ifs
     if (saved.holdMode == HOLD_MODE_RPM) {
         sprintf(buffer, "RPM %2d.%d", config.holdRPM / 1000, (config.holdRPM / 100) % 10);
@@ -221,8 +218,40 @@ void drawPreflight(configT config) {
     }
     u8x8.drawString(0,0, buffer);
 
-    sprintf(buffer, "%2d:%02d", config.timeFly / 60, config.timeFly % 60);
-    u8x8.drawString(9, 2, buffer);
+    if (
+// not possible without VOLT measuring:
+#ifndef PIN_VOLT
+        // flytime 0 would fly until Vcut
+        (config.timeFly == 0) ||
+        // power calculation needs volts (and current)
+        (saved.holdMode == HOLD_MODE_POWER) ||
+#else
+#ifndef PIN_CURRENT
+        // power calculation needs current (and volts)
+        (saved.holdMode == HOLD_MODE_POWER) ||
+#endif
+#endif
+        (   (saved.holdMode == HOLD_MODE_SMART_THROTTLE) &&
+            (
+                // smart throttle end value should be bigger than start
+                (config.holdThrottle > saved.smartEndThrottle) ||
+                // smart throttle cannot calculate until vcut (at least for now)
+                (config.timeFly == 0)
+            )
+        )
+    ) {
+        config.preflightError = true;
+    }
+
+    if (config.preflightError) {
+        u8x8.drawString(10, 0, " NO ");
+        u8x8.drawString(9, 2, " FLY ");
+    }
+    else {
+        u8x8.drawString(10, 0, "FLY?");
+        sprintf(buffer, "%2d:%02d", config.timeFly / 60, config.timeFly % 60);
+        u8x8.drawString(9, 2, buffer);
+    }
 
 #endif
 }
