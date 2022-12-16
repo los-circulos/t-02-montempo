@@ -15,8 +15,7 @@ void ledOn();
 void ledOff();
 
 ///////////////////////////////////////// BUTTONS       /////////////////////////////////////
-//#define BTN_A PIN_A6
-#define BTN_A PIN_A7
+#define BTN_A PIN_A6
 //#define BTN_B PIN_A7
 
 bool btnAPushed();
@@ -95,8 +94,10 @@ void throttlePcnt(unsigned char pcnt);
  *      in delay ("countdown") and test modes as well, and will reset countdown timer.
  */
 #define INPUT_DIP8
+//#define INPUT_DIP9
 
 #ifdef INPUT_DIP8
+#define ANY_DIP_INPUT
 #define INPUT_DIP_1 5
 #define INPUT_DIP_2 6
 #define INPUT_DIP_3 7
@@ -105,6 +106,19 @@ void throttlePcnt(unsigned char pcnt);
 #define INPUT_DIP_6 10
 #define INPUT_DIP_7 11
 #define INPUT_DIP_8 12
+unsigned char readDips(unsigned char cnt);
+#endif
+#ifdef INPUT_DIP9
+#define ANY_DIP_INPUT
+#define INPUT_DIP_1 4
+#define INPUT_DIP_2 5
+#define INPUT_DIP_3 6
+#define INPUT_DIP_4 7
+#define INPUT_DIP_5 8
+#define INPUT_DIP_6 9
+#define INPUT_DIP_7 10
+#define INPUT_DIP_8 11
+#define INPUT_DIP_9 12
 unsigned char readDips(unsigned char cnt);
 #endif
 // read config from SD card

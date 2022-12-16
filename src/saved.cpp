@@ -33,7 +33,8 @@ void saveSaved() {
 }
 
 void readSavedInput() {
-#ifdef INPUT_DIP8
+//#ifdef INPUT_DIP8
+#ifdef ANY_DIP_INPUT
     // DIPS 5...8
     int i = readDips(8) / 16;
 
@@ -52,9 +53,13 @@ void readSavedInput() {
     else if (i == 6) {
         savedInputMode = SAVED_INPUT_MODE_POLES;
     }
+//    else if (i == 5) {
+//        savedInputMode = SAVED_INPUT_MODE_CURRENT_CUT;
+//    }
     else if (i == 4) {
         savedInputMode = SAVED_INPUT_MODE_VOLT_CUT;
     }
+//    else {
     else if (i < 4) {
         savedInputMode = SAVED_INPUT_MODE_SMART;
     }

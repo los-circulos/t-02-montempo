@@ -13,10 +13,16 @@ configT config;
 const unsigned int powerValues[] = { 120, 140, 160, 180, 200, 220, 240, 260, 280, 300, 330, 360, 390, 420, 450, 480 };
 // 3:00 default, 370 + 25sec = leaves 25sec of the 7mins to start timer and to land. 0 stands for run until voltage cut
 #ifdef DEVMODE
-const unsigned int flyTimeValues[] = { 10, 60, 240, 300, 340, 355, 370, 0 };
-//const unsigned int flyTimeValues[] = { 10, 60, 20, 30, 40, 45, 50, 55 };
+const unsigned int flyTimeValues[] = { 10, 60, 210, 240, 270, 280, 290, 300, 310, 320, 330, 340, 350, 360, 370, 0 };
 #else
+#ifdef INPUT_DIP8
+// 0, 60, 180, 240, 300, 340, 355, 370
 const unsigned int flyTimeValues[] = { 180, 60, 240, 300, 340, 355, 370, 0 };
+#endif
+#ifdef INPUT_DIP9
+// 0, 60, 180, 210, 240, 270, 280, 290, 300, 310, 320, 330, 340, 350, 360, 370
+const unsigned int flyTimeValues[] = { 180, 60, 210, 240, 270, 280, 290, 300, 310, 320, 330, 340, 350, 360, 370, 0 };
+#endif
 #endif
 
 unsigned char i;
@@ -51,16 +57,29 @@ void readConfigInput() {
 
 #ifdef INPUT_DIP8
     i = readDips(4);
+#endif
+#ifdef INPUT_DIP9
+    i = readDips(4);
+#endif
     setHoldValues(i);
 
+#ifdef INPUT_DIP8
     i = (readDips(7) - i) / 16;
+#endif
+#ifdef INPUT_DIP9
+    i = (readDips(8) - i) / 16;
+#endif
     config.timeFly = flyTimeValues[i];
 
     // @todo screen rotate delay should be read from eprom (?)
     // @todo default screen should be read from eprom
 
     // @todo this value should be refreshed in countdown and restart countdown if changes
+#ifdef INPUT_DIP8
     config.rotateScreens = !digitalRead(INPUT_DIP_8);
+#endif
+#ifdef INPUT_DIP9
+    config.rotateScreens = !digitalRead(INPUT_DIP_9);
 #endif
 
 #ifdef PIN_VOLT
