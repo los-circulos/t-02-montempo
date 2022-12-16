@@ -25,10 +25,10 @@ void initHardware() {
     }
 #endif
 
-#ifdef PIN_THROTTLE
-    // this will leave the ESC initialized but not armed - not true for at least one old dualsky ESC, which arms on 0 signal as well
-    throttle.attach(PIN_THROTTLE, THROTTLE_MICROS_MIN, THROTTLE_MICROS_MAX);
-    throttle.writeMicroseconds(0);
+#ifdef ANY_DIP_INPUT
+    for (int i=INPUT_DIP_1; i <= INPUT_DIP_LAST; i++) {
+        pinMode(i, INPUT_PULLUP);
+    }
 #endif
 
 //#ifdef PIN_VOLT

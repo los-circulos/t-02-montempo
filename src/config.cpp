@@ -10,7 +10,11 @@ configT config;
 
 // 30A * 15V = 450W (when holding power) / 20A * 15V = 300W
 //const unsigned int powerValues[] = { 160, 190, 220, 260, 300, 350, 400, 450 };
-const unsigned int powerValues[] = { 120, 140, 160, 180, 200, 220, 240, 260, 280, 300, 330, 360, 390, 420, 450, 480 };
+//const unsigned int powerValues[] = { 120, 140, 160, 180, 200, 220, 240, 260, 280, 300, 330, 360, 390, 420, 450, 480 };
+#ifdef ANY_DIP_INPUT
+const unsigned int powerValues[] = { 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270,
+                                     280, 290, 300, 310, 320, 330, 340, 350, 370, 390, 410, 430, 450, 470, 480, 500 };
+#endif
 // 3:00 default, 370 + 25sec = leaves 25sec of the 7mins to start timer and to land. 0 stands for run until voltage cut
 #ifdef DEVMODE
 const unsigned int flyTimeValues[] = { 10, 60, 210, 240, 270, 280, 290, 300, 310, 320, 330, 340, 350, 360, 370, 0 };
@@ -30,23 +34,20 @@ unsigned char i;
 // abstracted so I could reuse code when viewing logs? Seems it gets inline-optimized meanwhile :D
 void setHoldValues(unsigned char rawHoldValue) {
     config.holdValueRaw = rawHoldValue;
-    config.holdThrottle = 98 - rawHoldValue * 2;
-    config.holdRPM = RPM_BASE + rawHoldValue * 300;
-    config.holdPower = powerValues[rawHoldValue];
+    config.holdThrottle = 98 - rawHoldValue * INPUT_HOLD_THROTTLE_MULT;
+    config.holdRPM = RPM_BASE + rawHoldValue * INPUT_HOLD_RPM_MULT;
+    config.holdPower = powerValues[rawHoldValue * INPUT_HOLD_RPM_MULT];
 }
 
 void initConfig() {
 
-#ifdef INPUT_DIP_8
-
+#ifdef ANY_DIP_INPUT
     config.savedInputMode = true;
-    for (i=INPUT_DIP_1; i <= INPUT_DIP_8; i++) {
-        pinMode(i, INPUT_PULLUP);
+    for (i=INPUT_DIP_1; i <= INPUT_DIP_LAST; i++) {
         if (digitalRead(i)) {
             config.savedInputMode = false;
         }
     }
-
 #endif
 
 #ifdef PIN_VOLT

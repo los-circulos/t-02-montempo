@@ -273,7 +273,7 @@ void loop() {
                 notImplemented();
             }
             else if (ANY_BUTTON_PUSHED) {
-                setMode(MODE_PREFLIGHT_CONFIG);
+                setMode(MODE_WELCOME_LOCK);
             }
             else if (i == 0) {
                 drawRemainingTime(i);

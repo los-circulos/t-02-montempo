@@ -45,7 +45,7 @@ void throttlePcnt(unsigned char pcnt);
 #define THROTTLE_MICROS_MAX 1950
 
 // enable voltage sensing
-//#define PIN_VOLT A0
+#define PIN_VOLT A0
 //// 18.5V * 4.8 = 88.8 this leaves ~15% margin for high voltage (potmeter set too high) detection
 //#define INPUT_DIV_VOLT 4.8
 // 18.5V * 4.2 = 890 this leaves ~15% margin for too high voltage (potmeter set too high) detection
@@ -55,10 +55,10 @@ void throttlePcnt(unsigned char pcnt);
 #define METRICS_V_MAX 212
 
 // enable current sensing
-//#define PIN_CURRENT A1
+#define PIN_CURRENT A1
 
 // enable RPM sensing
-//#define PIN_RPM PIN2
+#define PIN_RPM PIN2
 // @todo make this a meaningful threshold and set rpm 0 if under
 #define RPM_MIN 1
 #define RPM_MAX 15000
@@ -106,6 +106,10 @@ void throttlePcnt(unsigned char pcnt);
 #define INPUT_DIP_6 10
 #define INPUT_DIP_7 11
 #define INPUT_DIP_8 12
+#define INPUT_DIP_LAST 12
+#define INPUT_HOLD_THROTTLE_MULT 2.5
+#define INPUT_HOLD_RPM_MULT 300
+#define INPUT_HOLD_POWER_MULT 2
 unsigned char readDips(unsigned char cnt);
 #endif
 #ifdef INPUT_DIP9
@@ -119,7 +123,11 @@ unsigned char readDips(unsigned char cnt);
 #define INPUT_DIP_7 10
 #define INPUT_DIP_8 11
 #define INPUT_DIP_9 12
+#define INPUT_DIP_LAST 12
 unsigned char readDips(unsigned char cnt);
+#define INPUT_HOLD_THROTTLE_MULT 2
+#define INPUT_HOLD_RPM_MULT 300
+#define INPUT_HOLD_POWER_MULT 1
 #endif
 // read config from SD card
 // #define CONFIG_SD
