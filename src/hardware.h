@@ -33,6 +33,7 @@ bool allButtonsPushed();
 // will arm with calibrating throttle range too. Pretty standard in ESCs but just in case.
 //  will also save a second, which might (or not) count eg in competition
 // comment define to disable (but run at least once having it enabled, so ESC is calibrated)
+#define ARM_ON_STARTUP
 #define ARM_WITH_CALIBRATE
 
 extern Servo throttle;

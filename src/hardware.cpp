@@ -1,6 +1,7 @@
 #include "hardware.h"
 #include "config.h"
 #include "metrics.h"
+#include "screen.h"
 
 //volatile unsigned int rpmCnt = 0;
 //unsigned long rpmConvertLast = 0;
@@ -29,6 +30,18 @@ void initHardware() {
     for (int i=INPUT_DIP_1; i <= INPUT_DIP_LAST; i++) {
         pinMode(i, INPUT_PULLUP);
     }
+#endif
+
+#ifdef PIN_THROTTLE
+
+    // this will leave the ESC initialized but not armed - not true for at least one old dualsky ESC, which arms on 0 signal as well
+    throttle.attach(PIN_THROTTLE, THROTTLE_MICROS_MIN, THROTTLE_MICROS_MAX);
+#ifdef ARM_ON_STARTUP
+    armThrottle();
+#else
+    throttle.writeMicroseconds(0);
+#endif
+
 #endif
 
 //#ifdef PIN_VOLT
@@ -91,18 +104,25 @@ Servo throttle = Servo();
 bool throttleArmed = false;
 
 void armThrottle() {
-#ifdef ARM_WITH_CALIBRATE
-    // this will leave a 1sec delay but also calibrate min/max values
+
+    drawArming();
+
+#ifdef PIN_THROTTLE
+
     if (!throttleArmed) {
+
+#ifdef ARM_WITH_CALIBRATE
+        // this will leave a 1sec delay but also calibrate min/max values
         throttlePcnt(99);
         delay(1000);
+#endif
     }
     throttleOff();
-#else
-    // might not be compatible with all ESCs
-    throttleOff();
+
 #endif
+
     throttleArmed = true;
+
 }
 
 void throttlePcnt(unsigned char pcnt) {

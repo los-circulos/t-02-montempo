@@ -41,10 +41,10 @@ void setup() {
 
 //    Serial.begin(9600);
 
-    initSaved();
-    initConfig();
-    initHardware();
     initScreen();
+    initSaved();
+    initHardware();
+    initConfig();
 
     readConfigInput();
 
@@ -411,7 +411,6 @@ void setMode(unsigned char newMode) {
             resetMetrics();
         case MODE_DELAY:
             if (!MODE_NOT_IMPLEMENTED) {
-                drawArming();
                 armThrottle();
             }
         // commenting or not the following makes no difference in memory, probably it's optimized during compile
