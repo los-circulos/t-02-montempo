@@ -365,7 +365,23 @@ void loop() {
             if (elapsedInMode(200)) {
                 bool drawScreen = true;
                 if (btnAPushed()) {
+#ifdef PIN_RPM
+
+#ifdef PIN_TEMP
                     currentScreen+= 4;
+#else
+                    currentScreen+= 3;
+#endif
+
+#else
+
+#ifdef PIN_TEMP
+                    currentScreen+= 3;
+#else
+                    currentScreen+= 2;
+#endif
+
+#endif
                 }
                 else if (ANY_BUTTON_PUSHED) {
                     currentScreen++;
@@ -376,9 +392,31 @@ void loop() {
                 else {
                     drawScreen = false;
                 }
+#ifdef PIN_RPM
+
+#ifdef PIN_TEMP
                 if (currentScreen > 4) {
                     currentScreen-= 5;
                 }
+#else
+                if (currentScreen > 3) {
+                    currentScreen-= 4;
+                }
+#endif
+
+#else
+
+#ifdef PIN_TEMP
+                if (currentScreen > 3) {
+                    currentScreen-= 4;
+                }
+#else
+                if (currentScreen > 2) {
+                    currentScreen-= 3;
+                }
+#endif
+
+#endif
                 if (drawScreen) {
                     drawAfterScreen(currentScreen);
                     // delay a bit, helps if button is still pressed

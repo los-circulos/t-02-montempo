@@ -36,6 +36,7 @@ char *holdModeLabels[] = {"THRO", "RPM ", "PWR ", "SMRT"};
 //char *holdModeLabels[] = {"THRO", "RPM ", "PWR ", "SMRT", "GLOW", "UNIF", "ERRA"};
 //char *resultLabels[] = {"OKTIME", "OKVCUT", "BTN", "V ???", "VHIGH", "A ???", "AHIGH", "R??", "RHIGH", "T1???", "T2???"};
 char *resultLabels[] = {"OK T", "OK V", "BTN", "V?", "VHI", "A?", "R?", "RHI", "T1?", "T2?"};
+char *comingSoon = "COMING SOON";
 
 #define FMT_TEST_VALUE_COMMON " %2d%c"
 #define FMT_TEST_VALUE_VOLTS "3.%1dV"
@@ -491,19 +492,25 @@ void drawAfterScreen(unsigned char which) {
 
         // flight time and result
         sprintFixedTimeAndResult();
+
+        // time
         u8x8.drawString(0, 2, buffer);
 
+#ifdef PIN_CURRENT
         // pre-print "MAH" since we have font L here (we save a SET_FONT_L later)
-//        SET_FONT_L;
         u8x8.drawString(13, 1, "MAH");
-
+#else
+        // pre-print "V"
+        u8x8.drawString(15, 1, "V");
+#endif
         SET_FONT_S;
-//        sprintResult();
+        // result
         floatBuffer[3] = 0;
         u8x8.drawString(13, 0, floatBuffer);
 
         if (metricsSum.holdMode == HOLD_MODE_HOLD_THROTTLE) {
-            sprintf(floatBuffer, " %2d %%", metricsSum.holdValueRaw);
+//            sprintf(floatBuffer, " %2d %%", metricsSum.holdValueRaw);
+            sprintf(floatBuffer, " %2d %%", config.holdThrottle);
         }
         else if (metricsSum.holdMode == HOLD_MODE_SMART_THROTTLE) {
             sprintf(floatBuffer, "%2d-%2d%%", metricsSum.holdValueRaw, saved.smartEndThrottle);
@@ -518,8 +525,9 @@ void drawAfterScreen(unsigned char which) {
         sprintf(buffer, " %s %s", holdModeLabels[metricsSum.holdMode], floatBuffer);
         u8x8.drawString(4, 3, buffer);
 
-        // consumption mAh
         SET_FONT_XL;
+#ifdef PIN_CURRENT
+        // consumption mAh
         // 1mAh = 3.6As
         // AVG_AMPS[A] * FLYTIME[s] / 3.6 = ... mAh
         // test with max time 10m. 10m with max 50A (30 is max) is still just 8333MAH so fits
@@ -527,6 +535,10 @@ void drawAfterScreen(unsigned char which) {
         i = metricsSum.flightTime;
         i = ((long)i) * metricsSum.ampsAvg / 18;
         sprintf(floatBuffer, "%4d", min(9999, i));
+#else
+        i = metrics.volts;
+        sprintf(floatBuffer, "%2d.%1d", i/10, i%10);
+#endif
         u8x8.drawString(5, 0, floatBuffer);
 
     }
@@ -536,17 +548,28 @@ void drawAfterScreen(unsigned char which) {
         draw3Decimals('V', metricsSum.voltsMin, metricsSum.voltsAvg, metricsSum.voltsMax);
         u8x8.drawString(0, 0, buffer);
 
+#ifdef PIN_CURRENT
         draw3Decimals('A', metricsSum.ampsMin, metricsSum.ampsAvg, metricsSum.ampsMax);
         u8x8.drawString(0, 2, buffer);
+#endif
     }
     // power / rpm view
     else if (which == 3) {
 //        SET_FONT_L;
+#ifdef PIN_RPM
         draw3Decimals('R', metricsSum.rpmMin, metricsSum.rpmAvg, metricsSum.rpmMax);
+#else
+        sprintf(buffer, "R%15s", comingSoon);
+#endif
         u8x8.drawString(0, 0, buffer);
 
+#ifdef PIN_CURRENT
         draw3Decimals('P', metricsSum.pMin, metricsSum.pAvg, metricsSum.pMax);
+#else
+        sprintf(buffer, "P%15s", comingSoon);
+#endif
         u8x8.drawString(0, 2, buffer);
+
     }
     // T1 / T2 view
     else if (which == 4) {
