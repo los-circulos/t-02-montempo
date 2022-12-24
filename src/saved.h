@@ -29,8 +29,8 @@ struct savedT {
     unsigned char holdMode = HOLD_MODE_HOLD_THROTTLE;
     // the default is very low so if RPM hold is attempted without setting up, it will just underdrive the motor
     unsigned char poles = 4;
-    // 3.7
-    unsigned char voltCut = 7;
+    // 3.6
+    unsigned char voltCut = 6;
     // not yet configurable ?
     unsigned char currentCut = 30;
 //    bool armOnStartup = false;
