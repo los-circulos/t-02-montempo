@@ -501,7 +501,7 @@ void drawAfterScreen(unsigned char which) {
         u8x8.drawString(13, 1, "MAH");
 #else
         // pre-print "V"
-        u8x8.drawString(15, 1, "V");
+        u8x8.drawString(13, 1, "V");
 #endif
         SET_FONT_S;
         // result
@@ -513,7 +513,7 @@ void drawAfterScreen(unsigned char which) {
             sprintf(floatBuffer, " %2d %%", config.holdThrottle);
         }
         else if (metricsSum.holdMode == HOLD_MODE_SMART_THROTTLE) {
-            sprintf(floatBuffer, "%2d-%2d%%", metricsSum.holdValueRaw, saved.smartEndThrottle);
+            sprintf(floatBuffer, "%2d-%2d%%", config.holdThrottle, saved.smartEndThrottle);
         }
 //        else if (metricsSum.holdMode == HOLD_MODE_POWER) {
 //            // power, formula: P = 10*t/c

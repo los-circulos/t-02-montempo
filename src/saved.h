@@ -33,6 +33,7 @@ struct savedT {
     unsigned char voltCut = 7;
     // not yet configurable ?
     unsigned char currentCut = 30;
+//    bool armOnStartup = false;
 };
 
 extern savedT saved;
