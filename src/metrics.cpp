@@ -18,7 +18,9 @@ void rpmISR() {
 void readMetrics() {
     int i;
 #ifdef PIN_VOLT
-    metrics.volts = analogRead(PIN_VOLT) / INPUT_DIV_VOLT;
+    if (!VOLTS_DISABLED) {
+        metrics.volts = analogRead(PIN_VOLT) / INPUT_DIV_VOLT;
+    }
 #endif
 #ifdef PIN_CURRENT
     i = analogRead(PIN_CURRENT);
@@ -68,7 +70,9 @@ void resetMetrics() {
     // this yields much because the added initial values in .h
 //    metricsSum = {};
 #ifdef PIN_VOLT
-    metricsSum.voltsMin = 255;
+    if (!VOLTS_DISABLED) {
+        metricsSum.voltsMin = 255;
+    }
 #endif
 #ifdef PIN_CURRENT
     metricsSum.ampsMin = 255;
@@ -96,11 +100,14 @@ void readAndSumMetrics() {
     metricsSum.flightTime = (currentTime - metricsSumCnt.startMillis) / 1000;
 
 #ifdef PIN_VOLT
-    metricsSum.voltsMin = min(metricsSum.voltsMin, metrics.volts);
-    metricsSum.voltsMax = max(metricsSum.voltsMax, metrics.volts);
-    metricsSumCnt.voltsSum+= metrics.volts;
-    metricsSum.voltsAvg = metricsSumCnt.voltsSum / metricsSumCnt.summedSamples;
+    if (!VOLTS_DISABLED) {
+        metricsSum.voltsMin = min(metricsSum.voltsMin, metrics.volts);
+        metricsSum.voltsMax = max(metricsSum.voltsMax, metrics.volts);
+        metricsSumCnt.voltsSum+= metrics.volts;
+        metricsSum.voltsAvg = metricsSumCnt.voltsSum / metricsSumCnt.summedSamples;
+    }
 #endif
+
 #ifdef PIN_CURRENT
     metricsSum.ampsMin = min(metricsSum.ampsMin, metrics.amps);
     metricsSum.ampsMax = max(metricsSum.ampsMax, metrics.amps);

@@ -55,11 +55,17 @@ void throttlePcnt(unsigned char pcnt);
 // volts * 10 over which potmeter is set too low and pin voltage gets near 5V
 #define METRICS_V_MAX 212
 
+#ifdef PIN_VOLT
+#define VOLTS_DISABLED (saved.voltCut == 0)
+#else
+#define VOLTS_DISABLED true
+#endif
+
 // enable current sensing
-//#define PIN_CURRENT A1
+#define PIN_CURRENT A1
 
 // enable RPM sensing
-//#define PIN_RPM PIN2
+#define PIN_RPM PIN2
 // @todo make this a meaningful threshold and set rpm 0 if under
 #define RPM_MIN 1
 #define RPM_MAX 15000
