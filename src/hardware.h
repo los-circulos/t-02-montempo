@@ -2,6 +2,7 @@
 #define MONTEMPO_HARDWARE_H
 
 #include <Arduino.h>
+#include "saved.h"
 #include "Servo.h"
 
 #define  BASEV 5.0
@@ -63,6 +64,12 @@ void throttlePcnt(unsigned char pcnt);
 
 // enable current sensing
 #define PIN_CURRENT A1
+
+#ifdef PIN_CURRENT
+#define CURRENT_DISABLED (saved.currentCut == 0)
+#else
+#define CURRENT_DISABLED true
+#endif
 
 // enable RPM sensing
 #define PIN_RPM PIN2
