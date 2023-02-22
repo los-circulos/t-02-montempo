@@ -279,7 +279,8 @@ void loop() {
                 drawRemainingTime(i);
                 ledOn();
                 delay(1000);
-                setMode(MODE_FLY);
+//                setMode(MODE_FLY);
+                setMode(MODE_SOFT_START);
             }
             // NOTE this has to be in sync with BLINK_FAST blinking, hence the otherwise unnecessarily high rate
             else if (elapsedInMode(100)) {
@@ -289,6 +290,40 @@ void loop() {
         break;
         // @todo soft start?
         case MODE_SOFT_START:
+            if (MODE_NOT_IMPLEMENTED) {
+                notImplemented();
+                return;
+            }
+            else if (ANY_BUTTON_PUSHED) {
+                endMode(RESULT_ERR_BTN);
+                return;
+            }
+//            if (ANY_BUTTON_PUSHED || (
+//                (metricsSum.holdMode != HOLD_MODE_HOLD_THROTTLE) && (metricsSum.holdMode != HOLD_MODE_SMART_THROTTLE)
+//            )) {
+//                endMode(RESULT_ERR_BTN);
+//                return;
+//            }
+            if (elapsedInMode(100)) {
+
+//                flightAlarms();
+
+                unsigned int flyElapsed2 = (currentTime - currentModeStarted) / 100;
+                if (flyElapsed2 >= 40) {
+                    setMode(MODE_FLY);
+                }
+//                5/target = elapsed/x
+                unsigned int throttle = flyElapsed2 * config.holdThrottle / 40;
+                throttlePcnt(throttle);
+                blinkLed(BLINK_NORMAL);
+
+//                if ((elapsedInModeCounter % 5) == 0) {
+                if ((elapsedInModeCounter % 2) == 0) {
+                    i = flyElapsed2 / 10;
+                    drawRunScreen(i);
+                }
+
+            }
             break;
         case MODE_FLY:
             if (MODE_NOT_IMPLEMENTED) {
@@ -356,6 +391,7 @@ void loop() {
 
                 // update screen every 0.5sec
                 if ((elapsedInModeCounter % 5) == 0) {
+                    clearScreen();
                     drawRunScreen(i);
                 }
             }
@@ -464,6 +500,7 @@ void setMode(unsigned char newMode) {
         break;
         case MODE_FLY:
             resetMetrics();
+            clearScreen();
         break;
     }
     ledOff();
