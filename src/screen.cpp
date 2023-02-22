@@ -265,11 +265,14 @@ void drawSavedInputScreen() {
     case SAVED_INPUT_MODE_T1_CUT:
     case SAVED_INPUT_MODE_T2_CUT:
     case SAVED_INPUT_MODE_CURRENT_CUT:
+//    case SAVED_INPUT_MODE_POLES:
+        sprintf(buffer, savedInputValue>0 ? FMT_TEST_VALUE_COMMON : "OFF ", savedInputValue, savedInputModeUnits[savedInputMode]);
+        break;
     case SAVED_INPUT_MODE_POLES:
         sprintf(buffer, FMT_TEST_VALUE_COMMON, savedInputValue, savedInputModeUnits[savedInputMode]);
         break;
     case SAVED_INPUT_MODE_VOLT_CUT:
-        sprintf(buffer, FMT_TEST_VALUE_VOLTS, savedInputValue);
+        sprintf(buffer, savedInputValue>0 ? FMT_TEST_VALUE_VOLTS : "OFF ", savedInputValue);
         sprintf(floatBuffer, FMT_TEST_VALUE_VOLTS, saved.voltCut);
         break;
     case SAVED_INPUT_MODE_MODE:
@@ -327,8 +330,7 @@ void drawTestSpinScreen() {
     SET_FONT_L;
     sprintf(buffer, "THR %2d %% %2d.%1d V", savedInputValue, metrics.volts / 10, metrics.volts % 10);
     u8x8.drawString(0, 0, buffer);
-//    sprintf(buffer,  "RPM %2d.%1d %4d A", metrics.rpm/1000, (metrics.rpm%1000)/100, metrics.amps);
-    sprintf(buffer,  "RPM %4d %4d A", metrics.rpm, metrics.amps);
+    sprintf(buffer,  "RPM %2d.%1d %2d.%1d A", metrics.rpm/1000, (metrics.rpm%1000)/100, metrics.amps / 5, (metrics.amps*2) % 10);
     u8x8.drawString(0, 2, buffer);
 #endif
 }
@@ -378,15 +380,21 @@ void drawRunScreen(unsigned int secsRemain) {
         u8x8.drawString(i, 3, buffer);
 
         u8x8.inverse();
-//        for (i--; i>5; i--) {
-        for (i--; i>1; i--) {
+
+        // @todo this if() should be redundant but with soft start (and only with soft start) there's a bug without it
+        if (i>1 && i<16) {
+//        for (i--; i>1; i--) {
+        for (i--; i>0; i--) {
             u8x8.drawString(i, 3, " ");
+        }
         }
 
     }
+    /*
+    */
 
     u8x8.noInverse();
-#ifdef DEVMODE_
+#ifdef DEVMODE_OBS
 
     SET_FONT_S;
 
@@ -434,8 +442,6 @@ void drawRunScreen(unsigned int secsRemain) {
         sprintf(buffer, "%2d.%1dA", metrics.amps/5, (metrics.amps*2)%10);
         u8x8.drawString(0, 2, buffer);
     }
-//    sprintf(buffer, "%2d.%1d ", metrics.amps/5, (metrics.amps*2)%10);
-//    u8x8.drawString(0, 3, buffer);
 
 #endif
 
@@ -515,11 +521,10 @@ void drawAfterScreen(unsigned char which) {
         u8x8.drawString(13, 0, floatBuffer);
 
         if (metricsSum.holdMode == HOLD_MODE_HOLD_THROTTLE) {
-//            sprintf(floatBuffer, " %2d %%", metricsSum.holdValueRaw);
             sprintf(floatBuffer, " %2d %%", config.holdThrottle);
         }
         else if (metricsSum.holdMode == HOLD_MODE_SMART_THROTTLE) {
-            sprintf(floatBuffer, "%2d-%2d%%", config.holdThrottle, saved.smartEndThrottle);
+            sprintf(floatBuffer, "%2d-%2d%%", metricsSum.throttleMin, metricsSum.throttleMax);
         }
 //        else if (metricsSum.holdMode == HOLD_MODE_POWER) {
 //            // power, formula: P = 10*t/c
@@ -551,11 +556,12 @@ void drawAfterScreen(unsigned char which) {
     // volts and amps screen
     else if (which == 2) {
 //        SET_FONT_L;
+
         draw3Decimals('V', metricsSum.voltsMin, metricsSum.voltsAvg, metricsSum.voltsMax);
         u8x8.drawString(0, 0, buffer);
 
 #ifdef PIN_CURRENT
-        draw3Decimals('A', metricsSum.ampsMin, metricsSum.ampsAvg, metricsSum.ampsMax);
+        draw3Decimals('A', metricsSum.ampsMin*2, metricsSum.ampsAvg*2, metricsSum.ampsMax*2);
         u8x8.drawString(0, 2, buffer);
 #endif
     }
