@@ -31,39 +31,51 @@
 
 
 struct metricsT {
-    // multiplied by 10
-    unsigned int volts = 0;
-    // multiplied by 5
-    unsigned int amps = 0;
-    // ???
-    unsigned int rpm = 0;
-//    unsigned int t1;
-//    unsigned int t2;
-    unsigned long lastTime;
+    // raw throttle
     unsigned char throttlePcnt;
+    // multiplied by 10
+    unsigned char volts = 0;
+    // multiplied by 5
+    unsigned char amps = 0;
+    // rpms raw (???)
+    unsigned int rpm = 0;
+    // ???
+//    unsigned char t1;
+//    unsigned char t2;
+    // watts / 2
+    unsigned char p;
+    unsigned long lastTime;
 };
 
 struct metricsSumT {
-    // volts *10
+    unsigned char throttleMin;
+    unsigned char throttleMax;
+    unsigned char throttleAvg;
+
     unsigned char voltsMin;
     unsigned char voltsMax;
     unsigned char voltsAvg;
-    // amps *5
+
     unsigned char ampsMin;
     unsigned char ampsMax;
     unsigned char ampsAvg;
-    // rpms raw
+
     unsigned int rpmMin;
     unsigned int rpmMax;
     unsigned int rpmAvg;
-    // watts / 2
+
+//    unsigned char t1Min;
+//    unsigned char t1Max;
+//    unsigned char t1Avg;
+
+//    unsigned char t2Min;
+//    unsigned char t2Max;
+//    unsigned char t2Avg;
+
     unsigned char pMin;
     unsigned char pMax;
     unsigned char pAvg;
-//    unsigned int t1Min;
-//    unsigned int t1Max;
-//    unsigned int t2Min;
-//    unsigned int t2Max;
+
     // secs
     unsigned int flightTime;
     unsigned char holdMode;
@@ -71,6 +83,7 @@ struct metricsSumT {
     unsigned char result;
 };
 struct metricsSumCntT {
+    unsigned long throttleSum;
     unsigned long voltsSum;
     unsigned long ampsSum;
     unsigned long rpmSum;

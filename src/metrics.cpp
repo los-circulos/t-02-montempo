@@ -69,6 +69,9 @@ void resetMetrics() {
     memset(&metricsSum, 0, sizeof metricsSum);
     // this yields much because the added initial values in .h
 //    metricsSum = {};
+
+    metricsSum.throttleMin = 255;
+
 #ifdef PIN_VOLT
     if (!VOLTS_DISABLED) {
         metricsSum.voltsMin = 255;
@@ -98,6 +101,11 @@ void readAndSumMetrics() {
     metricsSumCnt.lastMillis = currentTime;
     metricsSumCnt.summedSamples++;
     metricsSum.flightTime = (currentTime - metricsSumCnt.startMillis) / 1000;
+
+    metricsSum.throttleMin = min(metricsSum.throttleMin, metrics.throttlePcnt);
+    metricsSum.throttleMax = min(metricsSum.throttleMax, metrics.throttlePcnt);
+    metricsSumCnt.throttleSum+= metrics.volts;
+    metricsSum.throttleAvg = metricsSumCnt.throttleSum / metricsSumCnt.summedSamples;
 
 #ifdef PIN_VOLT
     if (!VOLTS_DISABLED) {
