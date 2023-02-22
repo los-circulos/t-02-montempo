@@ -586,11 +586,11 @@ void flightAlarms() {
 //    // @todo we might not need this???
     setAlarm(
         RESULT_ERR_V_OVER,
-        (metrics.volts > 0) && (metrics.volts > config.cellCount * 42)
+        !VOLTS_DISABLED && (metrics.volts > config.cellCount * 42)
     );
     setAlarm(
         RESULT_ERR_ACUT,
-        (metrics.amps > 0) && (metrics.amps / 5 > saved.currentCut)
+        !CURRENT_DISABLED && (metrics.amps / 5 > saved.currentCut)
     );
     setAlarm(
         RESULT_ERR_RPM_OVER,

@@ -78,7 +78,9 @@ void resetMetrics() {
     }
 #endif
 #ifdef PIN_CURRENT
-    metricsSum.ampsMin = 255;
+    if (!CURRENT_DISABLED) {
+        metricsSum.ampsMin = 255;
+    }
 #endif
 #ifdef PIN_RPM
     metricsSum.rpmMin = 255;
@@ -117,10 +119,12 @@ void readAndSumMetrics() {
 #endif
 
 #ifdef PIN_CURRENT
-    metricsSum.ampsMin = min(metricsSum.ampsMin, metrics.amps);
-    metricsSum.ampsMax = max(metricsSum.ampsMax, metrics.amps);
-    metricsSumCnt.ampsSum+= metrics.amps;
-    metricsSum.ampsAvg = metricsSumCnt.ampsSum / metricsSumCnt.summedSamples;
+    if (!CURRENT_DISABLED) {
+        metricsSum.ampsMin = min(metricsSum.ampsMin, metrics.amps);
+        metricsSum.ampsMax = max(metricsSum.ampsMax, metrics.amps);
+        metricsSumCnt.ampsSum += metrics.amps;
+        metricsSum.ampsAvg = metricsSumCnt.ampsSum / metricsSumCnt.summedSamples;
+    }
 
     // power
     #ifdef PIN_VOLT
