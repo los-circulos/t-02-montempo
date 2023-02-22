@@ -49,26 +49,18 @@ void readSavedInput() {
     }
     else if (i == 7) {
         savedInputMode = SAVED_INPUT_MODE_MODE;
-//        savedInputValue = readDips(2);
     }
     else if (i == 6) {
         savedInputMode = SAVED_INPUT_MODE_POLES;
-//        savedInputValue = 34 - readDips(4) * 2;
     }
-//    else if (i == 5) {
-//        savedInputMode = SAVED_INPUT_MODE_CURRENT_CUT;
-//    }
+    else if (i == 5) {
+        savedInputMode = SAVED_INPUT_MODE_CURRENT_CUT;
+    }
     else if (i == 4) {
         savedInputMode = SAVED_INPUT_MODE_VOLT_CUT;
-//        savedInputValue = 7 - readDips(3);
-    }
-//    else {
-    else if (i < 4) {
-        savedInputMode = SAVED_INPUT_MODE_SMART;
     }
     else {
-        savedInputMode = SAVED_INPUT_MODE_CURRENT_CUT;
-//        savedInputValue = 50 - readDips(4) * 2;
+        savedInputMode = SAVED_INPUT_MODE_SMART;
     }
 
     // a switch would take only 4 bytes less of memory
@@ -78,18 +70,18 @@ void readSavedInput() {
                           - !digitalRead(INPUT_DIP_5) * 20
                           - !digitalRead(INPUT_DIP_6) * 48;
     }
-        // 28..90C /2
+    // 28..90C /2
     else if (savedInputMode <= SAVED_INPUT_MODE_T2_CUT) {
         savedInputValue = 90 - readDips(5) * 2;
         if (savedInputValue == 28) {
             savedInputValue = 0;
         }
     }
-        // 3...3.7V / 0.1
+    // 3...3.7V / 0.1
     else if (savedInputMode == SAVED_INPUT_MODE_VOLT_CUT) {
         savedInputValue = 7 - readDips(3);
     }
-        // 20..50/2
+    // 20..50/2
     else if (savedInputMode == SAVED_INPUT_MODE_CURRENT_CUT) {
         savedInputValue = 50 - readDips(4) * 2;
         if (savedInputValue == 20) {

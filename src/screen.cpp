@@ -41,6 +41,7 @@ char *comingSoon = "COMING SOON";
 #define FMT_TEST_VALUE_COMMON " %2d%c"
 #define FMT_TEST_VALUE_VOLTS "3.%1dV"
 #define FMT_TEST_4DECIMALS "%4d"
+#define FMT_OFF "OFF "
 
 void initScreen() {
 #ifdef SCREEN_32X4
@@ -266,14 +267,14 @@ void drawSavedInputScreen() {
     case SAVED_INPUT_MODE_T2_CUT:
     case SAVED_INPUT_MODE_CURRENT_CUT:
 //    case SAVED_INPUT_MODE_POLES:
-        sprintf(buffer, savedInputValue>0 ? FMT_TEST_VALUE_COMMON : "OFF ", savedInputValue, savedInputModeUnits[savedInputMode]);
+        sprintf(buffer, savedInputValue>0 ? FMT_TEST_VALUE_COMMON : FMT_OFF, savedInputValue, savedInputModeUnits[savedInputMode]);
         break;
     case SAVED_INPUT_MODE_POLES:
         sprintf(buffer, FMT_TEST_VALUE_COMMON, savedInputValue, savedInputModeUnits[savedInputMode]);
         break;
     case SAVED_INPUT_MODE_VOLT_CUT:
-        sprintf(buffer, savedInputValue>0 ? FMT_TEST_VALUE_VOLTS : "OFF ", savedInputValue);
-        sprintf(floatBuffer, FMT_TEST_VALUE_VOLTS, saved.voltCut);
+        sprintf(buffer, savedInputValue>0 ? FMT_TEST_VALUE_VOLTS : FMT_OFF, savedInputValue);
+        sprintf(floatBuffer, saved.voltCut > 0 ? FMT_TEST_VALUE_VOLTS : FMT_OFF, saved.voltCut);
         break;
     case SAVED_INPUT_MODE_MODE:
         strcpy(buffer, holdModeLabels[savedInputValue]);
@@ -292,13 +293,13 @@ void drawSavedInputScreen() {
         sprintf(floatBuffer, FMT_TEST_4DECIMALS, saved.smartEndThrottle);
         break;
     case SAVED_INPUT_MODE_T1_CUT:
-        sprintf(floatBuffer, FMT_TEST_VALUE_COMMON, saved.t1Cut, savedInputModeUnits[savedInputMode]);
+        sprintf(floatBuffer, saved.t1Cut > 0 ? FMT_TEST_VALUE_COMMON : FMT_OFF, saved.t1Cut, savedInputModeUnits[savedInputMode]);
         break;
     case SAVED_INPUT_MODE_T2_CUT:
-        sprintf(floatBuffer, FMT_TEST_VALUE_COMMON, saved.t2Cut, savedInputModeUnits[savedInputMode]);
+        sprintf(floatBuffer, saved.t2Cut > 0 ? FMT_TEST_VALUE_COMMON : FMT_OFF, saved.t2Cut, savedInputModeUnits[savedInputMode]);
         break;
     case SAVED_INPUT_MODE_CURRENT_CUT:
-        sprintf(floatBuffer, FMT_TEST_VALUE_COMMON, saved.currentCut, savedInputModeUnits[savedInputMode]);
+        sprintf(floatBuffer, saved.currentCut > 0 ? FMT_TEST_VALUE_COMMON : FMT_OFF, saved.currentCut, savedInputModeUnits[savedInputMode]);
         break;
     case SAVED_INPUT_MODE_POLES:
         sprintf(floatBuffer, FMT_TEST_4DECIMALS, saved.poles);
