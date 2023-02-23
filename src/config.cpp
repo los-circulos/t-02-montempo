@@ -12,8 +12,10 @@ configT config;
 //const unsigned int powerValues[] = { 160, 190, 220, 260, 300, 350, 400, 450 };
 //const unsigned int powerValues[] = { 120, 140, 160, 180, 200, 220, 240, 260, 280, 300, 330, 360, 390, 420, 450, 480 };
 #ifdef ANY_DIP_INPUT
+#ifdef PIN_CURRENT
 const unsigned int powerValues[] = { 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270,
                                      280, 290, 300, 310, 320, 330, 340, 350, 370, 390, 410, 430, 450, 470, 480, 500 };
+#endif
 #endif
 // 3:00 default, 370 + 25sec = leaves 25sec of the 7mins to start timer and to land. 0 stands for run until voltage cut
 #ifdef DEVMODE
@@ -36,7 +38,9 @@ void setHoldValues(unsigned char rawHoldValue) {
     config.holdValueRaw = rawHoldValue;
     config.holdThrottle = 98 - rawHoldValue * INPUT_HOLD_THROTTLE_MULT;
     config.holdRPM = RPM_BASE + rawHoldValue * INPUT_HOLD_RPM_MULT;
+#ifdef PIN_CURRENT
     config.holdPower = powerValues[rawHoldValue * INPUT_HOLD_RPM_MULT];
+#endif
 }
 
 void initConfig() {

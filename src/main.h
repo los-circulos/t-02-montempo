@@ -46,4 +46,7 @@ extern unsigned char currentMode;
 
 #define ALARM_TIMEOUT 1000
 
+#define E_5_PER_SEC 200
+#define E_EVERY_SEC 1000
+
 #endif //MONTEMPO_MAIN_H

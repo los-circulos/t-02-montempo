@@ -62,8 +62,8 @@ void throttlePcnt(unsigned char pcnt);
 #define VOLTS_DISABLED true
 #endif
 
-// enable current sensing
-#define PIN_CURRENT A1
+// enable current sensing - currently NOT supported
+//#define PIN_CURRENT A1
 
 #ifdef PIN_CURRENT
 #define CURRENT_DISABLED (saved.currentCut == 0)
@@ -76,6 +76,12 @@ void throttlePcnt(unsigned char pcnt);
 // @todo make this a meaningful threshold and set rpm 0 if under
 #define RPM_MIN 1
 #define RPM_MAX 15000
+
+#ifdef PIN_RPM
+#define RPM_DISABLED false
+#else
+#define RPM_DISABLED true
+#endif
 
 // enable temperature sensing
 //#define PIN_TEMP PIN_A3
@@ -139,9 +145,6 @@ unsigned char readDips(unsigned char cnt);
 #define INPUT_DIP_9 12
 #define INPUT_DIP_LAST 12
 unsigned char readDips(unsigned char cnt);
-#define INPUT_HOLD_THROTTLE_MULT 2
-#define INPUT_HOLD_RPM_MULT 300
-#define INPUT_HOLD_POWER_MULT 1
 #endif
 // read config from SD card
 // #define CONFIG_SD

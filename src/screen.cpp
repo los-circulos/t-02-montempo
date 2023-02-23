@@ -191,10 +191,12 @@ void drawPreflight(configT config) {
         sprintf(buffer, "RPM %2d.%d", config.holdRPM / 1000, (config.holdRPM / 100) % 10);
         u8x8.drawString(0, 2, buffer);
     }
+#ifdef PIN_CURRENT
     else if (saved.holdMode == HOLD_MODE_POWER) {
         sprintf(buffer, "PWR  %3d", config.holdPower);
         u8x8.drawString(0, 2, buffer);
     }
+#endif
     else if (saved.holdMode == HOLD_MODE_SMART_THROTTLE) {
         sprintf(buffer, "SMR %2d-%2d", config.holdThrottle, saved.smartEndThrottle);
         u8x8.drawString(0, 2, buffer);
@@ -362,7 +364,7 @@ void drawRunScreen(unsigned int secsRemain) {
 //        secsRemain = 43 - secsRemain*44/config.timeFly;
         secsRemain = 59 - secsRemain*60/config.timeFly;
 
-        unsigned int i = secsRemain % 4;
+        int i = secsRemain % 4;
 
         buffer[0] = progressBarChars[i];
         buffer[1] = 0;
@@ -380,7 +382,13 @@ void drawRunScreen(unsigned int secsRemain) {
         SET_FONT_S;
         u8x8.drawString(i, 3, buffer);
 
+        // for DEBUG only
+//        sprintf(buffer, "%3d ", i);
+//        u8x8.drawString(0, 2, buffer);
+//        delay(5000);
+
         u8x8.inverse();
+
 
         // @todo this if() should be redundant but with soft start (and only with soft start) there's a bug without it
         if (i>1 && i<16) {
@@ -439,10 +447,12 @@ void drawRunScreen(unsigned int secsRemain) {
         sprintf(buffer, "%2d.%1dV", metrics.volts/10, metrics.volts%10);
         u8x8.drawString(0, 1, buffer);
     }
+#ifdef PIN_CURRENT
     if (!CURRENT_DISABLED) {
         sprintf(buffer, "%2d.%1dA", metrics.amps/5, (metrics.amps*2)%10);
         u8x8.drawString(0, 2, buffer);
     }
+#endif
 
 #endif
 
@@ -498,7 +508,7 @@ void drawAfterScreen(unsigned char which) {
 #ifdef SCREEN_32X4
     SET_FONT_L;
     // main sum page
-    if (which == 1) {
+    if (which == AFTER_SCREEN_SUMMARY) {
 
         // flight #
         u8x8.drawString(0, 0, "# ??");
@@ -527,10 +537,12 @@ void drawAfterScreen(unsigned char which) {
         else if (metricsSum.holdMode == HOLD_MODE_SMART_THROTTLE) {
             sprintf(floatBuffer, "%2d-%2d%%", metricsSum.throttleMin, metricsSum.throttleMax);
         }
-//        else if (metricsSum.holdMode == HOLD_MODE_POWER) {
-//            // power, formula: P = 10*t/c
-//            sprintf(floatBuffer, "  %3dW", 0);
-//        }
+#ifdef PIN_CURRENT
+        else if (metricsSum.holdMode == HOLD_MODE_POWER) {
+            // power, formula: P = 10*t/c
+            sprintf(floatBuffer, "  %3dW", 0);
+        }
+#endif
         else {
             sprintf(floatBuffer, "NOTIMPL");
         }
@@ -554,42 +566,42 @@ void drawAfterScreen(unsigned char which) {
         u8x8.drawString(5, 0, floatBuffer);
 
     }
-    // volts and amps screen
-    else if (which == 2) {
+    // volts and rpm screen
+    else if (which == AFTER_SCREEN_VOLT_RPM) {
 //        SET_FONT_L;
 
         draw3Decimals('V', metricsSum.voltsMin, metricsSum.voltsAvg, metricsSum.voltsMax);
         u8x8.drawString(0, 0, buffer);
 
-#ifdef PIN_CURRENT
-        draw3Decimals('A', metricsSum.ampsMin*2, metricsSum.ampsAvg*2, metricsSum.ampsMax*2);
-        u8x8.drawString(0, 2, buffer);
-#endif
-    }
-    // power / rpm view
-    else if (which == 3) {
-//        SET_FONT_L;
-#ifdef PIN_RPM
+#ifdef PIN_RPMs
         draw3Decimals('R', metricsSum.rpmMin, metricsSum.rpmAvg, metricsSum.rpmMax);
 #else
-        sprintf(buffer, "R%15s", comingSoon);
-#endif
-        u8x8.drawString(0, 0, buffer);
-
-#ifdef PIN_CURRENT
-        draw3Decimals('P', metricsSum.pMin, metricsSum.pAvg, metricsSum.pMax);
-#else
-        sprintf(buffer, "P%15s", comingSoon);
+        sprintf(buffer, "R %14s", FMT_OFF);
 #endif
         u8x8.drawString(0, 2, buffer);
 
     }
     // T1 / T2 view
-    else if (which == 4) {
+    else if (which == AFTER_SCREEN_TEMP) {
 //        SET_FONT_L;
         u8x8.drawString(0, 0, "T1   COMING SOON");
         u8x8.drawString(0, 2, "T2   COMING SOON");
     }
+
+    // amps / power view
+#ifdef PIN_CURRENT
+    else if (which == AFTER_SCREEN_CURRENT_POWER) {
+//        SET_FONT_L;
+
+//        sprintf(buffer, "A %14s", comingSoon);
+        draw3Decimals('A', metricsSum.ampsMin*2, metricsSum.ampsAvg*2, metricsSum.ampsMax*2);
+        u8x8.drawString(0, 0, buffer);
+
+        draw3Decimals('P', metricsSum.pMin, metricsSum.pAvg, metricsSum.pMax);
+        u8x8.drawString(0, 2, buffer);
+    }
+#endif
+
     // WELLDONE screen OK
     else if (metricsSum.result < RESULT_ERRORS_FROM) {
         SET_FONT_XL;

@@ -22,7 +22,7 @@ struct configT {
 #endif
 
 //    unsigned int softStartTime = 5;
-    unsigned int softStartTime = 0;
+    unsigned int softStartTime = 40;
 
     unsigned int timeFly = 180;
 //    float cutoffVoltage = 3.7;

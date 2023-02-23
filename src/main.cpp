@@ -95,7 +95,7 @@ void loop() {
     setCurrentTime();
 //    unsigned int i;
 
-    if (elapsedInMode(1000)) {
+    if (elapsedInMode(E_EVERY_SEC)) {
         u8x8.setFont(FONT_L);
         if (btnAPushed()) {
             xPcnt++;
@@ -119,7 +119,7 @@ void loop() {
 #ifdef AMP_DEBUG
 char buf[20];
 void loop() {
-//    if (elapsedInMode(200)) {
+//    if (elapsedInMode(E_5_PER_SEC)) {
 
         u8x8.setFont(FONT_L);
 
@@ -171,7 +171,7 @@ void loop() {
         break;
         case MODE_SAVED_INPUT:
             // @todo deny test/setup if both buttons are disabled
-            if (elapsedInMode(200)) {
+            if (elapsedInMode(E_5_PER_SEC)) {
                 readSavedInput();
                 drawSavedInputScreen();
                 confirmation();
@@ -197,9 +197,11 @@ void loop() {
             else if (savedInputMode == SAVED_INPUT_MODE_VOLT_CUT) {
                 saved.voltCut = savedInputValue;
             }
+#ifdef PIN_CURRENT
             else if (savedInputMode == SAVED_INPUT_MODE_CURRENT_CUT) {
                 saved.currentCut = savedInputValue;
             }
+#endif
             else if (savedInputMode == SAVED_INPUT_MODE_MODE) {
                 saved.holdMode = savedInputValue;
             }
@@ -227,7 +229,7 @@ void loop() {
             }
         break;
         case MODE_TEST_SPIN:
-            if (elapsedInMode(200)) {
+            if (elapsedInMode(E_5_PER_SEC)) {
                 readSavedInput();
                 readAndSumMetrics();
                 if ((savedInputMode != SAVED_INPUT_MODE_SPIN) || !ANY_BUTTON_PUSHED) {
@@ -241,7 +243,7 @@ void loop() {
             }
         break;
         case MODE_PREFLIGHT_CONFIG:
-            if (elapsedInMode(200)) {
+            if (elapsedInMode(E_5_PER_SEC)) {
                 readConfigInput();
                 readMetrics();
                 drawPreflight(config);
@@ -279,6 +281,7 @@ void loop() {
                 drawRemainingTime(i);
                 ledOn();
                 delay(1000);
+                // @TODO enter soft start mode only if config.softStartTime > 0
 //                setMode(MODE_FLY);
                 setMode(MODE_SOFT_START);
             }
@@ -298,26 +301,20 @@ void loop() {
                 endMode(RESULT_ERR_BTN);
                 return;
             }
-//            if (ANY_BUTTON_PUSHED || (
-//                (metricsSum.holdMode != HOLD_MODE_HOLD_THROTTLE) && (metricsSum.holdMode != HOLD_MODE_SMART_THROTTLE)
-//            )) {
-//                endMode(RESULT_ERR_BTN);
-//                return;
-//            }
+
             if (elapsedInMode(100)) {
 
-//                flightAlarms();
+                flightAlarms();
 
                 unsigned int flyElapsed2 = (currentTime - currentModeStarted) / 100;
                 if (flyElapsed2 >= 40) {
                     setMode(MODE_FLY);
                 }
-//                5/target = elapsed/x
+                // 5/target = elapsed/x
                 unsigned int throttle = flyElapsed2 * config.holdThrottle / 40;
                 throttlePcnt(throttle);
                 blinkLed(BLINK_NORMAL);
 
-//                if ((elapsedInModeCounter % 5) == 0) {
                 if ((elapsedInModeCounter % 2) == 0) {
                     i = flyElapsed2 / 10;
                     drawRunScreen(i);
@@ -398,61 +395,26 @@ void loop() {
             break;
         // draw after info
         case MODE_AFTER:
-            if (elapsedInMode(200)) {
+            if (elapsedInMode(E_5_PER_SEC)) {
                 bool drawScreen = true;
                 if (btnAPushed()) {
-#ifdef PIN_RPM
-
-#ifdef PIN_TEMP
-                    currentScreen+= 4;
-#else
-                    currentScreen+= 3;
-#endif
-
-#else
-
-#ifdef PIN_TEMP
-                    currentScreen+= 3;
-#else
-                    currentScreen+= 2;
-#endif
-
-#endif
+                    currentScreen+= AFTER_SCREENS_COUNT-1;
                 }
                 else if (ANY_BUTTON_PUSHED) {
                     currentScreen++;
                 }
-                else if (config.rotateScreens && (elapsedInModeCounter % 25 == 0)) {
+//                else if (config.rotateScreens && (elapsedInModeCounter % 25 == 0)) {
+                else if (config.rotateScreens && (elapsedInModeCounter % (config.screenRotateTime * 5) == 0)) {
                     currentScreen++;
                 }
                 else {
                     drawScreen = false;
                 }
-#ifdef PIN_RPM
 
-#ifdef PIN_TEMP
-                if (currentScreen > 4) {
-                    currentScreen-= 5;
+                if (currentScreen >= AFTER_SCREENS_COUNT) {
+                    currentScreen-= AFTER_SCREENS_COUNT;
                 }
-#else
-                if (currentScreen > 3) {
-                    currentScreen-= 4;
-                }
-#endif
 
-#else
-
-#ifdef PIN_TEMP
-                if (currentScreen > 3) {
-                    currentScreen-= 4;
-                }
-#else
-                if (currentScreen > 2) {
-                    currentScreen-= 3;
-                }
-#endif
-
-#endif
                 if (drawScreen) {
                     drawAfterScreen(currentScreen);
                     // delay a bit, helps if button is still pressed
@@ -588,10 +550,12 @@ void flightAlarms() {
         RESULT_ERR_V_OVER,
         !VOLTS_DISABLED && (metrics.volts > config.cellCount * 42)
     );
+#ifdef PIN_CURRENT
     setAlarm(
         RESULT_ERR_ACUT,
         !CURRENT_DISABLED && (metrics.amps / 5 > saved.currentCut)
     );
+#endif
     setAlarm(
         RESULT_ERR_RPM_OVER,
         (metrics.rpm > 0) && (metrics.rpm > RPM_MAX)
