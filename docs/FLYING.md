@@ -16,28 +16,24 @@ After the logo screen and self-initialization, the pre-flight screen is shown.
 
 ### Available pre-flight settings
 
- - throttle/rpm/power - based on the saved flight MODE, the applied throttle, the target rpm, or the target power
+ - throttle/rpm - based on the saved flight MODE, the applied throttle, the target rpm, or the target power
  - flight time - selected from predefined options
    - flight time "0:00" can be selected and means that the motor will spin until a cutoff threshold is met. Selecting
        "0:00" is only available if battery voltage sensing is active.
- - screen cycle - sets whether info screens are cycled during flight, or fixed for a given screen
-   - to select a fix screen, activate cycling and start the countdown. Screens will cycle. When the desired screen
-       is shown, deactivate cycling. Countdown will restart. The selected screen will be remember for later flights
-       until another screen is selected (upcoming, to do)
 
 ## Configuration with 8bit DIP switches
 
-Altough using the 8bit DIP switches is optional, currently this is the only way to set pre-flight settings.
+Adjusting pre-flight settings requires DIP switches and at least one push button.
 
-A push button is not required, but then countdown will start automatically (if possible, eg. no cutoff is active)
+A push button is not required, but then countdown will start automatically (if possible)
 
 ### Setting throttle/rpm/power
 
-Use the first 4 DIP switches to change the value. The actual value will be reflected on the screen.
+Use the first 5 (9bit) or first 4 (8bit) DIP switches to change the value. The actual value will be shown on the screen.
 
 Values:
- - for throttle, constant throttle and SMART modes: 68...98% in 2% steps, 98% default
-   - for SMART mode this is the initial throttle. End target throttle remains the same constant
+ - for constant throttle and SMART throttle modes: 53...98% in 3% steps
+   - for SMART mode this is the initial throttle. End target throttle remains the same constant set in configuration
    - default: 98% throttle (all DIPs "down")
  - for RPM: 8000...12500, 300 1/min steps
    - default: 8000 (all DIPs "down")

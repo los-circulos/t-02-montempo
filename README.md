@@ -1,27 +1,40 @@
-# t-02 active digital field-programmable electric control line timer with OLED display and optional metrics
+# t-02 semi-active digital field-programmable electric control line timer with OLED display and optional metrics
 
-## General documentation, 
+## What it does
+
+ - safe startup sequence
+ - easily change throttle and flight time before flight
+ - start countdown with a long button press
+ - 25sec countdown before motor starts
+ - configurable soft start
+ - flight on fixed or compensated throttle level
+ - status led flashes tell what's happening all the time, fast flashes notice before motor start and before motor stop
+
+### What it does not
+
+ - it does not actively compensate for maneuvers or other flight speed changes
+ - RPM, temperature and current sensing and related functions are not fully implemented currently (thus power related 
+   neither as it would depend on current)
+
+## General documentation,
 
 Program and schematics to build a timer based on Arduino Nano
 
- - active: SMART throttle, constant RPM ("governor"), constant power (flat throttle is available)
+ - semi-active: SMART throttle, voltage compensation ("govi"), constant RPM ("governor")
  - digital: settings are precise and repeatable
  - field programmable: easily change configuration before each flight with a simple DIP switch
-   - DIP switch is optional, but then timer will work only in default mode: 98% constant throttle, 3:00 flight time, 
-       And cutoffs, is sensors connected: 90C, ...V, ...A
+   - 8 or 9 bit DIP switch for programming (8bit gives less value resolution in setups)
  - OLED display: shows time, configuration, metrics information. 
-   - Depending on display size and line length, flight time might be seen during flight
-   - various info screens to chose from or to rotate them
-   - very easy way to record discharge and voltage drop during flight
+   - flight time (countdown) is displayed during flight, along with a progress bar
+   - after flight summary screen - just a photo as flight log
    - easy to write "plugins" for different screens 
-   - OLED display is optional. Saves a few grams, but no metrics info, and configuration is difficult.
- - metrics: simple sensor boards ad voltage dividers can provide live data
+   - OLED display is optional. Might save a few grams, but no metrics info, and configuration is difficult.
+ - metrics: base board has connectors for some sensors
    - voltage: requires a simple voltage divider. Required for voltage cut-off and constant power.
    - RPM: requires a simple voltage divider and calibration. Required for constant RPM.
-   - current: requires current sensing board. Required for discharge metering and constant power.
-   - temperature: up to 3 points of measurement with simple sensors. Required for temperature cut-off. Configurable 28-90C
+   - current (NOT IMPLEMENTED): requires current sensing board. Required for discharge metering and constant power.
+   - temperature (NOT IMPLEMENTED): up to 3 points of measurement with simple sensors. Required for temperature cut-off. Configurable 28-90C
    - without any sensors, SMART and constant throttle still work
-   - NOTE some of these features are "coming up"
  - open source: you can build your own and compile the code yourself. Make any changes :)
  - support for up to 2 push buttons
    - used to initialize flight and for configuration

@@ -1,6 +1,6 @@
-# t-02 active digital field-programmable electric control line timer with OLED display and optional metrics
+# t-02 semi-active digital field-programmable electric control line timer with OLED display and optional metrics
 
-Note: this document describes saved configuration and not pre-flicht programming. For latter, check FLYING.md
+Note: this document describes saved configuration and not pre-flight programming. For latter, check FLYING.md
 
 Saved configuration includes items which rarely change, eg. setting voltage cut-off, number of motor poles etc.
 The configuration utility allows setting precise (digital) values for each setting and save them. Settings are
@@ -14,39 +14,23 @@ Pre-flight programming, on the other hand, lets fine tune throttle, RPM or power
 
 # Configuration with 8bit DIP switches
 
-Altough using the 8bit DIP switches is optional, currently this is the only way to configure saved settings.
-
-Also, at least one pushbutton is needed to save settings.
+DIP switches and at least one pushbutton are required to set and save settings.
 
 ## Entering the configuration utility
 
- - Set all DIP switches to low/up/on/ground (*) before connecting battery.
+ - Set all DIP switches to low=up (*) before connecting battery.
  - Release any push buttons
  - Connect battery
- - "MOTOR 0%" and "PUSH TO SPIN" should be displayed. Test spin (motor) mode is the default configuration screen.
+ - wait while timer boots up
+ - "MOTOR OFF" and "PUSH TO SPIN" should be displayed. Test spin (motor) mode is the default configuration screen.
 
 ## Changing a setting
 
-### Select a setting
-
-The setting is selected with the rightmost DIP switches (pins 0, 1, etc). Some modes require setting just 2 DIP
-switches, while others require setting the 3 or 4 rightmost switches. Eg. "UP UP" means setting the 2 rightmost (last)
-DIP switches to low/up/on/ground (*).
-
-When a mode is selected, the currently saved value is displayed as "<OLD" with medium size fonts. The actual value is
-displayed as "^NEW" and with large fonts.
-
-### Change the value
-
-The DIP switches not used for selecting a setting are used to set its value. Eg. if "UP UP" was used, which 
-selects test spin (motor) mode, then the first 6 DIP switches are available to set the desired throttle.
-
-### Save new value
-
-Saving a value is done by holding both push buttons (or one, if the other is disabled). While holding both buttons,
-the LED will flash, an exclamation mark "!" is shown on the screen, as well as running dots in the bottom. A big
-"SAVED" title appears once the save is done, and the timer will wait until all buttons are released before continuing.
-If any of the buttons is released while the dots are still running, the setting is not saved.
+ - select a setting using the 4 rightmost switches
+ - set new value using left 5 (4) switches. New value is displaey in top right part of screen, big letters
+ - check current (old) value on left of the screen with small letters
+ - to save, push button (or both buttons when using two) and keep pushing until status LED flashes and screen says "SAVED"
+ - release button
 
 ## Available settings and what they do
 
@@ -55,6 +39,8 @@ If any of the buttons is released while the dots are still running, the setting 
 (insert image here explaining . - U - D)
 
 ### List of available settings
+
+(this section needs update)
 
  - "MOTOR" - it is not a setting but a motor test spin can be activated by setting a throttle output and pushing
     both buttons (like when saving).
