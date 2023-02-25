@@ -319,11 +319,9 @@ void loop() {
         case MODE_SOFT_START:
             if (MODE_NOT_IMPLEMENTED) {
                 notImplemented();
-//                return;
             }
             else if (ANY_BUTTON_PUSHED) {
                 endMode(RESULT_ERR_BTN);
-//                return;
             }
             else if (elapsedInMode(100)) {
 
@@ -421,8 +419,8 @@ void loop() {
                 else if (ANY_BUTTON_PUSHED) {
                     currentScreen++;
                 }
-//                else if (config.rotateScreens && (elapsedInModeCounter % 25 == 0)) {
-                else if (config.rotateScreens && (elapsedInModeCounter % (config.screenRotateTime * 5) == 0)) {
+//                else if (config.rotateScreens && (elapsedInModeCounter % (config.screenRotateTime * 5) == 0)) {
+                else if ((elapsedInModeCounter % (config.screenRotateTime * 5)) == 0) {
                     currentScreen++;
                 }
                 else {

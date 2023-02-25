@@ -60,16 +60,14 @@ void readConfigInput() {
     i = readInputLeft()%8;
     config.timeFly = flyTimeValues[i];
 
-    // @todo screen rotate delay should be read from eprom (?)
-    // @todo default screen should be read from eprom
+    // @todo this value should be refreshed in countdown and restart countdown if changes?
 
-    // @todo this value should be refreshed in countdown and restart countdown if changes
-#ifdef INPUT_DIP8
-    config.rotateScreens = !digitalRead(INPUT_DIP_8);
-#endif
-#ifdef INPUT_DIP9
-    config.rotateScreens = !digitalRead(INPUT_DIP_9);
-#endif
+//#ifdef INPUT_DIP8
+//    config.rotateScreens = !digitalRead(INPUT_DIP_8);
+//#endif
+//#ifdef INPUT_DIP9
+//    config.rotateScreens = !digitalRead(INPUT_DIP_9);
+//#endif
 
 #ifdef PIN_VOLT
     if (!VOLTS_DISABLED) {
