@@ -19,7 +19,8 @@ const unsigned int powerValues[] = { 120, 130, 140, 150, 160, 170, 180, 190, 200
 #endif
 // 3:00 default, 370 + 25sec = leaves 25sec of the 7mins to start timer and to land. 0 stands for run until voltage cut
 #ifdef DEVMODE
-const unsigned int flyTimeValues[] = { 10, 60, 210, 240, 270, 280, 290, 300, 310, 320, 330, 340, 350, 360, 370, 0 };
+//const unsigned int flyTimeValues[] = { 10, 60, 210, 240, 270, 280, 290, 300, 310, 320, 330, 340, 350, 360, 370, 0 };
+const unsigned int flyTimeValues[] = { 10, 60, 360, 330, 300, 240, 0, 0 };
 #else
 //const unsigned int flyTimeValues[] = { 180, 60, 210, 240, 270, 280, 290, 300, 310, 320, 330, 340, 350, 360, 370, 0 };
 const unsigned int flyTimeValues[] = { 180, 60, 360, 330, 300, 240, 0, 0 };
@@ -30,7 +31,7 @@ unsigned char i;
 // abstracted so I could reuse code when viewing logs? Seems it gets inline-optimized meanwhile :D
 void setHoldValues(unsigned char rawHoldValue) {
     config.holdValueRaw = rawHoldValue;
-    config.holdThrottle = 98 - rawHoldValue;
+    config.holdThrottle = 98 - rawHoldValue*2;
 //    config.holdRPM = RPM_BASE + rawHoldValue * INPUT_HOLD_RPM_MULT;
 #ifdef PIN_CURRENT
     config.holdPower = powerValues[rawHoldValue * INPUT_HOLD_RPM_MULT];
