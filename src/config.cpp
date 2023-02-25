@@ -21,14 +21,7 @@ const unsigned int powerValues[] = { 120, 130, 140, 150, 160, 170, 180, 190, 200
 #ifdef DEVMODE
 const unsigned int flyTimeValues[] = { 10, 60, 210, 240, 270, 280, 290, 300, 310, 320, 330, 340, 350, 360, 370, 0 };
 #else
-#ifdef INPUT_DIP8
-// 0, 60, 180, 240, 300, 340, 355, 370
-const unsigned int flyTimeValues[] = { 180, 60, 240, 300, 340, 355, 370, 0 };
-#endif
-#ifdef INPUT_DIP9
-// 0, 60, 180, 210, 240, 270, 280, 290, 300, 310, 320, 330, 340, 350, 360, 370
 const unsigned int flyTimeValues[] = { 180, 60, 210, 240, 270, 280, 290, 300, 310, 320, 330, 340, 350, 360, 370, 0 };
-#endif
 #endif
 
 unsigned char i;
@@ -60,20 +53,10 @@ void initConfig() {
 }
 void readConfigInput() {
 
-#ifdef INPUT_DIP8
-    i = readDips(4);
-#endif
-#ifdef INPUT_DIP9
-    i = readDips(4);
-#endif
+    i = readInputRight();
     setHoldValues(i);
+    i = 15 - readInputLeft();
 
-#ifdef INPUT_DIP8
-    i = (readDips(7) - i) / 16;
-#endif
-#ifdef INPUT_DIP9
-    i = (readDips(8) - i) / 16;
-#endif
     config.timeFly = flyTimeValues[i];
 
     // @todo screen rotate delay should be read from eprom (?)
