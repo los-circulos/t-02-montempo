@@ -185,31 +185,49 @@ void loop() {
                 setMode(MODE_TEST_SPIN);
                 return;
             }
-            else if (savedInputMode == SAVED_INPUT_MODE_SMART) {
-                saved.smartEndThrottle = savedInputValue;
-            }
             else if (savedInputMode == SAVED_INPUT_MODE_T1_CUT) {
                 saved.t1Cut = savedInputValue;
             }
             else if (savedInputMode == SAVED_INPUT_MODE_T2_CUT) {
                 saved.t2Cut = savedInputValue;
             }
-            else if (savedInputMode == SAVED_INPUT_MODE_VOLT_CUT) {
-                saved.voltCut = savedInputValue;
-            }
-#ifdef PIN_CURRENT
-            else if (savedInputMode == SAVED_INPUT_MODE_CURRENT_CUT) {
-                saved.currentCut = savedInputValue;
-            }
-#endif
             else if (savedInputMode == SAVED_INPUT_MODE_MODE) {
                 saved.holdMode = savedInputValue;
+            }
+            else if (savedInputMode == SAVED_INPUT_MODE_VOLT_CUT) {
+                saved.voltCut = savedInputValue;
             }
             else if (savedInputMode == SAVED_INPUT_MODE_POLES) {
                 saved.poles = savedInputValue;
             }
+            else if (savedInputMode == SAVED_INPUT_MODE_END_THROTTLE) {
+                saved.endThrottle = savedInputValue;
+            }
+            else if (savedInputMode == SAVED_INPUT_MODE_GOVI) {
+                saved.govi = !!savedInputValue;
+            }
+            else if (savedInputMode == SAVED_INPUT_MODE_ARM) {
+                saved.arm = !!savedInputValue;
+            }
+            else if (savedInputMode == SAVED_INPUT_MODE_CAL) {
+                saved.calibrate = !!savedInputValue;
+            }
+            else if (savedInputMode == SAVED_INPUT_MODE_SOFT_TIME) {
+                saved.softTime = savedInputValue;
+            }
+            else if (savedInputMode == SAVED_INPUT_MODE_COUNTDOWN) {
+                saved.countdown = savedInputValue;
+            }
+            else if (savedInputMode == SAVED_INPUT_MODE_CLEAR_LOGS) {
+//                saved.endThrottle = savedInputValue;
+            }
             saveSaved();
             setMode(MODE_SAVED_INPUT_SAVED);
+#ifdef PIN_CURRENT
+            else if (savedInputMode == SAVED_INPUT_MODE_CURRENT_CUT_OBS) {
+                saved.currentCut = savedInputValue;
+            }
+#endif
         break;
         case MODE_SAVED_INPUT_SAVED:
             if (elapsedInMode(100)) {
@@ -355,7 +373,7 @@ void loop() {
                     // timeLimit / elapsed = (thr1 - thr0) / (thrX - thr0)
                     // elapsed / timeLimit = (thrX - thr0) / (thr1 - thr0)
                     // thrX = thr0 + (thr1 - thr0) * elapsed / timeLimit
-                    i = (unsigned long)(saved.smartEndThrottle - config.holdThrottle) * flyElapsed / config.timeFly + config.holdThrottle;
+                    i = (unsigned long)(saved.endThrottle - config.holdThrottle) * flyElapsed / config.timeFly + config.holdThrottle;
                     throttlePcnt(i);
                 }
 
@@ -366,14 +384,14 @@ void loop() {
                         return;
                     }
                     // remaining time is flight time minus soft start time (elapsed already) minus elapsed time
-                    i = config.timeFly - config.softStartTime - flyElapsed;
+                    i = config.timeFly - saved.softTime - flyElapsed;
                 }
                 // until cut flight
                 else {
                     // @todo limit flight to 9:59
                     // @todo check here if voltage reading is meaningful and error if not
                     // when using soft start and incremental time, add it to elapsed time (twice to increment previous deduction)
-                    i = flyElapsed + 2*config.softStartTime;
+                    i = flyElapsed + 2*saved.softTime;
                 }
 
                 // blink led fast if less than 5 seconds remain AND ALSO in every first half of a second

@@ -29,9 +29,10 @@ char buffer[20];
 char floatBuffer[10];
 char progressBarChars[4] = {'>','#','#',' '};
 
-char *savedInputModeLabels[] = {"MOTOR", "SMART", "T1CUT", "T2CUT", "V CUT", "A CUT", "MODE ", "POLES"};
+char *savedInputModeLabels[] = {"MOTOR", "", "T1CUT", "T2CUT", "MODE ", "V CUT", "POLES", "ENDTH", "GOVI ", "ARM  ", "CALIB", "SOFT ", "DELAY", "NOT  ", "CLEAR", "NOT  "};
 char savedInputModeUnits[] = "%%CCVA P";
-char *holdModeLabels[] = {"THRO", "RPM ", "PWR ", "SMRT"};
+//char *holdModeLabels[] = {"THRO", "SMRT", "RPM ", "PWR "};
+char *holdModeLabels[] = {"THRO", "SMRT"};
 // @todo more modes - simulate glow with stunt tank, with uniflow tank, and erratic run with hole on tank
 //char *holdModeLabels[] = {"THRO", "RPM ", "PWR ", "SMRT", "GLOW", "UNIF", "ERRA"};
 //char *resultLabels[] = {"OKTIME", "OKVCUT", "BTN", "V ???", "VHIGH", "A ???", "AHIGH", "R??", "RHIGH", "T1???", "T2???"};
@@ -198,7 +199,7 @@ void drawPreflight(configT config) {
     }
 #endif
     else if (saved.holdMode == HOLD_MODE_SMART_THROTTLE) {
-        sprintf(buffer, "SMR %2d-%2d", config.holdThrottle, saved.smartEndThrottle);
+        sprintf(buffer, "SMR %2d-%2d", config.holdThrottle, saved.endThrottle);
         u8x8.drawString(0, 2, buffer);
     }
     else {
@@ -238,7 +239,7 @@ void drawPreflight(configT config) {
         (   (saved.holdMode == HOLD_MODE_SMART_THROTTLE) &&
             (
                 // smart throttle end value should be bigger than start
-                (config.holdThrottle > saved.smartEndThrottle) ||
+                (config.holdThrottle > saved.endThrottle) ||
                 // smart throttle cannot calculate until vcut (at least for now)
                 (config.timeFly == 0)
             )
@@ -264,15 +265,15 @@ void drawSavedInputScreen() {
 
     switch (savedInputMode) {
     case SAVED_INPUT_MODE_SPIN:
-    case SAVED_INPUT_MODE_SMART:
     case SAVED_INPUT_MODE_T1_CUT:
     case SAVED_INPUT_MODE_T2_CUT:
-    case SAVED_INPUT_MODE_CURRENT_CUT:
-//    case SAVED_INPUT_MODE_POLES:
-        sprintf(buffer, savedInputValue>0 ? FMT_TEST_VALUE_COMMON : FMT_OFF, savedInputValue, savedInputModeUnits[savedInputMode]);
-        break;
+    case SAVED_INPUT_MODE_END_THROTTLE:
+#ifdef PIN_CURRENT
+    case SAVED_INPUT_MODE_CURRENT_CUT_OBS:
+#endif
+    // poles should never be off, but it cannot be set 0 anyway
     case SAVED_INPUT_MODE_POLES:
-        sprintf(buffer, FMT_TEST_VALUE_COMMON, savedInputValue, savedInputModeUnits[savedInputMode]);
+        sprintf(buffer, savedInputValue>0 ? FMT_TEST_VALUE_COMMON : FMT_OFF, savedInputValue, savedInputModeUnits[savedInputMode]);
         break;
     case SAVED_INPUT_MODE_VOLT_CUT:
         sprintf(buffer, savedInputValue>0 ? FMT_TEST_VALUE_VOLTS : FMT_OFF, savedInputValue);
@@ -281,18 +282,26 @@ void drawSavedInputScreen() {
     case SAVED_INPUT_MODE_MODE:
         strcpy(buffer, holdModeLabels[savedInputValue]);
         strcpy(floatBuffer, holdModeLabels[saved.holdMode]);
-    // omitting this saves 30 bytes but savedInputMode rather be valid then lol
-//        break;
-//    default:
-//        sprintf(buffer, "USED");
-//        sprintf(floatBuffer, "----");
+        break;
+    case SAVED_INPUT_MODE_SOFT_TIME:
+        sprintf(buffer, "%1d.%1ds", savedInputValue/10, savedInputValue%10);
+        sprintf(floatBuffer, "%1d.%1ds", saved.softTime/10, saved.softTime%10);
+        break;
+    case SAVED_INPUT_MODE_COUNTDOWN:
+        sprintf(buffer, " %2ds", savedInputValue);
+        sprintf(floatBuffer, " %2ds", saved.countdown);
+        break;
+    default:
+        sprintf(buffer, "USED");
+        sprintf(floatBuffer, "----");
     }
+
     switch (savedInputMode) {
     case SAVED_INPUT_MODE_SPIN:
         strcpy(floatBuffer, "    ");
         break;
-    case SAVED_INPUT_MODE_SMART:
-        sprintf(floatBuffer, FMT_TEST_4DECIMALS, saved.smartEndThrottle);
+    case SAVED_INPUT_MODE_END_THROTTLE:
+        sprintf(floatBuffer, FMT_TEST_4DECIMALS, saved.endThrottle);
         break;
     case SAVED_INPUT_MODE_T1_CUT:
         sprintf(floatBuffer, saved.t1Cut > 0 ? FMT_TEST_VALUE_COMMON : FMT_OFF, saved.t1Cut, savedInputModeUnits[savedInputMode]);
@@ -300,9 +309,11 @@ void drawSavedInputScreen() {
     case SAVED_INPUT_MODE_T2_CUT:
         sprintf(floatBuffer, saved.t2Cut > 0 ? FMT_TEST_VALUE_COMMON : FMT_OFF, saved.t2Cut, savedInputModeUnits[savedInputMode]);
         break;
-    case SAVED_INPUT_MODE_CURRENT_CUT:
+#ifdef PIN_CURRENT
+    case SAVED_INPUT_MODE_CURRENT_CUT_OBS:
         sprintf(floatBuffer, saved.currentCut > 0 ? FMT_TEST_VALUE_COMMON : FMT_OFF, saved.currentCut, savedInputModeUnits[savedInputMode]);
         break;
+#endif
     case SAVED_INPUT_MODE_POLES:
         sprintf(floatBuffer, FMT_TEST_4DECIMALS, saved.poles);
         break;
@@ -431,7 +442,7 @@ void drawRunScreen(unsigned int secsRemain) {
     sprintf(buffer, "%4d%%", metrics.throttlePcnt);
     u8x8.drawString(0, 0, buffer);
     sprintf(buffer, "%3d", metrics.volts);
-//    sprintf(buffer, "%3dV", saved.smartEndThrottle);
+//    sprintf(buffer, "%3dV", saved.endThrottle);
     u8x8.drawString(0, 1, buffer);
     sprintf(buffer, "%2dA", metrics.amps*2);
 //    sprintf(buffer, "%3d", config.holdThrottle);

@@ -36,8 +36,8 @@ unsigned char i;
 // abstracted so I could reuse code when viewing logs? Seems it gets inline-optimized meanwhile :D
 void setHoldValues(unsigned char rawHoldValue) {
     config.holdValueRaw = rawHoldValue;
-    config.holdThrottle = 98 - rawHoldValue * INPUT_HOLD_THROTTLE_MULT;
-    config.holdRPM = RPM_BASE + rawHoldValue * INPUT_HOLD_RPM_MULT;
+    config.holdThrottle = 98 - rawHoldValue;
+//    config.holdRPM = RPM_BASE + rawHoldValue * INPUT_HOLD_RPM_MULT;
 #ifdef PIN_CURRENT
     config.holdPower = powerValues[rawHoldValue * INPUT_HOLD_RPM_MULT];
 #endif

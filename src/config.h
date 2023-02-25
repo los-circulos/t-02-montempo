@@ -1,7 +1,7 @@
 #ifndef MONTEMPO_CONFIG_H
 #define MONTEMPO_CONFIG_H
 
-//#define DEVMODE
+#define DEVMODE
 
 #define CONFIG_CELLS_MAX 5
 #define CONFIG_CELLS_ERR_VCUT 6
@@ -20,9 +20,6 @@ struct configT {
 #else
     unsigned int timeDelay = 25;
 #endif
-
-//    unsigned int softStartTime = 5;
-    unsigned int softStartTime = 40;
 
     unsigned int timeFly = 180;
 //    float cutoffVoltage = 3.7;

@@ -141,6 +141,40 @@ void convertRpm() {
 }
 
 #ifdef ANY_DIP_INPUT
+unsigned char readInputLeft() {
+    return digitalRead(INPUT_DIP_1) * 8 +
+            digitalRead(INPUT_DIP_2) * 4 +
+            digitalRead(INPUT_DIP_3) * 2 +
+            digitalRead(INPUT_DIP_4) * 1;
+}
+#endif
+
+#ifdef INPUT_DIP8
+//unsigned char readDips(unsigned char cnt) {
+unsigned int readDips(unsigned char cnt) {
+//    unsigned char i, v = 2;
+    unsigned char v = 2;
+    unsigned int ret = 0;
+    for (unsigned char i=1; i<cnt; i++) {
+        ret += !digitalRead(INPUT_DIP_1 + i - 1) * v;
+        v *= 2;
+    }
+    return ret;
+}
+unsigned char readInputRight() {
+    return digitalRead(INPUT_DIP_5) * 16 +
+            digitalRead(INPUT_DIP_6) * 8 +
+            digitalRead(INPUT_DIP_7) * 4 +
+            digitalRead(INPUT_DIP_8) * 2;
+}
+unsigned char readInputThrottle() {
+    return 98 - digitalRead(INPUT_DIP_5) * 32 -
+                digitalRead(INPUT_DIP_6) * 16 -
+                digitalRead(INPUT_DIP_7) * 8 -
+                digitalRead(INPUT_DIP_8) * 4;
+}
+#endif
+#ifdef INPUT_DIP9
 unsigned char readDips(unsigned char cnt) {
     unsigned char i, v = 1;
     unsigned char ret = 0;
@@ -149,5 +183,19 @@ unsigned char readDips(unsigned char cnt) {
         v *= 2;
     }
     return ret;
+}
+unsigned char readInputRight() {
+    return digitalRead(INPUT_DIP_5) * 16 +
+            digitalRead(INPUT_DIP_6) * 8 +
+            digitalRead(INPUT_DIP_7) * 4 +
+            digitalRead(INPUT_DIP_8) * 2 +
+            digitalRead(INPUT_DIP_9) * 1;
+}
+unsigned char readInputThrottle() {
+    return 98 - (digitalRead(INPUT_DIP_5) * 16 +
+                digitalRead(INPUT_DIP_6) * 8 +
+                digitalRead(INPUT_DIP_7) * 4 +
+                digitalRead(INPUT_DIP_8) * 2 +
+                digitalRead(INPUT_DIP_9) * 1) * 2;
 }
 #endif

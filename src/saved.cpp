@@ -2,6 +2,7 @@
 #include "saved.h"
 #include "hardware.h"
 #include "config.h"
+#include "screen.h"
 
 savedT saved;
 uint8_t savedInputMode;
@@ -33,67 +34,53 @@ void saveSaved() {
 }
 
 void readSavedInput() {
-//#ifdef INPUT_DIP8
-#ifdef ANY_DIP_INPUT
-    // DIPS 5...8
-    int i = readDips(8) / 16;
 
-    if (i>=12) {
+#ifdef ANY_DIP_INPUT
+
+    savedInputMode = readInputLeft();
+
+    // preloading once saves memory over calling the same in various locations
+    savedInputValue = readInputRight();
+
+    // lowest bit of savedInputMode is the highest bit of throttle
+    if (savedInputMode <= SAVED_INPUT_MODE_SPIN2) {
+        savedInputValue = readInputThrottle() - (savedInputMode%2) * 36;
         savedInputMode = SAVED_INPUT_MODE_SPIN;
     }
-    else if (i >= 10) {
-        savedInputMode = SAVED_INPUT_MODE_T2_CUT;
-    }
-    else if (i >= 8) {
-        savedInputMode = SAVED_INPUT_MODE_T1_CUT;
-    }
-    else if (i == 7) {
-        savedInputMode = SAVED_INPUT_MODE_MODE;
-    }
-    else if (i == 6) {
-        savedInputMode = SAVED_INPUT_MODE_POLES;
-    }
-    else if (i == 5) {
-        savedInputMode = SAVED_INPUT_MODE_CURRENT_CUT;
-    }
-    else if (i == 4) {
-        savedInputMode = SAVED_INPUT_MODE_VOLT_CUT;
-    }
-    else {
-        savedInputMode = SAVED_INPUT_MODE_SMART;
-    }
-
-    // a switch would take only 4 bytes less of memory
-    if (savedInputMode <= SAVED_INPUT_MODE_SMART) {
-        savedInputValue = 98
-                          - readDips(4) * 2
-                          - !digitalRead(INPUT_DIP_5) * 20
-                          - !digitalRead(INPUT_DIP_6) * 48;
-    }
-    // 28..90C /2
+    // 32..90C /2
     else if (savedInputMode <= SAVED_INPUT_MODE_T2_CUT) {
-        savedInputValue = 90 - readDips(5) * 2;
-        if (savedInputValue == 28) {
-            savedInputValue = 0;
-        }
+        savedInputValue = savedInputValue < 30 ? 90 - savedInputValue * 2 : 0;
     }
     // 3...3.7V / 0.1
     else if (savedInputMode == SAVED_INPUT_MODE_VOLT_CUT) {
-        savedInputValue = 7 - readDips(3);
-    }
-    // 20..50/2
-    else if (savedInputMode == SAVED_INPUT_MODE_CURRENT_CUT) {
-        savedInputValue = 50 - readDips(4) * 2;
-        if (savedInputValue == 20) {
-            savedInputValue = 0;
-        }
+        savedInputValue = 7 - (savedInputValue % 16) / 2;
     }
     else if (savedInputMode == SAVED_INPUT_MODE_POLES){
-        savedInputValue = 34 - readDips(4) * 2;
+        savedInputValue = 34 - savedInputValue * 2;
     }
+    else if (savedInputMode == SAVED_INPUT_MODE_END_THROTTLE) {
+        savedInputValue = readInputThrottle();
+    }
+    else if (savedInputMode == SAVED_INPUT_MODE_SOFT_TIME) {
+        savedInputValue = savedInputValue < 60 ? 62 - savedInputValue : 0;
+    }
+    else if (savedInputMode == SAVED_INPUT_MODE_COUNTDOWN) {
+        savedInputValue = 87 - savedInputValue * 2;
+    }
+    // only 2 modes available
+//    else if (savedInputMode == SAVED_INPUT_MODE_MODE) {
+//        savedInputValue = (savedInputValue/2) % 4;
+//    }
     else {
-        savedInputValue = readDips(2);
+        savedInputValue = (savedInputValue % 4) % 2;
     }
+
+#ifdef PIN_CURRENT
+    // 20..50/2
+    else if (savedInputMode == SAVED_INPUT_MODE_CURRENT_CUT_OBS) {
+        savedInputValue = savedInputValue <30 ? 50 - savedInputValue : 0;
+    }
+#endif
 
 #endif
 }
