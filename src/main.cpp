@@ -436,6 +436,12 @@ void loop() {
                     delay(500);
                 }
             }
+#ifdef DEVMODE
+            confirmation();
+            break;
+            case MODE_AFTER + 1:
+                countDown(MODE_WELCOME_LOCK);
+#endif
             break;
     }
 
