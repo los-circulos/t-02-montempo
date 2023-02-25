@@ -139,7 +139,7 @@ void loop() {
     setCurrentTime();
     unsigned int i;
 
-    unsigned int flyElapsed = (currentTime - currentModeStarted) / 100;
+    unsigned int flyElapsed = (currentTime - currentModeStarted) / 1000;
 
     switch (currentMode) {
         case MODE_WELCOME_LOCK:
@@ -336,7 +336,7 @@ void loop() {
                 blinkLed(BLINK_NORMAL);
 
                 if ((elapsedInModeCounter % 2) == 0) {
-                    drawRunScreen(flyElapsed / 10);
+                    drawRunScreen(saved.softTime - flyElapsed);
                 }
 
             }
@@ -359,8 +359,7 @@ void loop() {
                     return;
                 }
 
-                // elapsed time
-                flyElapsed /= 10;
+                // elapsed time already in flyelapsed
 
                 // UPDATE THROTTLE
                 // update holdThrottle - currently only fixed holdThrottle
@@ -382,14 +381,14 @@ void loop() {
                         return;
                     }
                     // remaining time is flight time minus soft start time (elapsed already) minus elapsed time
-                    i = config.timeFly - saved.softTime - flyElapsed;
+                    i = config.timeFly - flyElapsed;
                 }
                 // until cut flight
                 else {
                     // @todo limit flight to 9:59
                     // @todo check here if voltage reading is meaningful and error if not
                     // when using soft start and incremental time, add it to elapsed time (twice to increment previous deduction)
-                    i = flyElapsed + 2*saved.softTime;
+                    i = flyElapsed;
                 }
 
                 // blink led fast if less than 5 seconds remain AND ALSO in every first half of a second

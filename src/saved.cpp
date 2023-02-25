@@ -62,7 +62,7 @@ void readSavedInput() {
         savedInputValue = readInputThrottle();
     }
     else if (savedInputMode == SAVED_INPUT_MODE_SOFT_TIME) {
-        savedInputValue = savedInputValue < 60 ? 62 - savedInputValue : 0;
+        savedInputValue = 7 - (savedInputValue % 8);
     }
     else if (savedInputMode == SAVED_INPUT_MODE_COUNTDOWN) {
         savedInputValue = 87 - savedInputValue * 2;
