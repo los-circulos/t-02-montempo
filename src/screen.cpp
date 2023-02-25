@@ -190,7 +190,7 @@ void drawPreflight(configT config) {
     // NOTE a switch would eat 4bytes more here than these ifs
     if (saved.holdMode == HOLD_MODE_RPM) {
         sprintf(buffer, "RPM %2d.%d", config.holdRPM / 1000, (config.holdRPM / 100) % 10);
-        u8x8.drawString(0, 2, buffer);
+        u8x8.drawString(6, 2, buffer);
     }
 #ifdef PIN_CURRENT
     else if (saved.holdMode == HOLD_MODE_POWER) {
@@ -200,11 +200,11 @@ void drawPreflight(configT config) {
 #endif
     else if (saved.holdMode == HOLD_MODE_SMART_THROTTLE) {
         sprintf(buffer, "SMR %2d-%2d", config.holdThrottle, saved.endThrottle);
-        u8x8.drawString(0, 2, buffer);
+        u8x8.drawString(6, 2, buffer);
     }
     else {
         sprintf(buffer, "THRO %2d%%", config.holdThrottle);
-        u8x8.drawString(0, 2, buffer);
+        u8x8.drawString(6, 2, buffer);
     }
 
     config.preflightError = true;
@@ -221,7 +221,7 @@ void drawPreflight(configT config) {
         sprintf(buffer, "%2d.%1dV %1dS", metrics.volts/10, metrics.volts%10, config.cellCount);
         config.preflightError = false;
     }
-    u8x8.drawString(0,0, buffer);
+    u8x8.drawString(6,0, buffer);
 
     if (
 // not possible without VOLT measuring:
@@ -231,7 +231,7 @@ void drawPreflight(configT config) {
         // power calculation needs volts (and current)
         (saved.holdMode == HOLD_MODE_POWER) ||
 #else
-#ifndef PIN_CURRENT
+#ifdef PIN_CURRENT
         // power calculation needs current (and volts)
         (saved.holdMode == HOLD_MODE_POWER) ||
 #endif
@@ -249,13 +249,13 @@ void drawPreflight(configT config) {
     }
 
     if (config.preflightError) {
-        u8x8.drawString(10, 0, " NO ");
-        u8x8.drawString(9, 2, " FLY!");
+        u8x8.drawString(0, 0, "NO ");
+        u8x8.drawString(0, 2, "FLY!");
     }
     else {
-        u8x8.drawString(10, 0, "FLY?");
+        u8x8.drawString(1, 0, "FLY?");
         sprintf(buffer, "%2d:%02d", config.timeFly / 60, config.timeFly % 60);
-        u8x8.drawString(9, 2, buffer);
+        u8x8.drawString(0, 2, buffer);
     }
 
 #endif
@@ -344,26 +344,17 @@ void drawTestSpinScreen() {
     SET_FONT_L;
     sprintf(buffer, "THR %2d %% %2d.%1d V", savedInputValue, metrics.volts / 10, metrics.volts % 10);
     u8x8.drawString(0, 0, buffer);
+#ifdef PIN_CURRENT
     sprintf(buffer,  "RPM %2d.%1d %2d.%1d A", metrics.rpm/1000, (metrics.rpm%1000)/100, metrics.amps / 5, (metrics.amps*2) % 10);
+#else
+    sprintf(buffer,  "RPM %2d.%1d       ", metrics.rpm/1000, (metrics.rpm%1000)/100);
+#endif
     u8x8.drawString(0, 2, buffer);
 #endif
 }
 void drawRunScreen(unsigned int secsRemain) {
 
 #ifdef SCREEN_32X4
-
-    // flash current value with inverse when not rotating screens. Not sure if it's of any use.
-    // indeed only useful when there is no visible in-flight led but the screen is visible
-//    if (!config.rotateScreens) {
-    // plan B: flash value when flying until battery time
-//    if ((config.timeFly == 0) && (secsRemain % 2 == 0)) {
-//        u8x8.inverse();
-//    }
-//    else {
-//        u8x8.noInverse();
-//    }
-    // for now, no inverse play
-//    u8x8.noInverse();
 
     drawRemainingTime(secsRemain);
 
@@ -410,47 +401,9 @@ void drawRunScreen(unsigned int secsRemain) {
         }
 
     }
-    /*
-    */
 
     u8x8.noInverse();
-#ifdef DEVMODE_OBS
 
-    SET_FONT_S;
-
-//    sprintf(buffer, "%4d", sizeof(metricsSumCntT));
-//    u8x8.drawString(6, 3, buffer);
-
-//    sprintf(buffer, "%4d", metrics.amps*2);
-//    u8x8.drawString(0, 0, buffer);
-//    sprintf(buffer, "%4d", metricsSum.ampsMin*2);
-//    u8x8.drawString(0, 1, buffer);
-//    sprintf(buffer, "%4d", (int)metricsSum.ampsAvg*2);
-//    u8x8.drawString(0, 2, buffer);
-//    sprintf(buffer, "%4d", metricsSum.ampsMax*2);
-//    u8x8.drawString(0, 3, buffer);
-
-//    sprintf(buffer, "%4d", metrics.volts);
-//    u8x8.drawString(0, 0, buffer);
-//    sprintf(buffer, "%4d", metricsSum.voltsMin);
-//    u8x8.drawString(0, 1, buffer);
-////    sprintf(buffer, "%4d", (int)METRICS_AVG_AMPS*2);
-////    u8x8.drawString(0, 2, buffer);
-//    sprintf(buffer, "%4d", metricsSum.voltsMax);
-//    u8x8.drawString(0, 3, buffer);
-
-    sprintf(buffer, "%4d%%", metrics.throttlePcnt);
-    u8x8.drawString(0, 0, buffer);
-    sprintf(buffer, "%3d", metrics.volts);
-//    sprintf(buffer, "%3dV", saved.endThrottle);
-    u8x8.drawString(0, 1, buffer);
-    sprintf(buffer, "%2dA", metrics.amps*2);
-//    sprintf(buffer, "%3d", config.holdThrottle);
-    u8x8.drawString(0, 2, buffer);
-    sprintf(buffer, "%5d", metrics.rpm);
-    u8x8.drawString(0, 3, buffer);
-
-#else
     SET_FONT_S;
     sprintf(buffer, " %2d %%", metrics.throttlePcnt);
     u8x8.drawString(0, 0, buffer);
@@ -463,8 +416,6 @@ void drawRunScreen(unsigned int secsRemain) {
         sprintf(buffer, "%2d.%1dA", metrics.amps/5, (metrics.amps*2)%10);
         u8x8.drawString(0, 2, buffer);
     }
-#endif
-
 #endif
 
 #endif
