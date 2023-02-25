@@ -175,15 +175,6 @@ unsigned char readInputThrottle() {
 }
 #endif
 #ifdef INPUT_DIP9
-unsigned char readDips(unsigned char cnt) {
-    unsigned char i, v = 1;
-    unsigned char ret = 0;
-    for (i=0; i<cnt; i++) {
-        ret += !digitalRead(INPUT_DIP_1 + i) * v;
-        v *= 2;
-    }
-    return ret;
-}
 unsigned char readInputRight() {
     return digitalRead(INPUT_DIP_5) * 16 +
             digitalRead(INPUT_DIP_6) * 8 +
