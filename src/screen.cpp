@@ -366,13 +366,8 @@ void drawRunScreen(unsigned int secsRemain) {
     drawRemainingTime(secsRemain);
 
     // draw progress
-//    if (config.timeFly > 0) {
     if ((config.timeFly > 0) && (secsRemain < 9999)) {
-        // timeFly/16 = (16-secsRemain)/x
-        // x = 64 - secsRemain*64/timeFly -1 (-1 so printing won't overflow on secsRemain=0)
-//        secsRemain = 63 - secsRemain*64/config.timeFly;
-//        secsRemain = 43 - secsRemain*44/config.timeFly;
-        secsRemain = 59 - secsRemain*60/config.timeFly;
+        secsRemain = 64 - secsRemain*64/config.timeFly;
 
         int i = secsRemain % 4;
 
@@ -386,26 +381,19 @@ void drawRunScreen(unsigned int secsRemain) {
             u8x8.noInverse();
         }
 
-//        i = secsRemain / 4 + 5;
-        i = secsRemain / 4 + 1;
+        i = secsRemain / 4;
 
         SET_FONT_S;
         u8x8.drawString(i, 3, buffer);
 
-        // for DEBUG only
-//        sprintf(buffer, "%3d ", i);
-//        u8x8.drawString(0, 2, buffer);
-//        delay(5000);
-
         u8x8.inverse();
 
 
-        // @todo this if() should be redundant but with soft start (and only with soft start) there's a bug without it
-        if (i>1 && i<16) {
-//        for (i--; i>1; i--) {
-        for (i--; i>0; i--) {
-            u8x8.drawString(i, 3, " ");
-        }
+        // @todo this if() should be redundant but without this the progress bar is drawn full at the beginning
+        if (i>0 && i<16) {
+            for (i--; i>=0; i--) {
+                u8x8.drawString(i, 3, " ");
+            }
         }
 
     }
