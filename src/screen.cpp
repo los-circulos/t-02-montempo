@@ -120,22 +120,29 @@ void drawNotImplemented() {
         clearScreen();
     }
 }
-void drawRemainingTime(unsigned int secsRemain) {
-//    blinkLed(secsRemain < 5 ? BLINK_FAST : BLINK_SLOW);
+// @todo try what if unsigned and we check if >9999
+void drawRemainingTime(int secsRemain) {
 #ifdef SCREEN_32X4
     if (secsRemain > 59) {
         sprintf(
                 buffer,
-//                "%2d.%02d",
                 "%1d.%02d",
                 secsRemain / 60,
+                secsRemain % 60
+        );
+    }
+    // used in soft start
+    else if (secsRemain < 0) {
+        u8x8.inverse();
+        sprintf(
+                buffer,
+                "%4d",
                 secsRemain % 60
         );
     }
     else {
         sprintf(
                 buffer,
-//                "  .%2d",
                 " .%2d",
                 secsRemain % 60
         );
@@ -144,8 +151,8 @@ void drawRemainingTime(unsigned int secsRemain) {
 //    SET_FONT_XXL;
 //    u8x8.drawString(1, 0, buffer);
     SET_FONT_XL;
-//    u8x8.drawString(3, 0, buffer);
     u8x8.drawString(8, 0, buffer);
+    u8x8.noInverse();
 #endif
 
 }
@@ -359,7 +366,8 @@ void drawRunScreen(unsigned int secsRemain) {
     drawRemainingTime(secsRemain);
 
     // draw progress
-    if (config.timeFly > 0) {
+//    if (config.timeFly > 0) {
+    if ((config.timeFly > 0) && (secsRemain < 9999)) {
         // timeFly/16 = (16-secsRemain)/x
         // x = 64 - secsRemain*64/timeFly -1 (-1 so printing won't overflow on secsRemain=0)
 //        secsRemain = 63 - secsRemain*64/config.timeFly;

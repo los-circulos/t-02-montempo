@@ -116,24 +116,6 @@ void loop() {
 
 }
 #else
-#ifdef AMP_DEBUG
-char buf[20];
-void loop() {
-//    if (elapsedInMode(E_5_PER_SEC)) {
-
-        u8x8.setFont(FONT_L);
-
-        readMetrics();
-        sumMetrics();
-
-        sprintf(buf, "%6d", analogRead(PIN_CURRENT));
-        u8x8.drawString(0, 0, buf);
-        sprintf(buf, "%5d %8d", metrics.amps/5, METRICS_AVG_AMPS);
-        u8x8.drawString(0, 2, buf);
-//    }
-    delay(200);
-}
-#else
 void loop() {
 
     setCurrentTime();
@@ -302,8 +284,8 @@ void loop() {
                 setMode(MODE_WELCOME_LOCK);
             }
             else if (i == 0) {
-                // @todo needed?
-//                drawRemainingTime(i);
+                // without this, it looks ugly and just 8 bytes
+                drawRemainingTime(i);
                 ledOn();
                 delay(1000);
                 // @TODO enter soft start mode only if config.softStartTime > 0
@@ -336,7 +318,8 @@ void loop() {
                 blinkLed(BLINK_NORMAL);
 
                 if ((elapsedInModeCounter % 2) == 0) {
-                    drawRunScreen(saved.softTime - flyElapsed);
+//                    drawRunScreen(saved.softTime - flyElapsed);
+                    drawRunScreen(flyElapsed - saved.softTime);
                 }
 
             }
@@ -447,7 +430,6 @@ void loop() {
 
 }
 
-#endif
 #endif
 #endif
 

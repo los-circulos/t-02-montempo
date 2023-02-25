@@ -73,7 +73,7 @@ void drawNoFly();
 void drawLogoLock();
 void eraseLogoLock();
 void drawNotImplemented();
-void drawRemainingTime(unsigned int secsRemain);
+void drawRemainingTime(int secsRemain);
 void drawSaved();
 void drawWaitDot(uint8_t x);
 
