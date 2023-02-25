@@ -43,7 +43,7 @@ struct savedT {
 #ifdef PIN_CURRENT
     unsigned char currentCut = 30;
 #endif
-    unsigned char softTime = 30;
+    unsigned char softTime = 3;
     unsigned char countdown = 25;
     bool govi = false;
     bool arm = SAVED_ARM_ON_BOOT;
