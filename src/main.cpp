@@ -139,6 +139,8 @@ void loop() {
     setCurrentTime();
     unsigned int i;
 
+    unsigned int flyElapsed = (currentTime - currentModeStarted) / 100;
+
     switch (currentMode) {
         case MODE_WELCOME_LOCK:
             if (!ANY_BUTTON_PUSHED) {
@@ -219,7 +221,8 @@ void loop() {
                 saved.countdown = savedInputValue;
             }
             else if (savedInputMode == SAVED_INPUT_MODE_CLEAR_LOGS) {
-//                saved.endThrottle = savedInputValue;
+                notImplemented();
+                return;
             }
             saveSaved();
             setMode(MODE_SAVED_INPUT_SAVED);
@@ -239,7 +242,6 @@ void loop() {
                 }
                 else if (elapsedInModeCounter > 8) {
                     setMode(MODE_SAVED_INPUT);
-//                    return;
                 }
                 else {
                     drawWaitDot(elapsedInModeCounter);
@@ -288,7 +290,11 @@ void loop() {
             }
         break;
         case MODE_DELAY:
-            i = config.timeDelay - (currentTime - currentModeStarted) / 1000;
+#ifdef DEVMODE
+            i = 3 - (currentTime - currentModeStarted) / 1000;
+#else
+            i = saved.countdown - (currentTime - currentModeStarted) / 1000;
+#endif
             if (MODE_NOT_IMPLEMENTED) {
                 notImplemented();
             }
@@ -296,7 +302,8 @@ void loop() {
                 setMode(MODE_WELCOME_LOCK);
             }
             else if (i == 0) {
-                drawRemainingTime(i);
+                // @todo needed?
+//                drawRemainingTime(i);
                 ledOn();
                 delay(1000);
                 // @TODO enter soft start mode only if config.softStartTime > 0
@@ -309,33 +316,29 @@ void loop() {
                 blinkLed(i < 5 ? BLINK_FAST : BLINK_SLOW);
             }
         break;
-        // @todo soft start?
         case MODE_SOFT_START:
             if (MODE_NOT_IMPLEMENTED) {
                 notImplemented();
-                return;
+//                return;
             }
             else if (ANY_BUTTON_PUSHED) {
                 endMode(RESULT_ERR_BTN);
-                return;
+//                return;
             }
-
-            if (elapsedInMode(100)) {
+            else if (elapsedInMode(100)) {
 
                 flightAlarms();
 
-                unsigned int flyElapsed2 = (currentTime - currentModeStarted) / 100;
-                if (flyElapsed2 >= 40) {
+                if (flyElapsed >= saved.softTime) {
                     setMode(MODE_FLY);
                 }
                 // 5/target = elapsed/x
-                unsigned int throttle = flyElapsed2 * config.holdThrottle / 40;
-                throttlePcnt(throttle);
+                i = flyElapsed * config.holdThrottle / saved.softTime;
+                throttlePcnt(i);
                 blinkLed(BLINK_NORMAL);
 
                 if ((elapsedInModeCounter % 2) == 0) {
-                    i = flyElapsed2 / 10;
-                    drawRunScreen(i);
+                    drawRunScreen(flyElapsed / 10);
                 }
 
             }
@@ -343,15 +346,12 @@ void loop() {
         case MODE_FLY:
             if (MODE_NOT_IMPLEMENTED) {
                 notImplemented();
-                return;
             }
             else if (ANY_BUTTON_PUSHED) {
                 endMode(RESULT_ERR_BTN);
-                return;
             }
-
             // loop every 0.1sec
-            if (elapsedInMode(100)) {
+            else if (elapsedInMode(100)) {
 
                 readAndSumMetrics();
 
@@ -362,7 +362,7 @@ void loop() {
                 }
 
                 // elapsed time
-                unsigned int flyElapsed = (currentTime - currentModeStarted) / 1000;
+                flyElapsed /= 10;
 
                 // UPDATE THROTTLE
                 // update holdThrottle - currently only fixed holdThrottle
