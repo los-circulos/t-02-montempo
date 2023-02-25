@@ -199,7 +199,7 @@ void drawPreflight(configT config) {
     }
 #endif
     else if (saved.holdMode == HOLD_MODE_SMART_THROTTLE) {
-        sprintf(buffer, "SMR %2d-%2d", config.holdThrottle, saved.endThrottle);
+        sprintf(buffer, "SM %2d-%2d", config.holdThrottle, saved.endThrottle);
         u8x8.drawString(6, 2, buffer);
     }
     else {
@@ -249,11 +249,11 @@ void drawPreflight(configT config) {
     }
 
     if (config.preflightError) {
-        u8x8.drawString(0, 0, "NO ");
-        u8x8.drawString(0, 2, "FLY!");
+        u8x8.drawString(0, 0, " NO  ");
+        u8x8.drawString(0, 2, "FLY! ");
     }
     else {
-        u8x8.drawString(1, 0, "FLY?");
+        u8x8.drawString(0, 0, " FLY?");
         sprintf(buffer, "%2d:%02d", config.timeFly / 60, config.timeFly % 60);
         u8x8.drawString(0, 2, buffer);
     }
@@ -284,15 +284,15 @@ void drawSavedInputScreen() {
         strcpy(floatBuffer, holdModeLabels[saved.holdMode]);
         break;
     case SAVED_INPUT_MODE_SOFT_TIME:
-        sprintf(buffer, "%1d.%1ds", savedInputValue/10, savedInputValue%10);
-        sprintf(floatBuffer, "%1d.%1ds", saved.softTime/10, saved.softTime%10);
+        sprintf(buffer, "%3ds", savedInputValue);
+        sprintf(floatBuffer, "%3ds", saved.softTime);
         break;
     case SAVED_INPUT_MODE_COUNTDOWN:
         sprintf(buffer, " %2ds", savedInputValue);
         sprintf(floatBuffer, " %2ds", saved.countdown);
         break;
     default:
-        sprintf(buffer, "USED");
+        sprintf(buffer, "----");
         sprintf(floatBuffer, "----");
     }
 
