@@ -267,7 +267,7 @@ void drawPreflight(configT config) {
         }
     }
     else {
-        sprintf(buffer, "#%3d", CURRENT_FLIGHT_NUMBER);
+        sprintf(buffer, "#%3d", CURRENT_FLIGHT_NUMBER % 1000);
         u8x8.drawString(0, 0, buffer);
         sprintf(buffer, "%1d:%02d ", config.timeFly / 60, config.timeFly % 60);
         u8x8.drawString(0, 2, buffer);
@@ -483,7 +483,7 @@ void drawAfterScreen(unsigned char which) {
     if (which == AFTER_SCREEN_SUMMARY) {
 
         // flight #
-        sprintf(buffer, "#%3d", lastFlightNumber);
+        sprintf(buffer, "#%3d", lastFlightNumber % 100);
         u8x8.drawString(0, 0, buffer);
 
         // flight time and result
@@ -586,7 +586,8 @@ void drawAfterScreen(unsigned char which) {
         SET_FONT_XL;
         u8x8.drawString(0, 0, "WELLDONE");
         SET_FONT_S;
-        u8x8.drawString(0, 3, "   @LOS.CIRCULOS");
+        sprintf(buffer, "%-3d@LOS.CIRCULOS", lastFlightNumber%1000);
+        u8x8.drawString(0, 3, buffer);
     }
     // OOPS screen
     else {
@@ -594,7 +595,7 @@ void drawAfterScreen(unsigned char which) {
 
         // as per now, I can save 50+ bytes of memory if I print only "OOPS", and log is not even implemented yet
 
-        sprintf(buffer, "#%3d", lastFlightNumber);
+        sprintf(buffer, "#%3d", lastFlightNumber % 1000);
         u8x8.drawString(0, 0, buffer);
 
         // flight time and result
