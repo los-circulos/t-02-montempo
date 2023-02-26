@@ -26,7 +26,7 @@ struct configT {
     /** which screen to show */
     int defaultScreen = 0;
     bool rotateScreens = true;
-    int screenRotateTime = 2;
+    int screenRotateTime = 5;
 
     unsigned int maxRPMs = 15000;
 
