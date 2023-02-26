@@ -1,15 +1,16 @@
 #include <EEPROM.h>
 #include "saved.h"
 #include "hardware.h"
-#include "config.h"
-#include "screen.h"
+#include "metrics.h"
 
 savedT saved;
 uint8_t savedInputMode;
 int savedInputValue;
+unsigned int lastFlightNumber = 0;
+unsigned char maxLogs;
 
 void initSaved() {
-    // check if EEPROM has ever been initialized and if not, initialize it
+    // check if EEPROM has ever been initialized (with current version) and if not, initialize it
     bool initialized = true;
     int i;
     for (i=0; i<3; i++) {
@@ -28,11 +29,18 @@ void initSaved() {
     else {
         EEPROM.get(ADDR_SAVED, saved);
     }
+
+    // this might overflow, which works but might be strange. So first load into an uint then convert
+//    maxLogs = (EEPROM.length() - ADDR_LOGS) / sizeof(metricsSum);
+    lastFlightNumber = (EEPROM.length() - ADDR_LOGS) / sizeof(metricsSum);
+    maxLogs = lastFlightNumber > 200 ? 200 : lastFlightNumber;
+    lastFlightNumber = EEPROM.read(ADDR_LAST_FLIGHT_NUM);
+    loadMetricsLog();
+
 }
 void saveSavedSetup() {
     EEPROM.put(ADDR_SAVED, saved);
 }
-
 void readSavedSetup() {
 
 #ifdef ANY_DIP_INPUT
@@ -83,4 +91,16 @@ void readSavedSetup() {
 #endif
 
 #endif
+}
+
+void saveMetricsAfterFlight() {
+    lastFlightNumber++;
+    EEPROM.write(ADDR_LAST_FLIGHT_NUM, lastFlightNumber);
+    saveMetricsLog();
+}
+void saveMetricsLog() {
+    EEPROM.put(ADDR_LOGS + sizeof(metricsSum) * (lastFlightNumber % maxLogs), metricsSum);
+}
+void loadMetricsLog() {
+    EEPROM.get(ADDR_LOGS + sizeof(metricsSum) * (lastFlightNumber % maxLogs), metricsSum);
 }

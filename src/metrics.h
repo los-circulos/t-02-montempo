@@ -28,20 +28,20 @@
 #define RESULT_ERR_VCUT 42
 #define RESULT_ERR_ACUT 43
 
-
-
 struct metricsT {
     // raw throttle
     unsigned char throttlePcnt;
     // multiplied by 10
     unsigned char volts = 0;
+#ifdef PIN_CURRENT
     // multiplied by 5
     unsigned char amps = 0;
+#endif
     // rpms raw (???)
     unsigned int rpm = 0;
     // ???
-//    unsigned char t1;
-//    unsigned char t2;
+    unsigned char t1 = 0;
+    unsigned char t2 = 0;
     // watts / 2
     unsigned char p;
     unsigned long lastTime;
@@ -56,30 +56,37 @@ struct metricsSumT {
     unsigned char voltsMax;
     unsigned char voltsAvg;
 
+
+    unsigned char t1Min;
+    unsigned char t1Max;
+    unsigned char t1Avg;
+
+    unsigned char t2Min;
+    unsigned char t2Max;
+    unsigned char t2Avg;
+
+#ifdef PIN_CURRENT
     unsigned char ampsMin;
     unsigned char ampsMax;
     unsigned char ampsAvg;
+
+    unsigned char pMin;
+    unsigned char pMax;
+    unsigned char pAvg;
+#endif
 
     unsigned int rpmMin;
     unsigned int rpmMax;
     unsigned int rpmAvg;
 
-//    unsigned char t1Min;
-//    unsigned char t1Max;
-//    unsigned char t1Avg;
-
-//    unsigned char t2Min;
-//    unsigned char t2Max;
-//    unsigned char t2Avg;
-
-    unsigned char pMin;
-    unsigned char pMax;
-    unsigned char pAvg;
-
     // secs
     unsigned int flightTime;
     unsigned char holdMode;
     unsigned char holdValueRaw;
+    unsigned char endValueRaw;
+    unsigned char softTime;
+    unsigned char voltsBefore;
+    unsigned char voltsAfter;
     unsigned char result;
 };
 struct metricsSumCntT {

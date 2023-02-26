@@ -4,7 +4,8 @@
 #define ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE 42
 
 #define ADDR_SAVED 4
-#define ADDR_LOGS 100
+#define ADDR_LAST_FLIGHT_NUM 50
+#define ADDR_LOGS 60
 
 #define HOLD_MODE_HOLD_THROTTLE 0
 #define HOLD_MODE_SMART_THROTTLE 1
@@ -53,12 +54,16 @@ struct savedT {
 extern savedT saved;
 extern unsigned char savedInputMode;
 extern int savedInputValue;
+extern unsigned int lastFlightNumber;
+#define CURRENT_FLIGHT_NUMBER (lastFlightNumber+1)
 
 void initSaved();
 
 void saveSavedSetup();
 void readSavedSetup();
 
-void saveMetrics();
+void saveMetricsAfterFlight();
+void saveMetricsLog();
+void loadMetricsLog();
 
 #endif //MONTEMPO_SAVED_H

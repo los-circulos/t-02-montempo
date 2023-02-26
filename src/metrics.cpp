@@ -70,11 +70,13 @@ void resetMetrics() {
     // this yields much because the added initial values in .h
 //    metricsSum = {};
 
+//    metricsSum.version = METRICS_LOG_VERSION;
     metricsSum.throttleMin = 255;
 
 #ifdef PIN_VOLT
     if (!VOLTS_DISABLED) {
         metricsSum.voltsMin = 255;
+        metricsSum.voltsBefore = analogRead(PIN_VOLT) / INPUT_DIV_VOLT;
     }
 #endif
 #ifdef PIN_CURRENT
@@ -85,11 +87,12 @@ void resetMetrics() {
 #ifdef PIN_RPM
     metricsSum.rpmMin = 255;
 #endif
-    metricsSum.holdMode = saved.holdMode;
-    metricsSum.holdValueRaw = savedInputValue;
 
     metricsSum.holdMode = saved.holdMode;
     metricsSum.holdValueRaw = config.holdValueRaw;
+    metricsSum.endValueRaw = saved.endValue;
+
+    metricsSum.softTime = saved.softTime;
 
     memset(&metricsSumCnt, 0, sizeof metricsSumCnt);
     metricsSumCnt.startMillis = currentTime;

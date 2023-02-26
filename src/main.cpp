@@ -63,6 +63,13 @@ void setup() {
 
     setMode(MODE_WELCOME_LOCK);
 
+//    char b[20];
+//    u8x8.setFont(FONT_L);
+//    sprintf(b, "%10d ", sizeof metricsSum);
+//    u8x8.drawString(0, 0, b);
+//
+//    delay(15000);
+
 }
 
 #ifdef AFTER_SCREEN_DEBUG
@@ -479,12 +486,16 @@ void endMode(unsigned char result) {
     throttleOff();
     // masq ERR_VCUT for flights without time limit
     metricsSum.result = ((result == RESULT_ERR_VCUT) && (config.timeFly == 0)) ? RESULT_OK_V : result;
+    saveMetricsAfterFlight();
+
     // display "WELLDONE" or "OOPS" as long as initial delay, then...
     drawAfterScreen(0);
-    // @TODO save flight metrics here (should set flight number!)
-//    delay(config.timeDelay*1000);
+
     delay(2000);
-    saveMetrics();
+
+    // @todo refresh after voltage and re-save
+//    saveMetricsLog();
+
     currentScreen = 1;
 //    clearScreen();
     // ... then draw main after screen
