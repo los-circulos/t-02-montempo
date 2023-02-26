@@ -47,7 +47,7 @@ struct savedT {
     unsigned char softTime = 3;
     unsigned char countdown = 25;
     bool govi = false;
-    bool arm = SAVED_ARM_ON_BOOT;
+    bool armOnBoot = SAVED_ARM_ON_BOOT;
     bool calibrate = true;
 };
 

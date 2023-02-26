@@ -36,11 +36,13 @@ void initHardware() {
 
     // this will leave the ESC initialized but not armed - not true for at least one old dualsky ESC, which arms on 0 signal as well
     throttle.attach(PIN_THROTTLE, THROTTLE_MICROS_MIN, THROTTLE_MICROS_MAX);
-#ifdef ARM_ON_STARTUP
-    armThrottle();
-#else
-    throttle.writeMicroseconds(0);
-#endif
+
+    if (saved.armOnBoot) {
+        armThrottle();
+    }
+    else {
+        throttle.writeMicroseconds(0);
+    }
 
 #endif
 

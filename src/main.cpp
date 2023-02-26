@@ -42,6 +42,7 @@ void setup() {
 //    Serial.begin(9600);
 
     initScreen();
+    // initSaved must happen before initHardware as latter uses saved.armOnBoot and saved.calibrate
     initSaved();
     initHardware();
     initConfig();
@@ -198,7 +199,7 @@ void loop() {
                 saved.govi = !!savedInputValue;
             }
             else if (savedInputMode == SAVED_INPUT_MODE_ARM) {
-                saved.arm = !!savedInputValue;
+                saved.armOnBoot = !!savedInputValue;
             }
             else if (savedInputMode == SAVED_INPUT_MODE_CAL) {
                 saved.calibrate = !!savedInputValue;
