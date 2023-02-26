@@ -26,7 +26,7 @@ unsigned char currentScreen = SCREEN_PRE;
 
 // should never be more than 17, but let's play safe
 char buffer[20];
-char floatBuffer[10];
+char floatBuffer[12];
 char progressBarChars[4] = {'>','#','#',' '};
 
 //char *savedInputModeLabels[] = {"MOTOR", "", "T1CUT", "T2CUT", "MODE ", "V CUT", "POLES", "ENDTH", "GOVI ", "ARM  ", "CALIB", "SOFT ", "DELAY", "NOT  ", "CLEAR", "NOT  "};
@@ -505,10 +505,10 @@ void drawAfterScreen(unsigned char which) {
         u8x8.drawString(13, 0, floatBuffer);
 
         if (metricsSum.holdMode == HOLD_MODE_HOLD_THROTTLE) {
-            sprintf(floatBuffer, " %2d %%", config.holdThrottle);
+            sprintf(floatBuffer, " THR %2d %%", config.holdThrottle);
         }
         else if (metricsSum.holdMode == HOLD_MODE_SMART_THROTTLE) {
-            sprintf(floatBuffer, "%2d-%2d%%", metricsSum.throttleMin, metricsSum.throttleMax);
+            sprintf(floatBuffer, " SM %2d-%2d", metricsSum.throttleMin, metricsSum.throttleMax);
         }
 #ifdef PIN_CURRENT
         else if (metricsSum.holdMode == HOLD_MODE_POWER) {
@@ -517,10 +517,16 @@ void drawAfterScreen(unsigned char which) {
         }
 #endif
         else {
-            sprintf(floatBuffer, "?WOOT?");
+            sprintf(floatBuffer, " ??WOOT??");
         }
-        sprintf(buffer, " %s %s", holdModeLabels[metricsSum.holdMode], floatBuffer);
-        u8x8.drawString(4, 3, buffer);
+        u8x8.drawString(6, 3, floatBuffer);
+
+
+        // soft time
+        if (metricsSum.softTime > 0) {
+            sprintf(buffer, "-%d", metricsSum.softTime);
+            u8x8.drawString(4, 3, buffer);
+        }
 
         SET_FONT_XL;
 #ifdef PIN_CURRENT
