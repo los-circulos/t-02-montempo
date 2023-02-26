@@ -37,6 +37,10 @@ char savedInputModeUnits[] = "%%CC VP%   SS   ";
 //char *holdModeLabels[] = {"THRO", "SMRT"};
 char holdModeLabels[2][5] = {"THRO", "SMRT"};
 //char *resultLabels[] = {"OK T", "OK V", "BTN", "V?", "VHI", "A?", "R?", "RHI", "T1?", "T2?"};
+
+//char savedArmOnBootLabels[2][5] = {"BOOT", "LATE"};
+//char yesNoLabels[2][4] = {"YES", " NO"};
+
 char resultLabels[10][5] = {"OK T", "OK V", "BTN", "V?", "VHI", "A?", "R?", "RHI", "T1?", "T2?"};
 char comingSoon[12] = "COMING SOON";
 
@@ -312,6 +316,14 @@ void drawSavedInputScreen() {
     case SAVED_INPUT_MODE_COUNTDOWN:
         sprintf(buffer, " %2ds", savedInputValue);
         sprintf(floatBuffer, " %2ds", saved.countdown);
+        break;
+    case SAVED_INPUT_MODE_ARM:
+        sprintf(buffer, "%s", !!savedInputValue ? "BOOT" : "LATE");
+        sprintf(floatBuffer, "%s", saved.armOnBoot ? "BOOT" : "LATE");
+        break;
+    case SAVED_INPUT_MODE_CAL:
+        sprintf(buffer, "%s", !!savedInputValue ? " YES" : "  NO");
+        sprintf(floatBuffer, "%s", saved.calibrate ? " YES" : " NO");
         break;
     default:
         sprintf(buffer, "----");

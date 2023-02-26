@@ -37,6 +37,7 @@ void initHardware() {
     // this will leave the ESC initialized but not armed - not true for at least one old dualsky ESC, which arms on 0 signal as well
     throttle.attach(PIN_THROTTLE, THROTTLE_MICROS_MIN, THROTTLE_MICROS_MAX);
 
+    // @todo arm only when not in saved config mode?
     if (saved.armOnBoot) {
         armThrottle();
     }
@@ -113,11 +114,12 @@ void armThrottle() {
 
     if (!throttleArmed) {
 
-#ifdef ARM_WITH_CALIBRATE
-        // this will leave a 1sec delay but also calibrate min/max values
-        throttlePcnt(99);
-        delay(1000);
-#endif
+        if (saved.calibrate) {
+            // this will leave a 1sec delay to calibrate throttle min/max values
+            throttlePcnt(99);
+            delay(1000);
+        }
+
     }
     throttleOff();
 
@@ -137,9 +139,6 @@ void throttlePcnt(unsigned char pcnt) {
     // test code - might need it someday
 //    sprintf(tmp, "%d %d ", pcnt, i);
 //    u8x8.drawString(0, 2, tmp );
-}
-void convertRpm() {
-
 }
 
 #ifdef ANY_DIP_INPUT
