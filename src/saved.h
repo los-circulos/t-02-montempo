@@ -32,7 +32,7 @@
 #define SAVED_ARM_ON_DELAY true
 
 struct savedT {
-    unsigned char endThrottle = 90;
+    unsigned char endValue = 90;
     unsigned char t1Cut = 90;
     unsigned char t2Cut = 90;
     unsigned char holdMode = HOLD_MODE_HOLD_THROTTLE;
@@ -55,8 +55,10 @@ extern unsigned char savedInputMode;
 extern int savedInputValue;
 
 void initSaved();
-void saveSaved();
 
-void readSavedInput();
+void saveSavedSetup();
+void readSavedSetup();
+
+void saveMetrics();
 
 #endif //MONTEMPO_SAVED_H

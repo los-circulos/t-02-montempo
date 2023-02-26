@@ -206,7 +206,7 @@ void drawPreflight(configT config) {
     }
 #endif
     else if (saved.holdMode == HOLD_MODE_SMART_THROTTLE) {
-        sprintf(buffer, "SM %2d-%2d", config.holdThrottle, saved.endThrottle);
+        sprintf(buffer, "SM %2d-%2d", config.holdThrottle, saved.endValue);
         u8x8.drawString(6, 2, buffer);
     }
     else {
@@ -246,7 +246,7 @@ void drawPreflight(configT config) {
         (   (saved.holdMode == HOLD_MODE_SMART_THROTTLE) &&
             (
                 // smart throttle end value should be bigger than start
-                (config.holdThrottle > saved.endThrottle) ||
+                (config.holdThrottle > saved.endValue) ||
                 // smart throttle cannot calculate until vcut (at least for now)
                 (config.timeFly == 0)
             )
@@ -308,7 +308,7 @@ void drawSavedInputScreen() {
         strcpy(floatBuffer, "    ");
         break;
     case SAVED_INPUT_MODE_END_THROTTLE:
-        sprintf(floatBuffer, FMT_TEST_4DECIMALS, saved.endThrottle);
+        sprintf(floatBuffer, FMT_TEST_4DECIMALS, saved.endValue);
         break;
     case SAVED_INPUT_MODE_T1_CUT:
         sprintf(floatBuffer, saved.t1Cut > 0 ? FMT_TEST_VALUE_COMMON : FMT_OFF, saved.t1Cut, savedInputModeUnits[savedInputMode]);

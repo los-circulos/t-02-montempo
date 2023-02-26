@@ -23,17 +23,17 @@ void initSaved() {
         for (i=EEPROM.length()-1; i>3; i--) {
             EEPROM.write(i, 0);
         }
-        saveSaved();
+        saveSavedSetup();
     }
     else {
         EEPROM.get(ADDR_SAVED, saved);
     }
 }
-void saveSaved() {
+void saveSavedSetup() {
     EEPROM.put(ADDR_SAVED, saved);
 }
 
-void readSavedInput() {
+void readSavedSetup() {
 
 #ifdef ANY_DIP_INPUT
 

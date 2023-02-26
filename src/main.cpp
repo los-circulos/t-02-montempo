@@ -156,7 +156,7 @@ void loop() {
         case MODE_SAVED_INPUT:
             // @todo deny test/setup if both buttons are disabled
             if (elapsedInMode(E_5_PER_SEC)) {
-                readSavedInput();
+                readSavedSetup();
                 drawSavedInputScreen();
                 confirmation();
             }
@@ -185,7 +185,7 @@ void loop() {
                 saved.poles = savedInputValue;
             }
             else if (savedInputMode == SAVED_INPUT_MODE_END_THROTTLE) {
-                saved.endThrottle = savedInputValue;
+                saved.endValue = savedInputValue;
             }
             else if (savedInputMode == SAVED_INPUT_MODE_GOVI) {
                 saved.govi = !!savedInputValue;
@@ -206,7 +206,7 @@ void loop() {
                 notImplemented();
                 return;
             }
-            saveSaved();
+            saveSavedSetup();
             setMode(MODE_SAVED_INPUT_SAVED);
 #ifdef PIN_CURRENT
             else if (savedInputMode == SAVED_INPUT_MODE_CURRENT_CUT_OBS) {
@@ -232,7 +232,7 @@ void loop() {
         break;
         case MODE_TEST_SPIN:
             if (elapsedInMode(E_5_PER_SEC)) {
-                readSavedInput();
+                readSavedSetup();
                 readAndSumMetrics();
                 if ((savedInputMode != SAVED_INPUT_MODE_SPIN) || !ANY_BUTTON_PUSHED) {
                     setMode(MODE_WELCOME_LOCK);
@@ -318,7 +318,6 @@ void loop() {
                 blinkLed(BLINK_NORMAL);
 
                 if ((elapsedInModeCounter % 2) == 0) {
-//                    drawRunScreen(saved.softTime - flyElapsed);
                     drawRunScreen(flyElapsed - saved.softTime);
                 }
 
@@ -353,7 +352,7 @@ void loop() {
                     // timeLimit / elapsed = (thr1 - thr0) / (thrX - thr0)
                     // elapsed / timeLimit = (thrX - thr0) / (thr1 - thr0)
                     // thrX = thr0 + (thr1 - thr0) * elapsed / timeLimit
-                    i = (unsigned long)(saved.endThrottle - config.holdThrottle) * flyElapsed / config.timeFly + config.holdThrottle;
+                    i = (unsigned long)(saved.endValue - config.holdThrottle) * flyElapsed / config.timeFly + config.holdThrottle;
                     throttlePcnt(i);
                 }
 
@@ -442,9 +441,6 @@ void notImplemented() {
 }
 
 void setMode(unsigned char newMode) {
-    currentMode = newMode;
-    currentModeStarted = currentTime;
-    elapsedInModeCounter = 0;
     switch (newMode) {
         case MODE_TEST_SPIN:
             resetMetrics();
@@ -463,11 +459,19 @@ void setMode(unsigned char newMode) {
         case MODE_SAVED_INPUT_SAVED:
             drawSaved();
         break;
-        case MODE_FLY:
+        case MODE_SOFT_START:
             resetMetrics();
+        break;
+        case MODE_FLY:
+            if (currentMode != MODE_SOFT_START) {
+                resetMetrics();
+            }
             clearScreen();
         break;
     }
+    currentMode = newMode;
+    currentModeStarted = currentTime;
+    elapsedInModeCounter = 0;
     ledOff();
 }
 
@@ -480,6 +484,7 @@ void endMode(unsigned char result) {
     // @TODO save flight metrics here (should set flight number!)
 //    delay(config.timeDelay*1000);
     delay(2000);
+    saveMetrics();
     currentScreen = 1;
 //    clearScreen();
     // ... then draw main after screen
