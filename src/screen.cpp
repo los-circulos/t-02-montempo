@@ -81,10 +81,13 @@ void drawFlyConfirmation(bool show) {
     SET_FONT_XL;
     if (show) {
         u8x8.drawString(14, 0, "!");
+        u8x8.drawString(15, 0, "!");
     }
-    else {
-        u8x8.drawString(14, 0, " ");
-    }
+    // @todo this doesn't play well with preflight screen which has "FLY?" in this same are so I don't wipe it for now.
+    //  Might look stupid in config, let's check it
+//    else {
+//        u8x8.drawString(14, 0, " ");
+//    }
 #endif
 }
 void drawNoFly() {
@@ -195,8 +198,8 @@ void drawPreflight(configT config) {
     SET_FONT_L;
 
     // NOTE a switch would eat 4bytes more here than these ifs
-    if (saved.holdMode == HOLD_MODE_RPM) {
-        sprintf(buffer, "RPM %2d.%d", config.holdRPM / 1000, (config.holdRPM / 100) % 10);
+    if (saved.holdMode == HOLD_MODE_SMART_THROTTLE) {
+        sprintf(buffer, "SM %2d-%2d", config.holdThrottle, saved.endValue);
         u8x8.drawString(6, 2, buffer);
     }
 #ifdef PIN_CURRENT
@@ -205,12 +208,12 @@ void drawPreflight(configT config) {
         u8x8.drawString(0, 2, buffer);
     }
 #endif
-    else if (saved.holdMode == HOLD_MODE_SMART_THROTTLE) {
-        sprintf(buffer, "SM %2d-%2d", config.holdThrottle, saved.endValue);
+    else if (saved.holdMode == HOLD_MODE_RPM) {
+        sprintf(buffer, "RPM %2d.%d", config.holdRPM / 1000, (config.holdRPM / 100) % 10);
         u8x8.drawString(6, 2, buffer);
     }
     else {
-        sprintf(buffer, "THRO %2d%%", config.holdThrottle);
+        sprintf(buffer, "THR %3d%%", config.holdThrottle);
         u8x8.drawString(6, 2, buffer);
     }
 
@@ -256,13 +259,24 @@ void drawPreflight(configT config) {
     }
 
     if (config.preflightError) {
-        u8x8.drawString(0, 0, " NO  ");
-        u8x8.drawString(0, 2, "FLY! ");
+        u8x8.drawString(0, 0, "  NO ");
+        u8x8.drawString(0, 2, " FLY!");
+        // erase "FLY?" when no fly
+        for (int iii=0; iii<4; iii++) {
+            u8x8.drawString(15, iii, " ");
+        }
     }
     else {
-        u8x8.drawString(0, 0, " FLY?");
-        sprintf(buffer, "%2d:%02d", config.timeFly / 60, config.timeFly % 60);
+        sprintf(buffer, "#%3d", CURRENT_FLIGHT_NUMBER);
+        u8x8.drawString(0, 0, buffer);
+        sprintf(buffer, "%1d:%02d ", config.timeFly / 60, config.timeFly % 60);
         u8x8.drawString(0, 2, buffer);
+        SET_FONT_S;
+        u8x8.drawString(15, 0, "F");
+        u8x8.drawString(15, 1, "L");
+        u8x8.drawString(15, 2, "Y");
+        u8x8.drawString(15, 3, "?");
+
     }
 
 #endif
