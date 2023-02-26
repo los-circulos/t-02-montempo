@@ -96,7 +96,7 @@ void readAndSumMetrics() {
     metricsSum.flightTime = (currentTime - metricsSumCnt.startMillis) / 1000;
 
     metricsSum.throttleMin = metricsSum.throttleMin == 0 ? metrics.throttlePcnt : min(metricsSum.throttleMin, metrics.throttlePcnt);
-    metricsSum.throttleMax = min(metricsSum.throttleMax, metrics.throttlePcnt);
+    metricsSum.throttleMax = max(metricsSum.throttleMax, metrics.throttlePcnt);
     metricsSumCnt.throttleSum+= metrics.volts;
     metricsSum.throttleAvg = metricsSumCnt.throttleSum / metricsSumCnt.summedSamples;
 
