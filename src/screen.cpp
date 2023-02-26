@@ -483,7 +483,8 @@ void drawAfterScreen(unsigned char which) {
     if (which == AFTER_SCREEN_SUMMARY) {
 
         // flight #
-        u8x8.drawString(0, 0, "# ??");
+        sprintf(buffer, "#%3d", lastFlightNumber);
+        u8x8.drawString(0, 0, buffer);
 
         // flight time and result
         sprintFixedTimeAndResult();
@@ -512,11 +513,11 @@ void drawAfterScreen(unsigned char which) {
 #ifdef PIN_CURRENT
         else if (metricsSum.holdMode == HOLD_MODE_POWER) {
             // power, formula: P = 10*t/c
-            sprintf(floatBuffer, "  %3dW", 0);
+            sprintf(floatBuffer, " %3dW", 0);
         }
 #endif
         else {
-            sprintf(floatBuffer, "NOTIMPL");
+            sprintf(floatBuffer, "?WOOT?");
         }
         sprintf(buffer, " %s %s", holdModeLabels[metricsSum.holdMode], floatBuffer);
         u8x8.drawString(4, 3, buffer);
@@ -587,8 +588,8 @@ void drawAfterScreen(unsigned char which) {
 
         // as per now, I can save 50+ bytes of memory if I print only "OOPS", and log is not even implemented yet
 
-        // @todo write flight number, obtained after saving after-flight metrics
-        u8x8.drawString(0, 0, "# ??");
+        sprintf(buffer, "#%3d", lastFlightNumber);
+        u8x8.drawString(0, 0, buffer);
 
         // flight time and result
         sprintFixedTimeAndResult();
