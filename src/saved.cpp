@@ -94,6 +94,7 @@ void readSavedSetup() {
 }
 
 void saveMetricsAfterFlight() {
+    updateMetricsFlightTime();
     lastFlightNumber++;
     EEPROM.write(ADDR_LAST_FLIGHT_NUM, lastFlightNumber);
     saveMetricsLog();

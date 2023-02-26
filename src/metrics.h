@@ -110,5 +110,6 @@ void rpmISR();
 void readMetrics();
 void resetMetrics();
 void readAndSumMetrics();
+void updateMetricsFlightTime();
 
 #endif //MONTEMPO_METRICS_H

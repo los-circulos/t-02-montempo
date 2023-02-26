@@ -486,7 +486,6 @@ void setMode(unsigned char newMode) {
 }
 
 void endMode(unsigned char result) {
-    readAndSumMetrics();
     throttleOff();
     // masq ERR_VCUT for flights without time limit
     metricsSum.result = ((result == RESULT_ERR_VCUT) && (config.timeFly == 0)) ? RESULT_OK_V : result;

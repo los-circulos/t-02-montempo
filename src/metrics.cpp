@@ -91,9 +91,9 @@ void readAndSumMetrics() {
 
     readMetrics();
 
-    metricsSumCnt.lastMillis = currentTime;
+    updateMetricsFlightTime();
+
     metricsSumCnt.summedSamples++;
-    metricsSum.flightTime = (currentTime - metricsSumCnt.startMillis) / 1000;
 
     metricsSum.throttleMin = metricsSum.throttleMin == 0 ? metrics.throttlePcnt : min(metricsSum.throttleMin, metrics.throttlePcnt);
     metricsSum.throttleMax = max(metricsSum.throttleMax, metrics.throttlePcnt);
@@ -134,4 +134,9 @@ void readAndSumMetrics() {
     metricsSum.rpmAvg = metricsSumCnt.rpmSum / metricsSumCnt.summedSamples;
 #endif
 
+}
+
+void updateMetricsFlightTime() {
+    metricsSumCnt.lastMillis = currentTime;
+    metricsSum.flightTime = (currentTime - metricsSumCnt.startMillis) / 1000;
 }
