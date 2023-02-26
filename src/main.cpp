@@ -426,7 +426,10 @@ void loop() {
                 }
             }
 #ifdef DEVMODE
-            confirmation();
+
+            if (readInputLeft() % 16 == 0) {
+                confirmation();
+            }
             break;
             case MODE_AFTER + 1:
                 countDown(MODE_WELCOME_LOCK);
@@ -483,6 +486,7 @@ void setMode(unsigned char newMode) {
 }
 
 void endMode(unsigned char result) {
+    readAndSumMetrics();
     throttleOff();
     // masq ERR_VCUT for flights without time limit
     metricsSum.result = ((result == RESULT_ERR_VCUT) && (config.timeFly == 0)) ? RESULT_OK_V : result;
