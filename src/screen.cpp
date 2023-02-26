@@ -29,15 +29,15 @@ char buffer[20];
 char floatBuffer[10];
 char progressBarChars[4] = {'>','#','#',' '};
 
-char *savedInputModeLabels[] = {"MOTOR", "", "T1CUT", "T2CUT", "MODE ", "V CUT", "POLES", "ENDTH", "GOVI ", "ARM  ", "CALIB", "SOFT ", "DELAY", "NOT  ", "CLEAR", "NOT  "};
+//char *savedInputModeLabels[] = {"MOTOR", "", "T1CUT", "T2CUT", "MODE ", "V CUT", "POLES", "ENDTH", "GOVI ", "ARM  ", "CALIB", "SOFT ", "DELAY", "NOT  ", "CLEAR", "NOT  "};
+char savedInputModeLabels[16][6] = {"MOTOR", "", "T1CUT", "T2CUT", "MODE ", "V CUT", "POLES", "ENDTH", "GOVI ", "ARM  ", "CALIB", "SOFT ", "DELAY", "NOT  ", "CLEAR", "NOT  "};
 char savedInputModeUnits[] = "%%CCVA P";
 //char *holdModeLabels[] = {"THRO", "SMRT", "RPM ", "PWR "};
-char *holdModeLabels[] = {"THRO", "SMRT"};
-// @todo more modes - simulate glow with stunt tank, with uniflow tank, and erratic run with hole on tank
-//char *holdModeLabels[] = {"THRO", "RPM ", "PWR ", "SMRT", "GLOW", "UNIF", "ERRA"};
-//char *resultLabels[] = {"OKTIME", "OKVCUT", "BTN", "V ???", "VHIGH", "A ???", "AHIGH", "R??", "RHIGH", "T1???", "T2???"};
-char *resultLabels[] = {"OK T", "OK V", "BTN", "V?", "VHI", "A?", "R?", "RHI", "T1?", "T2?"};
-char *comingSoon = "COMING SOON";
+//char *holdModeLabels[] = {"THRO", "SMRT"};
+char holdModeLabels[2][5] = {"THRO", "SMRT"};
+//char *resultLabels[] = {"OK T", "OK V", "BTN", "V?", "VHI", "A?", "R?", "RHI", "T1?", "T2?"};
+char resultLabels[10][5] = {"OK T", "OK V", "BTN", "V?", "VHI", "A?", "R?", "RHI", "T1?", "T2?"};
+char comingSoon[12] = "COMING SOON";
 
 #define FMT_TEST_VALUE_COMMON " %2d%c"
 #define FMT_TEST_VALUE_VOLTS "3.%1dV"
