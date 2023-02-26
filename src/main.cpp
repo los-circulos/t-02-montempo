@@ -297,8 +297,7 @@ void loop() {
                 ledOn();
                 delay(1000);
                 // @TODO enter soft start mode only if config.softStartTime > 0
-//                setMode(MODE_FLY);
-                setMode(MODE_SOFT_START);
+                setMode(saved.softTime > 0 ? MODE_SOFT_START : MODE_FLY);
             }
             // NOTE this has to be in sync with BLINK_FAST blinking, hence the otherwise unnecessarily high rate
             else if (elapsedInMode(100)) {

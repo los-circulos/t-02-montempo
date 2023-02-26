@@ -30,7 +30,7 @@
 
 struct metricsT {
     // raw throttle
-    unsigned char throttlePcnt;
+    unsigned char throttlePcnt = 0;
     // multiplied by 10
     unsigned char volts = 0;
 #ifdef PIN_CURRENT
