@@ -31,7 +31,8 @@ char progressBarChars[4] = {'>','#','#',' '};
 
 //char *savedInputModeLabels[] = {"MOTOR", "", "T1CUT", "T2CUT", "MODE ", "V CUT", "POLES", "ENDTH", "GOVI ", "ARM  ", "CALIB", "SOFT ", "DELAY", "NOT  ", "CLEAR", "NOT  "};
 char savedInputModeLabels[16][6] = {"MOTOR", "", "T1CUT", "T2CUT", "MODE ", "V CUT", "POLES", "ENDTH", "GOVI ", "ARM  ", "CALIB", "SOFT ", "DELAY", "NOT  ", "CLEAR", "NOT  "};
-char savedInputModeUnits[] = "%%CCVA P";
+//char savedInputModeUnits[] = "%%CCVA P";
+char savedInputModeUnits[] = "%%CC VP%   SS   ";
 //char *holdModeLabels[] = {"THRO", "SMRT", "RPM ", "PWR "};
 //char *holdModeLabels[] = {"THRO", "SMRT"};
 char holdModeLabels[2][5] = {"THRO", "SMRT"};
