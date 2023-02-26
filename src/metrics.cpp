@@ -70,22 +70,10 @@ void resetMetrics() {
     // this yields much because the added initial values in .h
 //    metricsSum = {};
 
-//    metricsSum.version = METRICS_LOG_VERSION;
-    metricsSum.throttleMin = 255;
-
 #ifdef PIN_VOLT
     if (!VOLTS_DISABLED) {
-        metricsSum.voltsMin = 255;
         metricsSum.voltsBefore = analogRead(PIN_VOLT) / INPUT_DIV_VOLT;
     }
-#endif
-#ifdef PIN_CURRENT
-    if (!CURRENT_DISABLED) {
-        metricsSum.ampsMin = 255;
-    }
-#endif
-#ifdef PIN_RPM
-    metricsSum.rpmMin = 255;
 #endif
 
     metricsSum.holdMode = saved.holdMode;
@@ -107,14 +95,14 @@ void readAndSumMetrics() {
     metricsSumCnt.summedSamples++;
     metricsSum.flightTime = (currentTime - metricsSumCnt.startMillis) / 1000;
 
-    metricsSum.throttleMin = min(metricsSum.throttleMin, metrics.throttlePcnt);
+    metricsSum.throttleMin = metricsSum.throttleMin == 0 ? metrics.throttlePcnt : min(metricsSum.throttleMin, metrics.throttlePcnt);
     metricsSum.throttleMax = min(metricsSum.throttleMax, metrics.throttlePcnt);
     metricsSumCnt.throttleSum+= metrics.volts;
     metricsSum.throttleAvg = metricsSumCnt.throttleSum / metricsSumCnt.summedSamples;
 
 #ifdef PIN_VOLT
     if (!VOLTS_DISABLED) {
-        metricsSum.voltsMin = min(metricsSum.voltsMin, metrics.volts);
+        metricsSum.voltsMin = metricsSum.voltsMin == 0 ? metrics.volts : min(metricsSum.voltsMin, metrics.volts);
         metricsSum.voltsMax = max(metricsSum.voltsMax, metrics.volts);
         metricsSumCnt.voltsSum+= metrics.volts;
         metricsSum.voltsAvg = metricsSumCnt.voltsSum / metricsSumCnt.summedSamples;
@@ -123,7 +111,7 @@ void readAndSumMetrics() {
 
 #ifdef PIN_CURRENT
     if (!CURRENT_DISABLED) {
-        metricsSum.ampsMin = min(metricsSum.ampsMin, metrics.amps);
+        metricsSum.ampsMin = metricsSum.ampsMin == 0 ? metrics.amps : min(metricsSum.ampsMin, metrics.amps);
         metricsSum.ampsMax = max(metricsSum.ampsMax, metrics.amps);
         metricsSumCnt.ampsSum += metrics.amps;
         metricsSum.ampsAvg = metricsSumCnt.ampsSum / metricsSumCnt.summedSamples;
@@ -133,14 +121,14 @@ void readAndSumMetrics() {
     #ifdef PIN_VOLT
     // volts/10 * amps/5 / (2 to fit in char)
     int i = (long)metrics.volts * metrics.amps / 100;
-    metricsSum.pMin = min(metricsSum.pMin, i);
+    metricsSum.pMin = metricsSum.pMin == 0 ? i : min(metricsSum.pMin, i);
     metricsSum.pMax = max(metricsSum.pMax, i);
     metricsSumCnt.pSum+= i;
     metricsSum.pAvg = metricsSumCnt.pSum / metricsSumCnt.summedSamples;
     #endif
 #endif
 #ifdef PIN_RPM
-    metricsSum.rpmMin = min(metricsSum.rpmMin, metrics.rpm);
+    metricsSum.rpmMin = metricsSum.rpmMin == 0 ? metrics.rpm : min(metricsSum.rpmMin, metrics.rpm);
     metricsSum.rpmMax = max(metricsSum.rpmMax, metrics.rpm);
     metricsSumCnt.rpmSum+= metrics.rpm;
     metricsSum.rpmAvg = metricsSumCnt.rpmSum / metricsSumCnt.summedSamples;
