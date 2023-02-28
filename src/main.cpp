@@ -129,7 +129,7 @@ void loop() {
     setCurrentTime();
     unsigned int i;
 
-    unsigned int flyElapsed = (currentTime - currentModeStarted) / 1000;
+    unsigned int flyElapsed = (currentTime - currentModeStarted) / 100;
 
     switch (currentMode) {
         case MODE_WELCOME_LOCK:
@@ -316,16 +316,16 @@ void loop() {
 
                 flightAlarms();
 
-                if (flyElapsed >= saved.softTime) {
+                if (flyElapsed/10 >= saved.softTime) {
                     setMode(MODE_FLY);
                 }
                 // 5/target = elapsed/x
-                i = flyElapsed * config.holdThrottle / saved.softTime;
+                i = flyElapsed * config.holdThrottle / saved.softTime / 10;
                 throttlePcnt(i);
                 blinkLed(BLINK_NORMAL);
 
                 if ((elapsedInModeCounter % 2) == 0) {
-                    drawRunScreen(flyElapsed - saved.softTime);
+                    drawRunScreen(flyElapsed/10 - saved.softTime);
                 }
 
             }
@@ -348,7 +348,8 @@ void loop() {
                     return;
                 }
 
-                // elapsed time already in flyelapsed
+                // elapsed time already in flyelapsed but have to divide
+                flyElapsed/= 10;
 
                 // UPDATE THROTTLE
                 // update holdThrottle - currently only fixed holdThrottle
