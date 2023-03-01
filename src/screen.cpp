@@ -30,7 +30,7 @@ char floatBuffer[12];
 char progressBarChars[4] = {'>','#','#',' '};
 
 //char *savedInputModeLabels[] = {"MOTOR", "", "T1CUT", "T2CUT", "MODE ", "V CUT", "POLES", "ENDTH", "GOVI ", "ARM  ", "CALIB", "SOFT ", "DELAY", "NOT  ", "CLEAR", "NOT  "};
-char savedInputModeLabels[16][6] = {"MOTOR", "", "T1CUT", "T2CUT", "MODE ", "V CUT", "POLES", "ENDTH", "GOVI ", "ARM  ", "CALIB", "SOFT ", "DELAY", "NOT  ", "CLEAR", "NOT  "};
+char savedInputModeLabels[16][6] = {"MOTOR", "", "T1CUT", "T2CUT", "MODE ", "V CUT", "POLES", "ENDTH", "GOVI ", "ARM  ", "CALIB", "SOFT ", "DELAY", "CLEAR", "USRTM", "NOT  "};
 //char savedInputModeUnits[] = "%%CCVA P";
 char savedInputModeUnits[] = "%%CC VP%   SS   ";
 //char *holdModeLabels[] = {"THRO", "SMRT", "RPM ", "PWR "};
@@ -324,6 +324,10 @@ void drawSavedInputScreen() {
     case SAVED_INPUT_MODE_CAL:
         sprintf(buffer, "%s", !!savedInputValue ? " YES" : "  NO");
         sprintf(floatBuffer, "%s", saved.calibrate ? " YES" : " NO");
+        break;
+    case SAVED_INPUT_MODE_USERTIME:
+        sprintf(buffer, "%1d:%02d", savedInputValue/6, (savedInputValue*10)%60);
+        sprintf(floatBuffer, "%1d:%02d", saved.userTime/6, (saved.userTime*10)%60);
         break;
     default:
         sprintf(buffer, "----");

@@ -214,6 +214,9 @@ void loop() {
                 notImplemented();
                 return;
             }
+            else if (savedInputMode >= SAVED_INPUT_MODE_USERTIME) {
+                saved.userTime = savedInputValue;
+            }
             saveSavedSetup();
             setMode(MODE_SAVED_INPUT_SAVED);
 #ifdef PIN_CURRENT

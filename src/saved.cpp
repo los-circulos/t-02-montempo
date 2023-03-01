@@ -75,6 +75,11 @@ void readSavedSetup() {
     else if (savedInputMode == SAVED_INPUT_MODE_COUNTDOWN) {
         savedInputValue = 87 - savedInputValue * 2;
     }
+    else if (savedInputMode >= SAVED_INPUT_MODE_USERTIME) {
+        savedInputValue = savedInputValue + (savedInputMode%2) * 32;
+        savedInputValue = min(savedInputValue, SAVED_USERTIME_MAX);
+        savedInputMode = SAVED_INPUT_MODE_USERTIME;
+    }
     // only 2 modes available
 //    else if (savedInputMode == SAVED_INPUT_MODE_MODE) {
 //        savedInputValue = (savedInputValue/2) % 4;

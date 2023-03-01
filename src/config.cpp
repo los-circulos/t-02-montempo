@@ -20,10 +20,10 @@ const unsigned int powerValues[] = { 120, 130, 140, 150, 160, 170, 180, 190, 200
 // 3:00 default, 370 + 25sec = leaves 25sec of the 7mins to start timer and to land. 0 stands for run until voltage cut
 #ifdef DEVMODE
 //const unsigned int flyTimeValues[] = { 10, 60, 210, 240, 270, 280, 290, 300, 310, 320, 330, 340, 350, 360, 370, 0 };
-const unsigned int flyTimeValues[] = { 10, 60, 360, 330, 300, 240, 0, 0 };
+const unsigned int flyTimeValues[] = { 10, 60, 240, 300, 330, 360, 0, 0 };
 #else
 //const unsigned int flyTimeValues[] = { 180, 60, 210, 240, 270, 280, 290, 300, 310, 320, 330, 340, 350, 360, 370, 0 };
-const unsigned int flyTimeValues[] = { 180, 60, 360, 330, 300, 240, 0, 0 };
+const unsigned int flyTimeValues[] = { 180, 60, 240, 300, 330, 360, 0, 0 };
 #endif
 
 unsigned char i;
@@ -59,7 +59,7 @@ void readConfigInput() {
     setHoldValues(i);
 
     i = readInputLeft()%8;
-    config.timeFly = flyTimeValues[i];
+    config.timeFly = i == 6 ? saved.userTime*10 : flyTimeValues[i];
 
     // @todo this value should be refreshed in countdown and restart countdown if changes?
 

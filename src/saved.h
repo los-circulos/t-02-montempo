@@ -25,12 +25,14 @@
 #define SAVED_INPUT_MODE_CAL 10
 #define SAVED_INPUT_MODE_SOFT_TIME 11
 #define SAVED_INPUT_MODE_COUNTDOWN 12
-#define SAVED_INPUT_MODE_CURRENT_CUT_OBS 13
-#define SAVED_INPUT_MODE_CLEAR_LOGS 14
-#define SAVED_INPUT_MODE_NOTUSED_1 15
+#define SAVED_INPUT_MODE_CLEAR_LOGS 13
+#define SAVED_INPUT_MODE_USERTIME 14
+#define SAVED_INPUT_MODE_NOTUSED 15
 
 #define SAVED_ARM_ON_BOOT false
 #define SAVED_ARM_ON_DELAY true
+
+#define SAVED_USERTIME_MAX 59
 
 struct savedT {
     unsigned char endValue = 90;
@@ -46,6 +48,7 @@ struct savedT {
 #endif
     unsigned char softTime = 3;
     unsigned char countdown = 25;
+    unsigned char userTime = 84;
     bool govi = false;
     bool armOnBoot = SAVED_ARM_ON_BOOT;
     bool calibrate = true;
